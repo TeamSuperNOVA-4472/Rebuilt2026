@@ -1,8 +1,12 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase 
@@ -57,5 +61,15 @@ public class TurretSubsystem extends SubsystemBase
         double output = pidController.calculate(currentAngle, targetAngle);
 
         turretMotor.set(output);
+    }
+
+    public void resetPosition()
+    {
+        turretMotor.setPosition(0);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Encoder position: ", turretMotor.getRotorPosition().getValue().div(5).in(Degrees));
     }
 }

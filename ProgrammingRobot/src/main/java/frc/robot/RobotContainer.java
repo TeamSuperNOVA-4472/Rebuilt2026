@@ -60,6 +60,8 @@ public class RobotContainer {
       theTriggerForB();
 
       theTriggerForBackwards();
+
+      theTriggerForReset();
   }
 
 
@@ -81,6 +83,9 @@ public class RobotContainer {
   Trigger turretTrigger = new Trigger(() -> mDriver.getBButton());
 
   Trigger turretBackwardTrigger = new Trigger(() -> mDriver.getXButton());
+  
+  Trigger turretResetTrigger = new Trigger(() -> mDriver.getYButton());
+
 
   private void theTriggerForB() 
   {
@@ -102,6 +107,19 @@ public class RobotContainer {
         new StartEndCommand
         (
             () -> mTurretSubsystem.rotateVoltage(-0.5),
+            () -> mTurretSubsystem.stop(),
+            mTurretSubsystem
+        )
+    );
+  }
+
+    private void theTriggerForReset()
+  {
+    turretResetTrigger.whileTrue
+    (
+        new StartEndCommand
+        (
+            () -> mTurretSubsystem.resetPosition(),
             () -> mTurretSubsystem.stop(),
             mTurretSubsystem
         )
