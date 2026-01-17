@@ -58,6 +58,8 @@ public class RobotContainer {
       new InstantCommand(() -> System.out.println("The Event has triggered")));
 
       theTriggerForB();
+
+      theTriggerForBackwards();
   }
 
 
@@ -78,16 +80,32 @@ public class RobotContainer {
 
   Trigger turretTrigger = new Trigger(() -> mDriver.getBButton());
 
+  Trigger turretBackwardTrigger = new Trigger(() -> mDriver.getXButton());
+
   private void theTriggerForB() 
   {
     turretTrigger.whileTrue
     (
         new StartEndCommand
         (
-            () -> mTurretSubsystem.rotateVoltage(1),
+            () -> mTurretSubsystem.rotateVoltage(0.5),
             () -> mTurretSubsystem.stop(),
             mTurretSubsystem
         )
     );
   }
+
+  private void theTriggerForBackwards()
+  {
+    turretBackwardTrigger.whileTrue
+    (
+        new StartEndCommand
+        (
+            () -> mTurretSubsystem.rotateVoltage(-0.5),
+            () -> mTurretSubsystem.stop(),
+            mTurretSubsystem
+        )
+    );
+  }
+
 }
