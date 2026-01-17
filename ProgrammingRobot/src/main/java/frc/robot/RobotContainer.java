@@ -63,6 +63,8 @@ public class RobotContainer {
       theTriggerForBackwards();
 
       theTriggerForReset();
+
+      theTriggerForGoToAngle();
   }
 
 
@@ -120,10 +122,10 @@ public class RobotContainer {
   {
     turretToAngleTrigger.whileTrue
     (
-        new GoToAngleCommand(mTurretSubsystem, 90, 0.5)
+        new GoToAngleCommand(mTurretSubsystem, mSwerveSubsystem::getHeadingDegrees, 90, 0.5)
     );
   }
-  
+
     private void theTriggerForReset()
   {
     turretResetTrigger.whileTrue

@@ -15,10 +15,8 @@ public class TurretSubsystem extends SubsystemBase
 
     private static final double revolutions = 2048;
 
-    private static final double kP = 0.0;
-
-    private static final double kI = 0.0;
-
+    private static final double kP = 0.015;
+    private static final double kI = 0.001;
     private static final double kD = 0.0;
 
     private final PIDController pidController;
@@ -28,8 +26,7 @@ public class TurretSubsystem extends SubsystemBase
         turretMotor = new TalonFX(24);
 
         pidController = new PIDController(kP, kI, kD);
-
-        pidController.enableContinuousInput(0, 360);
+        
     }
 //
     public void rotate(double speed) 
@@ -49,9 +46,9 @@ public class TurretSubsystem extends SubsystemBase
 
     public double getAngle() 
     {
-        double encoderPosition = turretMotor.getPosition().getValueAsDouble();
+        double encoderPosition = turretMotor.getRotorPosition().getValue().div(5).in(Degrees);
 
-        return (encoderPosition / revolutions) * 360;
+        return encoderPosition;
     }
 
     public void goToAngle(double targetAngle) 
@@ -89,5 +86,5 @@ public class TurretSubsystem extends SubsystemBase
 
         return pidController.calculate(currentAngle, targetAngle);
     }
-    
+
 }
