@@ -33,6 +33,11 @@ public class TurretSubsystem extends SubsystemBase
         turretMotor.set(speed);
     }
 
+    public void rotateVoltage(double theVoltage) 
+    {
+        turretMotor.setVoltage(theVoltage);
+    }
+
     public void stop() 
     {
         turretMotor.stopMotor();
