@@ -72,4 +72,22 @@ public class TurretSubsystem extends SubsystemBase
     public void periodic() {
         SmartDashboard.putNumber("Encoder position: ", turretMotor.getRotorPosition().getValue().div(5).in(Degrees));
     }
+
+    public double getPIDOutput(double currentAngle, double targetAngle) 
+    {
+        double difference = targetAngle - currentAngle;
+
+        if (difference > 180)
+        {
+            difference -= 360;
+        }
+
+        else if (difference < -180)
+        {
+            difference += 360;
+        }
+
+        return pidController.calculate(currentAngle, targetAngle);
+    }
+    
 }
