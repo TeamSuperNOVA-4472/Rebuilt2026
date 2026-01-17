@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DoTheThingCommand;
+import frc.robot.commands.GoToAngleCommand;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
@@ -82,6 +83,8 @@ public class RobotContainer {
 
   Trigger turretBackwardTrigger = new Trigger(() -> mDriver.getXButton());
 
+  Trigger turretToAngleTrigger = new Trigger(() -> mDriver.getYButton());
+
   private void theTriggerForB() 
   {
     turretTrigger.whileTrue
@@ -108,4 +111,11 @@ public class RobotContainer {
     );
   }
 
+  private void theTriggerForGoToAngle() 
+  {
+    turretToAngleTrigger.whileTrue
+    (
+        new GoToAngleCommand(mTurretSubsystem, 90, 0.5)
+    );
+  }
 }

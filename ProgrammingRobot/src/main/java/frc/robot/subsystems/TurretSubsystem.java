@@ -58,4 +58,22 @@ public class TurretSubsystem extends SubsystemBase
 
         turretMotor.set(output);
     }
+
+    public double getPIDOutput(double currentAngle, double targetAngle) 
+    {
+        double difference = targetAngle - currentAngle;
+
+        if (difference > 180)
+        {
+            difference -= 360;
+        }
+
+        else if (difference < -180)
+        {
+            difference += 360;
+        }
+
+        return pidController.calculate(currentAngle, targetAngle);
+    }
+
 }
