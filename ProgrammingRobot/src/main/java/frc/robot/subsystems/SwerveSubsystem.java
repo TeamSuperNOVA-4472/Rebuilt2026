@@ -142,4 +142,10 @@ public class SwerveSubsystem extends SubsystemBase {
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return mSwerveDrive.getRobotVelocity();
   }
+
+  @Override
+  public void periodic() {
+    // Update robot's odometry
+    mSwerveDrive.updateOdometry();
+  }
 }
