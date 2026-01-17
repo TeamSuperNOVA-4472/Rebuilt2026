@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase 
@@ -20,9 +19,9 @@ public class TurretSubsystem extends SubsystemBase
 
     private final PIDController pidController;
 
-    public TurretSubsystem(int id) 
+    public TurretSubsystem() 
     {
-        turretMotor = new TalonFX(id);
+        turretMotor = new TalonFX(24);
 
         pidController = new PIDController(kP, kI, kD);
 
