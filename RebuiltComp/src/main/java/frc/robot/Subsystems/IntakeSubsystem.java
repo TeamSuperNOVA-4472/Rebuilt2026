@@ -23,15 +23,25 @@ public class IntakeSubsystem extends SubsystemBase {
     private PIDController kSliderPID;
 
     private IntakeSubsystem(){
-
+        kMode = IntakeMode.STORED;
+        kIsAtState = true;
+        kIntakeMotor = new TalonFX(IntakeSubsystemConstants.kIntakeMotorPort);
+        kIntakeSlider = new TalonFX(IntakeSubsystemConstants.kSliderMotorPort);
     }
-
     private void moveToState(){}
-
-    public void setIntake(IntakeMode mNewMode){}
-    public IntakeMode getMode(){}
-    public boolean isReady(){}
-    public double getIntakeSpeed(){}
+    public void setIntake(IntakeMode mNewMode){
+        kMode = mNewMode;
+        moveToState();
+    }
+    public IntakeMode getMode(){
+        return kMode;
+    }
+    public boolean isReady(){
+        return kIsAtState;
+    }
+    public double getIntakeSpeed(){
+        return kIntakeMotor.get();
+    }
 
     @Override
     public void periodic(){}
