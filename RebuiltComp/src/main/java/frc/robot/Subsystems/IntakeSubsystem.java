@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableEvent.Kind;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -28,6 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
         kIsAtState = true;
         kIntakeMotor = new TalonFX(IntakeSubsystemConstants.kIntakeMotorPort);
         kIntakeSlider = new TalonFX(IntakeSubsystemConstants.kSliderMotorPort);
+        kSliderPID = new PIDController(IntakeSubsystemConstants.kSliderP,IntakeSubsystemConstants.kSliderI,IntakeSubsystemConstants.kSliderD);
+        kSliderPID.setTolerance(IntakeSubsystemConstants.kSlideThreshold,IntakeSubsystemConstants.kSlideSpeedThreshold);
     }
 
     private void moveToState(){
@@ -69,5 +72,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     @Override
-    public void periodic(){}
+    public void periodic(){
+        kIsAtState = kSliderPID.atSetpoint();
+        kIntakeSlider.set(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble(),kSliderTarget));
+    }
 }
