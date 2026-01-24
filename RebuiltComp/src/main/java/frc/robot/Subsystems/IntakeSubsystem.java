@@ -5,12 +5,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
     public static final IntakeSubsystem kIntake = new IntakeSubsystem();
 
-    enum IntakeMode{
+    public enum IntakeMode{
         STORED,
         INTAKE,
         OUTTAKE
@@ -75,5 +76,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic(){
         kIsAtState = kSliderPID.atSetpoint();
         kIntakeSlider.set(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble(),kSliderTarget));
+        SmartDashboard.putNumber("Current Mode", kMode.ordinal());
     }
 }
