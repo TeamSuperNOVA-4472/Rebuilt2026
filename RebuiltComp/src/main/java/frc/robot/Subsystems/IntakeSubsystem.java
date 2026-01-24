@@ -17,6 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private IntakeMode kMode;
 
     private boolean kIsAtState;
+    private double kSliderTarget; 
 
     private TalonFX kIntakeMotor;
     private TalonFX kIntakeSlider;
@@ -26,7 +27,29 @@ public class IntakeSubsystem extends SubsystemBase {
 
     }
 
-    private void moveToState(){}
+    private void moveToState(){
+        switch (kMode){
+        case STORED:
+            kSliderTarget = IntakeSubsystemConstants.kStoredPos;
+            kIntakeMotor.set(0);
+            break;
+        
+        case INTAKE:
+            kSliderTarget = IntakeSubsystemConstants.kOutPos;
+            kIntakeMotor.set(IntakeSubsystemConstants.kIntakeMotorSpeed);
+            break;
+        
+        case OUTTAKE:
+            kSliderTarget = IntakeSubsystemConstants.kOutPos;
+            kIntakeMotor.set(-IntakeSubsystemConstants.kIntakeMotorSpeed);
+            break;
+        
+        }
+        
+        
+
+        //desired target for the slider, speed of intake motor
+    }
 
     public void setIntake(IntakeMode mNewMode){}
     public IntakeMode getMode(){}
