@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
@@ -24,11 +25,13 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DoTheThingCommand;
 import frc.robot.commands.GoToAngleCommand;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,6 +47,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem mSwerveSubsystem = new SwerveSubsystem();
+  private final VisionSubsystem mVisionSubsystem;
 
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(1.0);
@@ -66,13 +70,19 @@ public class RobotContainer {
     new EventTrigger("TheEvent").onTrue(
       new InstantCommand(() -> System.out.println("The Event has triggered")));
 
-      theTriggerForB();
+      /*theTriggerForB();
 
       theTriggerForBackwards();
 
       theTriggerForReset();
 
-      theTriggerForGoToAngle();
+      theTriggerForGoToAngle();*/
+
+      mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees);
+      mVisionSubsystem.addMeasurementListener((PoseEstimate pose) -> {
+        mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds);
+        mSwerveSubsystem.addStandardDeviations(VecBuilder.fill(.7,.7,9999999));
+      });
   }
 
 

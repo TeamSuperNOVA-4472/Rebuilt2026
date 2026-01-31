@@ -49,4 +49,8 @@ public final class Constants {
       return Math.signum(clampedVal) * kControllerProfileMap.get(Math.abs(clampedVal));
     }
   }
+  public static class VisionConstants {
+    public static final boolean kUseMegatag2 = false; 
+    public static final String[] kLimelightNames = {"limelight"};
+  }
 }
