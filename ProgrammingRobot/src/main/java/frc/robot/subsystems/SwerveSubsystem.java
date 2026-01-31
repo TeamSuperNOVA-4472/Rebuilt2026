@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import java.io.File;
 import java.io.IOException;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -20,17 +21,21 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static frc.robot.Constants.SwerveConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
 
   private final SwerveDrive mSwerveDrive;
+  private final Pigeon2 mGyro;
 
   private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
@@ -85,6 +90,8 @@ public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
   public SwerveSubsystem() {
     // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    mGyro = new Pigeon2(13);
+
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
     configAutoBuilder(this);
@@ -135,7 +142,11 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    return mSwerveDrive.getPose().getRotation().getDegrees();
+    return !Robot.isSimulation() ? mGyro.getYaw().getValue().in(Degrees) : getPose().getRotation().getDegrees();
+  }
+
+  public double getAngularVelocity() {
+    return mGyro.getAngularVelocityZDevice().getValue().in(DegreesPerSecond);
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {

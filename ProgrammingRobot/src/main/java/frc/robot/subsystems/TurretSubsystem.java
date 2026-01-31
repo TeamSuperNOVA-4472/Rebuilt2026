@@ -1,90 +1,139 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
+import java.util.function.Supplier;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase 
 {
-    private final TalonFX turretMotor;
+    private final TalonFX mTurretMotor;
+    private final TalonFXSimState mTurretMotorSim;
 
-    private static final double revolutions = 2048;
+    private final DCMotorSim mMotorSimModel;
 
-    private static final double kP = 0.015;
-    private static final double kI = 0.001;
+    private static final double kThreeSixtyDegrees = 360;
+    private static final double kSimRefreshTimeMS = 0.020;
+
+    private static final double kP = 0.001; //0.0135
+    private static final double kI = 0.0; //0.001
     private static final double kD = 0.0;
 
-    private final PIDController pidController;
+    private static final double kS = 0.0; //0.001
+    private static final double kV = 0;
+
+    private static final double kGearRatio = 5.0;
+
+    private static final double kDeadZoneStart = 330;
+    private static final double kOffset = 0;
+
+    private final PIDController mPidController;
+    private final SimpleMotorFeedforward mFeedForward;
 
     public TurretSubsystem() 
     {
-        turretMotor = new TalonFX(24);
+        mTurretMotor = new TalonFX(24);
+        mTurretMotorSim = mTurretMotor.getSimState();
 
-        pidController = new PIDController(kP, kI, kD);
-        
-    }
-//
-    public void rotate(double speed) 
-    {
-        turretMotor.set(speed);
+        mMotorSimModel = new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                DCMotor.getKrakenX60(1), 0.001, kGearRatio), 
+                DCMotor.getKrakenX60(1)
+                );
+
+        mPidController = new PIDController(kP, kI, kD);
+        mFeedForward = new SimpleMotorFeedforward(kS, kV);
     }
 
-    public void rotateVoltage(double theVoltage) 
+    private double normalizeHeadingTo360Degrees(Angle angle)
     {
-        turretMotor.setVoltage(theVoltage);
+        return (angle.in(Degrees) % kThreeSixtyDegrees + kThreeSixtyDegrees) % kThreeSixtyDegrees;
+    }
+
+    private Angle getCurrentHeading()
+    {
+        return mTurretMotor.getRotorPosition().getValue();
+    }
+
+    public void rotateVoltage(double voltage) 
+    {
+        mTurretMotor.setVoltage(voltage);
+    }
+
+    private double adjustSetPoint(double setPoint)
+    {
+        if (setPoint >= kDeadZoneStart)
+        {
+            // Check if setpoint is closer to starting or ending bound of deadzone
+            return setPoint > (kThreeSixtyDegrees + kDeadZoneStart) / 2 ? 0 : kDeadZoneStart;
+        }
+        return setPoint;
+    }
+
+    private double absoluteHeadingToRelativeTurretHeading(Angle desiredAbsoluteHeading, Angle drivetrainHeading)
+    {
+        return normalizeHeadingTo360Degrees(desiredAbsoluteHeading.minus(drivetrainHeading).plus(Degrees.of(kOffset)));
+    }   
+
+    public void turnToSetpoint(Angle drivetrainHeading, Angle desiredHeading, double desiredVelocity)
+    {
+        double dtHeading = (drivetrainHeading.in(Degrees) + 360) % 360;
+        double newSetpoint = adjustSetPoint(absoluteHeadingToRelativeTurretHeading(desiredHeading, Degrees.of(dtHeading)));
+
+        double feedBack = mPidController.calculate(getCurrentHeading().in(Degrees), newSetpoint);
+        double feedForward = mFeedForward.calculate(desiredVelocity);
+
+        rotateVoltage(feedBack + feedForward);
+
+        SmartDashboard.putNumber("Drivetrain Heading: ", dtHeading);
+        SmartDashboard.putNumber("Turret Heading: ", getCurrentHeading().in(Degrees));
+        SmartDashboard.putNumber("Relative Heading: ", newSetpoint);
+
     }
 
     public void stop() 
     {
-        turretMotor.stopMotor();
-    }
-
-    public double getAngle() 
-    {
-        double encoderPosition = turretMotor.getRotorPosition().getValue().div(5).in(Degrees);
-
-        return encoderPosition;
-    }
-
-    public void goToAngle(double targetAngle) 
-    {
-        double currentAngle = getAngle();
-
-        double output = pidController.calculate(currentAngle, targetAngle);
-
-        turretMotor.set(output);
+        mTurretMotor.stopMotor();
     }
 
     public void resetPosition()
     {
-        turretMotor.setPosition(0);
+        mTurretMotor.setPosition(0);
     }
 
     @Override
-    public void periodic() {
-        SmartDashboard.putNumber("Encoder position: ", turretMotor.getRotorPosition().getValue().div(5).in(Degrees));
-    }
+    public void simulationPeriodic() {
+        mTurretMotorSim.setSupplyVoltage(RobotController.getBatteryVoltage());
 
-    public double getPIDOutput(double currentAngle, double targetAngle) 
-    {
-        double difference = targetAngle - currentAngle;
+        Voltage motorVoltage = mTurretMotorSim.getMotorVoltageMeasure();
 
-        if (difference > 180)
-        {
-            difference -= 360;
-        }
+        mMotorSimModel.setInputVoltage(motorVoltage.in(Volts));
+        mMotorSimModel.update(kSimRefreshTimeMS);
 
-        else if (difference < -180)
-        {
-            difference += 360;
-        }
-
-        return pidController.calculate(currentAngle, targetAngle);
+        mTurretMotorSim.setRawRotorPosition(mMotorSimModel.getAngularPosition().in(Rotations));
+        mTurretMotorSim.setRotorVelocity(mMotorSimModel.getAngularVelocity().in(RotationsPerSecond));
     }
 
 }
