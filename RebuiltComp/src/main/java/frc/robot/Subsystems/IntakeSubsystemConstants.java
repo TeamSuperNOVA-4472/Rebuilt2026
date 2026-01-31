@@ -12,7 +12,7 @@ public final class IntakeSubsystemConstants {
     public static final int kIntakeMotorPort = 0;
     public static final int kSliderMotorPort = 1;
 
-    public static final double kSliderP = 0.1;
+    public static final double kSliderP = 0.16;
     public static final double kSliderI = 0;
-    public static final double kSliderD = 0.05;
+    public static final double kSliderD = 0.006;
 }

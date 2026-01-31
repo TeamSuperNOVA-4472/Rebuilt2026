@@ -28,6 +28,6 @@ public class setIntake extends Command {
 
     @Override
     public boolean isFinished(){
-        return true;//kIntake.isReady();
+        return kIntake.isReady();
     }
 }
