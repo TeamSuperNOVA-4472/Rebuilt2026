@@ -81,8 +81,8 @@ public class VisionSubsystem extends SubsystemBase
                             
         }
 
-        
-        //SmartDashboard.putNumber("Tag info", LimelightHelpers.getTX("limelight"));
+        SmartDashboard.putNumber("Gyro position: ", mGetGyroPosition.get());
+        SmartDashboard.putNumber("Tag info", LimelightHelpers.getTX("limelight"));
     }
 }
 
