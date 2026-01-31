@@ -4,15 +4,29 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Commands.setIntake;
+import frc.robot.Subsystems.IntakeSubsystem;
+import frc.robot.Subsystems.IntakeSubsystem.IntakeMode;
 
 public class RobotContainer {
+  IntakeSubsystem mIntake;
+  XboxController mDriver;
   public RobotContainer() {
+    mIntake = IntakeSubsystem.kIntake;
+    mDriver = new XboxController(0);
     configureBindings();
   }
 
-  private void configureBindings() {}
+  private void configureBindings() {
+    Trigger intakeToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
+    intakeToggle.onTrue(new setIntake(mIntake, IntakeMode.INTAKE));
+    Trigger outtakeToggle = new Trigger(mDriver::getRightBumperButton);
+    outtakeToggle.onTrue(new setIntake(mIntake, IntakeMode.OUTTAKE));
+  }
 
   public Command getAutonomousCommand() {
     return Commands.print("No autonomous command configured");
