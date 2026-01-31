@@ -3,6 +3,7 @@ package frc.robot.Subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
     public static final SpindexerSubsystem kInstance = new SpindexerSubsystem();
@@ -21,7 +22,19 @@ public class SpindexerSubsystem extends SubsystemBase {
         kToFlywheelMoter = new TalonFX(6);
     }
 
-    private void moveSpindexer(){}
+    private void moveSpindexer(){
+        switch (kMode){
+        case OFF:
+            kSpindexterMotor.set(0);
+            kToFlywheelMoter.set(0);
+            break;
+
+        case LOAD:
+            kSpindexterMotor.set(Constants.kSpindexerSpeed);
+            kToFlywheelMoter.set(Constants.kSpindexerSpeed);
+            break;
+        }
+    }
     public double getSpinSpeed(){
         return kSpindexterMotor.get();
     }
