@@ -18,7 +18,7 @@ public class VisionSubsystem extends SubsystemBase
     //Suppliers and constants, members of class
     private final Supplier<Double> mGetGyroPosition;
 
-    private final ArrayList<Consumer<PoseEstimate>> mListeners;
+    private final ArrayList<Consumer<PoseEstimate> > mListeners;
     private final Field2d mField; 
 
     //Get gyro position 
@@ -28,6 +28,7 @@ public class VisionSubsystem extends SubsystemBase
         mField = new Field2d();
         SmartDashboard.putData("Subsystems/VisionSubsystem/Vision Pose", mField);
         mListeners = new ArrayList<>();
+        LimelightHelpers.SetIMUMode("limelight", 4);
     
     }
     public void addMeasurementListener(Consumer<PoseEstimate> consumer)
