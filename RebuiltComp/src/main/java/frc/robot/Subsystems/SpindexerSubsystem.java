@@ -2,6 +2,7 @@ package frc.robot.Subsystems;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -43,6 +44,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
     public void setMode(SpindexerMode mNewMode){
         kMode = mNewMode;
+        SmartDashboard.putNumber("Spindexer Mode", kMode.ordinal());
         moveSpindexer();
     }
 }

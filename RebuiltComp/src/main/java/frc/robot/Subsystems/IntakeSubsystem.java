@@ -52,10 +52,6 @@ public class IntakeSubsystem extends SubsystemBase {
             break;
         
         }
-        
-        
-
-        //desired target for the slider, speed of intake motor
     }
     
     public void setIntake(IntakeMode mNewMode){
