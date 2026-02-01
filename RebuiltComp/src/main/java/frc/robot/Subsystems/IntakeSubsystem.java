@@ -48,10 +48,10 @@ public class IntakeSubsystem extends SubsystemBase {
         kSliderPID = new PIDController(IntakeSubsystemConstants.kSliderP,IntakeSubsystemConstants.kSliderI,IntakeSubsystemConstants.kSliderD);
         kSliderPID.setTolerance(IntakeSubsystemConstants.kSlideThreshold,IntakeSubsystemConstants.kSlideSpeedThreshold);
         kIntakeSimMotor = DCMotor.getKrakenX60(1);
-        kIntakeSim = new ElevatorSim(kIntakeSimMotor, 20, 10, 0.05, 0, 0.4, false, 0, 0, 0);
+        kIntakeSim = new ElevatorSim(kIntakeSimMotor, 5, 2.26796, 0.01524, 0, 0.4572, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
-        kSimRoot = kSimSpace.getRoot("base", 50, 30);
-        kSimDisp = kSimRoot.append(new MechanismLigament2d("Intake", kIntakeSim.getPositionMeters()*39.3701*3, 195));
+        kSimRoot = kSimSpace.getRoot("base", 10, 30);
+        kSimDisp = kSimRoot.append(new MechanismLigament2d("Intake", kIntakeSim.getPositionMeters()*39.3701*3, IntakeSubsystemConstants.kIntakeAngle));
         SmartDashboard.putData("IntakeSim", kSimSpace);
     }
 
@@ -108,5 +108,6 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeSim.update(0.02);
 
         kSimDisp.setLength(kIntakeSim.getPositionMeters()*39.3701*3);
+        SmartDashboard.putNumber("Intake Length Horizontal", kIntakeSim.getPositionMeters()*39.3701*Math.cos(Math.toRadians(15)));
     }
 }
