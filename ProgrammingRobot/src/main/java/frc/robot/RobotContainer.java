@@ -7,7 +7,10 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DoTheThingCommand;
 import frc.robot.commands.SwerveTeleop;
+import frc.robot.commands.setFlywheel;
+import frc.robot.subsystems.FlywheelSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -32,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,7 +64,7 @@ public class RobotContainer {
     mDriver::getAButton,
     mSwerveSubsystem);
 
-
+  private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -68,6 +72,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("DoTheThingCommand", new DoTheThingCommand());
     new EventTrigger("TheEvent").onTrue(
       new InstantCommand(() -> System.out.println("The Event has triggered")));
+    Trigger flyWheelToggle = new Trigger(mDriver::getXButton);
+    flyWheelToggle.onTrue(new setFlywheel(kFlywheel, FlywheelMode.SPINNING));
+    Trigger flyWheelToggleOff = new Trigger(mDriver::getBButton);
+    flyWheelToggleOff.onTrue(new setFlywheel(kFlywheel, FlywheelMode.OFF));
   }
 
 
