@@ -15,6 +15,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     private PIDController kHoodPidController;
     private FlywheelMode kMode;
     private double kTargetAngle;
+    private boolean kHoodAtTarget;
 
     private FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
@@ -47,8 +48,13 @@ public class FlywheelSubsystem extends SubsystemBase {
     public void setHoodTarget(double mNewTarget){
         kTargetAngle = mNewTarget;
     }
+    public boolean getHoodAtTartget(){
+        return kHoodAtTarget;
+    }
     @Override
     public void periodic(){
+        kHoodAtTarget = kHoodPidController.atSetpoint();
         kFlywheelHoodMotor.set(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble(),kTargetAngle));
     }
+
 }

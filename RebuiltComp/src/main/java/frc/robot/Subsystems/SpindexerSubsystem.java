@@ -13,25 +13,25 @@ public class SpindexerSubsystem extends SubsystemBase {
         LOAD
     }
     private TalonFX kSpindexterMotor;
-    private TalonFX kToFlywheelMoter;
+    private TalonFX kToFlywheelMotor;
     private SpindexerMode kMode;
 
     private SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
         kSpindexterMotor = new TalonFX(7);
-        kToFlywheelMoter = new TalonFX(6);
+        kToFlywheelMotor = new TalonFX(6);
     }
 
     private void moveSpindexer(){
         switch (kMode){
         case OFF:
             kSpindexterMotor.set(0);
-            kToFlywheelMoter.set(0);
+            kToFlywheelMotor.set(0);
             break;
 
         case LOAD:
             kSpindexterMotor.set(Constants.kSpindexerSpeed);
-            kToFlywheelMoter.set(Constants.kSpindexerSpeed);
+            kToFlywheelMotor.set(Constants.kSpindexerSpeed);
             break;
         }
     }
