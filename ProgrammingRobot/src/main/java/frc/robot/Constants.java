@@ -62,8 +62,9 @@ public final class Constants {
   }
   public static class VisionConstants {
     public static final boolean kUseMegatag2 = true; 
-    public static final String[] kLimelightNames = {"limelight"};
+    public static final String[] kLimelightNames = {"limelight-one", "limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
+    public static final double kAmbiguity = 0.9;
 
     public static final boolean kIsAndyMark = false;
 

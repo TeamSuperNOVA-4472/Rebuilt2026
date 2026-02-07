@@ -166,5 +166,6 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     mSwerveDrive.updateOdometry();
+    SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
   }
 }

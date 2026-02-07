@@ -83,7 +83,7 @@ public class VisionSubsystem extends SubsystemBase
         {
             //Localization--will not return location update if a Limelight can't see an Apriltag
             pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
-            if(pose.tagCount == 0)
+            if(pose.tagCount == 0||pose.rawFiducials[0].ambiguity >= Constants.VisionConstants.kAmbiguity)
             {
                 rejectUpdate = true;
             }
