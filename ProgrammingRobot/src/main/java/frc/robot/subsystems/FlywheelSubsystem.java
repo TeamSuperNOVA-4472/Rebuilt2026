@@ -46,17 +46,18 @@ public class FlywheelSubsystem extends SubsystemBase {
         kMode = FlywheelMode.OFF;
         //TODO: Values below should be constants.
         kFlywheelMotor = new SparkMax(33, MotorType.kBrushless);
-        kFlywheelFeedforward = new SimpleMotorFeedforward(0.0001, 0.0075);
+        kFlywheelFeedforward = new SimpleMotorFeedforward(0.16693, 0.12451, 0.040519);
+        //TODO: Tune the PID.
         kFlywheelFeedback = new PIDController(0.13,0, 0.001);
         kRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(kFlywheelMotor::setVoltage, log -> {
                 // Record a frame for the shooter motor.
                 log.motor("shooter-wheel")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                            kFlywheelMotor.get() * RobotController.getBatteryVoltage(), Volts))
+                            kFlywheelMotor.getAppliedOutput() * RobotController.getBatteryVoltage(), Volts))
                     .angularPosition(m_angle.mut_replace(kFlywheelMotor.getEncoder().getPosition(), Rotations))
                     .angularVelocity(
-                        m_velocity.mut_replace(kFlywheelMotor.getEncoder().getVelocity(), RotationsPerSecond));
+                        m_velocity.mut_replace(kFlywheelMotor.getEncoder().getVelocity()/60.0, RotationsPerSecond));
               }, this));
     }
     private void moveFlywheel(){
