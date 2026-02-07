@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DoTheThingCommand;
+import frc.robot.commands.ShooterSysIdCommand;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.commands.setFlywheel;
 import frc.robot.subsystems.FlywheelSubsystem;
@@ -36,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -86,7 +88,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     try {
-      return new PathPlannerAuto("DriveDoTheThingDriveBack");
+      return new ShooterSysIdCommand(kFlywheel);//return new PathPlannerAuto("DriveDoTheThingDriveBack");
     } catch (AutoBuilderException e) {
       return new InstantCommand();
     }
