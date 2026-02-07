@@ -4,9 +4,20 @@
 
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -50,7 +61,18 @@ public final class Constants {
     }
   }
   public static class VisionConstants {
-    public static final boolean kUseMegatag2 = false; 
+    public static final boolean kUseMegatag2 = true; 
     public static final String[] kLimelightNames = {"limelight"};
+    public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
+
+    public static final boolean kIsAndyMark = false;
+
+    // Welded hub poses
+    public static final Pose2d kHubPoseBlueWeldedMeters = new Pose2d(4.6255177999999995, 4.0346376, Rotation2d.fromDegrees(0));
+    public static final Pose2d kHubPoseRedWeldedMeters = new Pose2d(11.9155209999999985, 4.0346376, Rotation2d.fromDegrees(0));
+
+    // Andymark hub poses
+    public static final Pose2d kHubPoseBlueAndyMarkMeters = new Pose2d(4.6115224, 4.0213534, Rotation2d.fromDegrees(0));
+    public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
   }
 }

@@ -78,11 +78,12 @@ public class RobotContainer {
 
       theTriggerForGoToAngle();*/
 
-      mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees);
-      mVisionSubsystem.addMeasurementListener((PoseEstimate pose) -> {
+      mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees,
+      (PoseEstimate pose) -> {
         mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds);
-        mSwerveSubsystem.addStandardDeviations(VecBuilder.fill(.7,.7,9999999));
-      });
+        mSwerveSubsystem.addStandardDeviations(Constants.VisionConstants.kStandardDeviations);
+      }
+      );
   }
 
 

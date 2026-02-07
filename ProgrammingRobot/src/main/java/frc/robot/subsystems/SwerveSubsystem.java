@@ -23,6 +23,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import swervelib.SwerveDrive;
@@ -38,7 +39,7 @@ import static frc.robot.Constants.SwerveConstants.*;
 public class SwerveSubsystem extends SubsystemBase {
 
   private final SwerveDrive mSwerveDrive;
-  private final Pigeon2 mGyro;
+  //private final Pigeon2 mGyro;
 
   private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
@@ -92,11 +93,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new ExampleSubsystem. */
   public SwerveSubsystem() {
-    // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    mGyro = new Pigeon2(13);
-
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
+
     configAutoBuilder(this);
   }
 
@@ -153,14 +152,19 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    return !Robot.isSimulation() ? mGyro.getYaw().getValue().in(Degrees) : getPose().getRotation().getDegrees();
+    return getPose().getRotation().getDegrees();
   }
 
   public double getAngularVelocity() {
-    return mGyro.getAngularVelocityZDevice().getValue().in(DegreesPerSecond);
+    return 0;//mGyro.getAngularVelocityZDevice().getValue().in(DegreesPerSecond);
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return mSwerveDrive.getRobotVelocity();
+  }
+
+  @Override
+  public void periodic() {
+    mSwerveDrive.updateOdometry();
   }
 }
