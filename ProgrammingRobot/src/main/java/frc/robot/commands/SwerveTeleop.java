@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.FieldMathHelpers;
 import frc.robot.subsystems.SwerveSubsystem;
 
 import java.util.function.Supplier;
@@ -21,6 +22,7 @@ public class SwerveTeleop extends Command {
   private final Supplier<Double> mTurnInput;
   private final Supplier<Boolean> mResetHeadingInput;
   private final SwerveSubsystem mSwerveSubsystem;
+  private final Supplier<Boolean> mTurnToHeading; 
 
   private final PIDController mGyroController = new PIDController(0.05, 0, 0.0005);
   private double mTargetHeading;
@@ -34,6 +36,7 @@ public class SwerveTeleop extends Command {
     Supplier<Double> pSideInput,
     Supplier<Double> pTurnInput,
     Supplier<Boolean> pResetHeadingInput,
+    Supplier<Boolean> pTurnToHeading,
     SwerveSubsystem pSwerveSubsystem) {
   
     mFwdInput = pFwdInput;
@@ -41,6 +44,7 @@ public class SwerveTeleop extends Command {
     mTurnInput = pTurnInput;
     mResetHeadingInput = pResetHeadingInput;
     mSwerveSubsystem = pSwerveSubsystem;
+    mTurnToHeading = pTurnToHeading;
   
     mTargetHeading = mSwerveSubsystem.getHeadingDegrees();
   
@@ -58,8 +62,12 @@ public class SwerveTeleop extends Command {
     double updatedTurnSpeedRadS =
       mTurnInput.get() * kMetersPerSecondToRadiansPerSecond * kMaxSpeedMS;
 
-
-    if(updatedTurnSpeedRadS == 0.0 && (updatedFwdSpeedMS != 0 || updatedSideSpeedMS != 0)) {
+    if(mTurnToHeading.get())
+    {
+      double normalizeDegrees = (mSwerveSubsystem.getHeadingDegrees() + 360) % 360;
+      updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
+    }
+    else if(updatedTurnSpeedRadS == 0.0 && (updatedFwdSpeedMS != 0 || updatedSideSpeedMS != 0)) {
       updatedTurnSpeedRadS = mGyroController.calculate(mSwerveSubsystem.getHeadingDegrees(), mTargetHeading);
     } else {
       mTargetHeading = mSwerveSubsystem.getHeadingDegrees();
