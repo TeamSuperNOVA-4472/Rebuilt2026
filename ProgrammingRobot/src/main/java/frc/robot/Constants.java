@@ -49,4 +49,7 @@ public final class Constants {
       return Math.signum(clampedVal) * kControllerProfileMap.get(Math.abs(clampedVal));
     }
   }
+  public static class SpindexerConstants {
+    public static final double kSpindexerSpeed = 41;
+  }
 }
