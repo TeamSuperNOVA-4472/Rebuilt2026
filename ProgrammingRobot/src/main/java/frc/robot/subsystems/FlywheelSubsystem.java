@@ -14,6 +14,7 @@ import edu.wpi.first.util.datalog.DataLog;
 import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -39,16 +40,18 @@ public class FlywheelSubsystem extends SubsystemBase {
     private final MutVoltage m_appliedVoltage = Volts.mutable(0);
     private final MutAngle m_angle = Radians.mutable(0);
     private final MutAngularVelocity m_velocity = RadiansPerSecond.mutable(0);
+    private final MutAngularVelocity kFlywheelSpeed = RotationsPerSecond.mutable(0);
 
 
 
     private FlywheelSubsystem(){
-        kMode = FlywheelMode.OFF;
+        kMode = FlywheelMode.SPINNING;
+        kTargetSpeed = 60;
         //TODO: Values below should be constants.
         kFlywheelMotor = new SparkMax(33, MotorType.kBrushless);
         kFlywheelFeedforward = new SimpleMotorFeedforward(0.16693, 0.12451, 0.040519);
         //TODO: Tune the PID.
-        kFlywheelFeedback = new PIDController(0.13,0, 0.001);
+        kFlywheelFeedback = new PIDController(0.05,0, 0);
         kRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(kFlywheelMotor::setVoltage, log -> {
                 // Record a frame for the shooter motor.
                 log.motor("shooter-wheel")
@@ -67,7 +70,7 @@ public class FlywheelSubsystem extends SubsystemBase {
             break;
         
         case SPINNING:
-            kTargetSpeed = 0.8;
+            kTargetSpeed = 60;
             break;
         }
     }
@@ -83,7 +86,12 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
     @Override
     public void periodic(){
-        // kFlywheelMotor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelMotor.getEncoder().getVelocity()/6000, kTargetSpeed) + kFlywheelFeedforward.calculate(kFlywheelMotor.getEncoder().getVelocity()), -11, 11));
+        kFlywheelSpeed.mut_replace(kFlywheelMotor.getEncoder().getVelocity()/60.0, RotationsPerSecond);
+        SmartDashboard.putNumber("FlywheelPID Out", MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelSpeed.magnitude(), kTargetSpeed) + kFlywheelFeedforward.calculate(kTargetSpeed), -11, 11));
+        kFlywheelMotor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelSpeed.magnitude(), kTargetSpeed) + kFlywheelFeedforward.calculate(kTargetSpeed), -11, 11));
+        SmartDashboard.putNumber("Actual Speed", kFlywheelSpeed.magnitude());
+        SmartDashboard.putNumber("Flywheel Feed Forward", kFlywheelFeedforward.calculate(kTargetSpeed));
+        SmartDashboard.putNumber("Target Speed", kTargetSpeed);
     }
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return kRoutine.dynamic(direction);
