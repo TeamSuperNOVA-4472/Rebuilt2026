@@ -10,6 +10,7 @@ import frc.robot.commands.ShooterSysIdCommand;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.commands.setFlywheel;
 import frc.robot.subsystems.FlywheelSubsystem;
+import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 
@@ -67,6 +68,7 @@ public class RobotContainer {
     mSwerveSubsystem);
 
   private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
+  private final SpindexerSubsystem kSpindexer = SpindexerSubsystem.kInstance;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
