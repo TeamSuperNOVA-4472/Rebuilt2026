@@ -1,5 +1,7 @@
 package frc.robot.Subsystems;
 
+import java.lang.annotation.Target;
+
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -18,6 +20,10 @@ public class TurretSubsystem extends SubsystemBase
     private static final double kD = 0.0;
 
     private final PIDController kPidController;
+
+    private static final double kDeadband = 330.0;
+
+    private double kTurretTargetAngle = 0.0;
 
     public TurretSubsystem() 
     {
@@ -50,5 +56,16 @@ public class TurretSubsystem extends SubsystemBase
         double output = kPidController.calculate(currentAngle, targetAngle);
 
         kTurretMotor.set(output);
+    }
+
+    public boolean isValidAngle() {
+        if (kTurretTargetAngle >= kDeadband) {
+            return false;
+        } else{
+            return true;
+        }  
+    }
+     public void setTargetAngle(double mNewAngle) {
+        kTurretTargetAngle = mNewAngle;
     }
 }
