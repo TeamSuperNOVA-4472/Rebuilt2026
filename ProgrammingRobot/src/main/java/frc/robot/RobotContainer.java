@@ -11,6 +11,8 @@ import com.pathplanner.lib.auto.AutoBuilderException;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -30,7 +32,6 @@ import frc.robot.commands.DoTheThingCommand;
 import frc.robot.commands.GoToAngleCommand;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
@@ -66,6 +67,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    SparkMax flywheel = new SparkMax(33, MotorType.kBrushless);
+    flywheel.set(0);
     mSwerveSubsystem.setDefaultCommand(mSwerveTeleop);
     NamedCommands.registerCommand("DoTheThingCommand", new DoTheThingCommand());
     new EventTrigger("TheEvent").onTrue(
@@ -99,68 +102,6 @@ public class RobotContainer {
     } catch (AutoBuilderException e) {
       return new InstantCommand();
     }
-  }
-//
-  private final TurretSubsystem mTurretSubsystem = new TurretSubsystem();
-
-  Trigger turretTrigger = new Trigger(() -> mDriver.getBButton());
-
-  Trigger turretBackwardTrigger = new Trigger(() -> mDriver.getXButton());
-
-  Trigger turretToAngleTrigger = new Trigger(() -> mDriver.getYButton());
-  
-  Trigger turretResetTrigger = new Trigger(() -> mDriver.getAButton());
-
-
-  private void theTriggerForB() 
-  {
-    turretTrigger.whileTrue
-    (
-        new StartEndCommand
-        (
-            () -> mTurretSubsystem.rotateVoltage(0.5),
-            () -> mTurretSubsystem.stop(),
-            mTurretSubsystem
-        )
-    );
-  }
-
-  private void theTriggerForBackwards()
-  {
-    turretBackwardTrigger.whileTrue
-    (
-        new StartEndCommand
-        (
-            () -> mTurretSubsystem.rotateVoltage(-0.5),
-            () -> mTurretSubsystem.stop(),
-            mTurretSubsystem
-        )
-    );
-  }
-
-  private void theTriggerForGoToAngle() 
-  {
-    turretToAngleTrigger.whileTrue
-    (
-      new RunCommand(() -> mTurretSubsystem.turnToSetpoint(
-        Degrees.of(mSwerveSubsystem.getHeadingDegrees()),
-        Degrees.of(90), 
-        mSwerveSubsystem.getAngularVelocity()),
-        mTurretSubsystem)
-    );
-  }
-
-    private void theTriggerForReset()
-  {
-    turretResetTrigger.whileTrue
-    (
-        new StartEndCommand
-        (
-            () -> mTurretSubsystem.resetPosition(),
-            () -> mTurretSubsystem.stop(),
-            mTurretSubsystem
-        )
-    );
   }
 
 }

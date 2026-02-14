@@ -76,4 +76,8 @@ public final class Constants {
     public static final Pose2d kHubPoseBlueAndyMarkMeters = new Pose2d(4.6115224, 4.0213534, Rotation2d.fromDegrees(0));
     public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
   }
+  
+  public static class TurretConstants {
+    public static final Translation2d kTurretOffset = new Translation2d(0,0);
+  }
 }

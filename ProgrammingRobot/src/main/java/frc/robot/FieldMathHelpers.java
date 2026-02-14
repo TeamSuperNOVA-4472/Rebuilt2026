@@ -102,6 +102,10 @@ public class FieldMathHelpers
 
         return new Pair<Double, Double>(fieldRelativeXVelocity, fieldRelativeYVelocity);
     }
+    /*public static Pose2d getFieldRelativePositionOfTurret(Pose2d botpose, double robotHeadingDegrees)
+    {
+         Translation2d turretOfHeadingAdjustedOffset
+    } */
 
     /**
      * Checks if the robot is on the red alliance.

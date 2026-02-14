@@ -1,8 +1,8 @@
 {
   "imu": {
-    "type": "pigeon2",
-    "id": 13,
-    "canbus": "rio"
+    "type": "navx_spi",
+    "id": 0,
+    "canbus": null
   },
   "invertedIMU": false,
   "modules": [

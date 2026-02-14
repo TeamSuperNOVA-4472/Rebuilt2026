@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -116,6 +117,15 @@ public class VisionSubsystem extends SubsystemBase
             {
                 updatePose(pose.get());            
             }
+            if(DriverStation.isDisabled())
+            {
+                LimelightHelpers.SetThrottle(limelight, 200);
+            }
+            else
+            {
+                LimelightHelpers.SetThrottle(limelight, 0);
+            }
+
                             
         }
     }
