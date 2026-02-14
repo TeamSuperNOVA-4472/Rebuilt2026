@@ -8,7 +8,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DoTheThingCommand;
 import frc.robot.commands.ShooterSysIdCommand;
 import frc.robot.commands.SwerveTeleop;
-import frc.robot.commands.setFlywheel;
+import frc.robot.commands.ToggleSpindexer;
+import frc.robot.commands.calculateFlywheelSpeed;
 import frc.robot.subsystems.FlywheelSubsystem;
 import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -77,9 +78,11 @@ public class RobotContainer {
     new EventTrigger("TheEvent").onTrue(
       new InstantCommand(() -> System.out.println("The Event has triggered")));
     Trigger flyWheelToggle = new Trigger(mDriver::getXButton);
-    flyWheelToggle.onTrue(new setFlywheel(kFlywheel, FlywheelMode.SPINNING));
+    flyWheelToggle.onTrue(new calculateFlywheelSpeed(kFlywheel, mSwerveSubsystem, FlywheelMode.SPINNING));
     Trigger flyWheelToggleOff = new Trigger(mDriver::getBButton);
-    flyWheelToggleOff.onTrue(new setFlywheel(kFlywheel, FlywheelMode.OFF));
+    flyWheelToggleOff.onTrue(new calculateFlywheelSpeed(kFlywheel, mSwerveSubsystem, FlywheelMode.OFF));
+    Trigger spindexerToggle = new Trigger(mDriver::getYButton);
+    spindexerToggle.onTrue(new ToggleSpindexer(kSpindexer));
   }
 
 

@@ -16,10 +16,8 @@ public class SpindexerSubsystem extends SubsystemBase {
     private TalonFX kToFlywheelMotor;
     private SpindexerMode kMode;
 
-    private SpindexerSubsystem(){
-        kMode = SpindexerMode.LOAD;
+    private SpindexerSubsystem(){;
         kToFlywheelMotor = new TalonFX(24);
-        kToFlywheelMotor.set(Constants.SpindexerConstants.kSpindexerSpeed);
     }
 
     private void moveSpindexer(){

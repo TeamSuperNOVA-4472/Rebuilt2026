@@ -45,8 +45,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
 
     private FlywheelSubsystem(){
-        kMode = FlywheelMode.SPINNING;
-        kTargetSpeed = 60;
+        kMode = FlywheelMode.OFF;
         //TODO: Values below should be constants.
         kFlywheelMotor = new SparkMax(33, MotorType.kBrushless);
         kFlywheelFeedforward = new SimpleMotorFeedforward(0.16693, 0.12451, 0.040519);
@@ -63,32 +62,27 @@ public class FlywheelSubsystem extends SubsystemBase {
                         m_velocity.mut_replace(kFlywheelMotor.getEncoder().getVelocity()/60.0, RotationsPerSecond));
               }, this));
     }
-    private void moveFlywheel(){
-        switch (kMode) {
-        case OFF:
-            kTargetSpeed = 0;
-            break;
-        
-        case SPINNING:
-            kTargetSpeed = 60;
-            break;
-        }
-    }
     public double getSpinSpeed(){
         return kFlywheelMotor.get();
     }
     public FlywheelMode getMode(){
         return kMode;
     }
+    public void setTargetSpeed(double mNewSpeed){
+        kTargetSpeed = mNewSpeed;
+    }
+    public double getTargetSpeed(){
+        return kTargetSpeed;
+    }
     public void setMode(FlywheelMode mNewMode){
         kMode = mNewMode;
-        moveFlywheel();
     }
     @Override
     public void periodic(){
         kFlywheelSpeed.mut_replace(kFlywheelMotor.getEncoder().getVelocity()/60.0, RotationsPerSecond);
         SmartDashboard.putNumber("FlywheelPID Out", MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelSpeed.magnitude(), kTargetSpeed) + kFlywheelFeedforward.calculate(kTargetSpeed), -11, 11));
-        kFlywheelMotor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelSpeed.magnitude(), kTargetSpeed) + kFlywheelFeedforward.calculate(kTargetSpeed), -11, 11));
+        if (kMode == FlywheelMode.SPINNING) kFlywheelMotor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelSpeed.magnitude(), kTargetSpeed) + kFlywheelFeedforward.calculate(kTargetSpeed), -11, 11));
+        else kFlywheelMotor.setVoltage(0);
         SmartDashboard.putNumber("Actual Speed", kFlywheelSpeed.magnitude());
         SmartDashboard.putNumber("Flywheel Feed Forward", kFlywheelFeedforward.calculate(kTargetSpeed));
         SmartDashboard.putNumber("Target Speed", kTargetSpeed);
