@@ -84,8 +84,8 @@ public class RobotContainer {
 
       mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees,
       (PoseEstimate pose) -> {
-        mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds);
-        mSwerveSubsystem.addStandardDeviations(Constants.VisionConstants.kStandardDeviations);
+        //mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds);
+        //mSwerveSubsystem.addStandardDeviations(Constants.VisionConstants.kStandardDeviations);
       }
       );
   }

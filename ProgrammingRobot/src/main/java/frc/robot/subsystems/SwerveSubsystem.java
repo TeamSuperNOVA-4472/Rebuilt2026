@@ -95,8 +95,8 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
-
     configAutoBuilder(this);
+    resetHeading();
   }
 
   private boolean isRedAlliance() {
