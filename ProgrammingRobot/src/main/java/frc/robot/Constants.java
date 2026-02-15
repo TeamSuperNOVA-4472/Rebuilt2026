@@ -50,6 +50,6 @@ public final class Constants {
     }
   }
   public static class SpindexerConstants {
-    public static final double kSpindexerSpeed = 41;
+    public static final double kSpindexerSpeed = 0.8;
   }
 }

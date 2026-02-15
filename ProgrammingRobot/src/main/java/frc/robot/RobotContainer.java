@@ -6,9 +6,12 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DoTheThingCommand;
+import frc.robot.commands.ShooterSysIdCommand;
 import frc.robot.commands.SwerveTeleop;
-import frc.robot.commands.setFlywheel;
+import frc.robot.commands.ToggleSpindexer;
+import frc.robot.commands.calculateFlywheelSpeed;
 import frc.robot.subsystems.FlywheelSubsystem;
+import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 
@@ -36,6 +39,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -65,6 +69,7 @@ public class RobotContainer {
     mSwerveSubsystem);
 
   private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
+  private final SpindexerSubsystem kSpindexer = SpindexerSubsystem.kInstance;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -73,9 +78,11 @@ public class RobotContainer {
     new EventTrigger("TheEvent").onTrue(
       new InstantCommand(() -> System.out.println("The Event has triggered")));
     Trigger flyWheelToggle = new Trigger(mDriver::getXButton);
-    flyWheelToggle.onTrue(new setFlywheel(kFlywheel, FlywheelMode.SPINNING));
+    flyWheelToggle.onTrue(new calculateFlywheelSpeed(kFlywheel, mSwerveSubsystem, FlywheelMode.SPINNING));
     Trigger flyWheelToggleOff = new Trigger(mDriver::getBButton);
-    flyWheelToggleOff.onTrue(new setFlywheel(kFlywheel, FlywheelMode.OFF));
+    flyWheelToggleOff.onTrue(new calculateFlywheelSpeed(kFlywheel, mSwerveSubsystem, FlywheelMode.OFF));
+    Trigger spindexerToggle = new Trigger(mDriver::getYButton);
+    spindexerToggle.onTrue(new ToggleSpindexer(kSpindexer));
   }
 
 
@@ -86,7 +93,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     try {
-      return new PathPlannerAuto("DriveDoTheThingDriveBack");
+      return new ShooterSysIdCommand(kFlywheel);//return new PathPlannerAuto("DriveDoTheThingDriveBack");
     } catch (AutoBuilderException e) {
       return new InstantCommand();
     }
