@@ -5,6 +5,13 @@ import java.lang.annotation.Target;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.ElevatorSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class TurretSubsystem extends SubsystemBase 
@@ -25,11 +32,26 @@ public class TurretSubsystem extends SubsystemBase
 
     private double kTurretTargetAngle = 0.0;
 
-    public TurretSubsystem() 
+    private DCMotor kTurretSimMotor;
+    private SingleJointedArmSim kTurretSim;
+    private Mechanism2d kSimSpace;
+    private MechanismRoot2d kSimRoot;
+    private MechanismLigament2d kSimDisp;
+    private double kOutput;
+    public static TurretSubsystem kTurret = new TurretSubsystem();
+
+    private TurretSubsystem() 
     {
         kTurretMotor = new TalonFX(24);
 
         kPidController = new PIDController(kP, kI, kD);
+
+        kTurretSimMotor = DCMotor.getKrakenX60(1);
+        kTurretSim = new SingleJointedArmSim(kTurretSimMotor, 5, 2.26796, 0.1, 0, kDeadband * Math.PI / 180.0, false, 0, 0, 0);
+        kSimSpace = new Mechanism2d(60, 60);
+        kSimRoot = kSimSpace.getRoot("base", 30, 30);
+        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",0.1 , kTurretSim.getAngleRads() * 180 / Math.PI));
+        SmartDashboard.putData("TurretSim", kSimSpace);
     }
 
     public void rotate(double speed) 
@@ -53,9 +75,9 @@ public class TurretSubsystem extends SubsystemBase
     {
         double currentAngle = getAngle();
 
-        double output = kPidController.calculate(currentAngle, targetAngle);
+        kOutput = kPidController.calculate(currentAngle, targetAngle);
 
-        kTurretMotor.set(output);
+        kTurretMotor.set(kOutput);
     }
 
     public boolean isValidAngle() {
@@ -67,5 +89,22 @@ public class TurretSubsystem extends SubsystemBase
     }
      public void setTargetAngle(double mNewAngle) {
         kTurretTargetAngle = mNewAngle;
+    }
+
+    @Override
+    public void periodic() {
+        if (isValidAngle()) {
+            goToAngle(kTurretTargetAngle);
+        }
+    }
+
+    @Override
+    public void simulationPeriodic() {
+      kTurretSim.setInput(kOutput * 12.0);
+
+      kTurretSim.update(0.02);
+
+      kSimDisp.setAngle(kTurretSim.getAngleRads()*180 / Math.PI);
+      SmartDashboard.putNumber("Turret Angle", kTurretSim.getAngleRads()*180 / Math.PI);
     }
 }
