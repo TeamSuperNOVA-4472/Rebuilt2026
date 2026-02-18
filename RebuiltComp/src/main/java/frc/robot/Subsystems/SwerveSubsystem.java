@@ -30,9 +30,9 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
 
-  private final SwerveDrive mSwerveDrive;
+  //private final SwerveDrive mSwerveDrive;
 
-  private static SwerveDrive readSwerveConfig() {
+  /*private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     try {
@@ -80,17 +80,17 @@ public class SwerveSubsystem extends SubsystemBase {
       // Handle exception as needed
       e.printStackTrace();
     }
-  }
+  }*/
 
   /** Creates a new ExampleSubsystem. */
   public SwerveSubsystem() {
     // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    mSwerveDrive = readSwerveConfig();
+    /*mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
-    configAutoBuilder(this);
+    configAutoBuilder(this);*/
   }
 
-  private boolean isRedAlliance() {
+  /*private boolean isRedAlliance() {
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       return alliance.get() == DriverStation.Alliance.Red;
@@ -140,5 +140,5 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return mSwerveDrive.getRobotVelocity();
-  }
+  }*/
 }

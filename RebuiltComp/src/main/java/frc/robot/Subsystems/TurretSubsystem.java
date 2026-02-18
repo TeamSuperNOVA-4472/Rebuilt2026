@@ -4,6 +4,7 @@ import java.lang.annotation.Target;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 
 public class TurretSubsystem extends SubsystemBase 
 {
@@ -20,7 +22,7 @@ public class TurretSubsystem extends SubsystemBase
 
     private static final double kRevolutions = 2048;
 
-    private static final double kP = 0.0;
+    private static final double kP = 0.001;
 
     private static final double kI = 0.0;
 
@@ -50,7 +52,7 @@ public class TurretSubsystem extends SubsystemBase
         kTurretSim = new SingleJointedArmSim(kTurretSimMotor, 5, 2.26796, 0.1, 0, kDeadband * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
         kSimRoot = kSimSpace.getRoot("base", 30, 30);
-        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",0.1 , kTurretSim.getAngleRads() * 180 / Math.PI));
+        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kTurretSim.getAngleRads() * 180 / Math.PI));
         SmartDashboard.putData("TurretSim", kSimSpace);
     }
 
@@ -73,9 +75,11 @@ public class TurretSubsystem extends SubsystemBase
 
     public void goToAngle(double targetAngle) 
     {
-        double currentAngle = getAngle();
+        double currentAngle;
+        if (Robot.isReal()) currentAngle = getAngle();
+        else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = kPidController.calculate(currentAngle, targetAngle);
+        kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -1, 1);
 
         kTurretMotor.set(kOutput);
     }
@@ -106,5 +110,6 @@ public class TurretSubsystem extends SubsystemBase
 
       kSimDisp.setAngle(kTurretSim.getAngleRads()*180 / Math.PI);
       SmartDashboard.putNumber("Turret Angle", kTurretSim.getAngleRads()*180 / Math.PI);
+      SmartDashboard.putNumber("Turret Target", kTurretTargetAngle);
     }
 }
