@@ -43,6 +43,17 @@ public final class Constants {
     public static final double kV = 2.65;
     public static final double kA = 0.239;
   }
+
+  public static class FlywheelConstants {
+    public static final InterpolatingDoubleTreeMap kDistanceToVelocity = new InterpolatingDoubleTreeMap();
+    static {
+        kDistanceToVelocity.put(1.85,48.0);
+        kDistanceToVelocity.put(2.0,50.0);
+        kDistanceToVelocity.put(2.5,52.0);
+        kDistanceToVelocity.put(3.5,58.0);
+    }
+  }
+
   public static class OperatorConstants {
     public static final double kDeadband = 0.1;
     public static final int kDriverControllerPort = 0;
@@ -62,9 +73,14 @@ public final class Constants {
   }
   public static class VisionConstants {
     public static final boolean kUseMegatag2 = true; 
-    public static final String[] kLimelightNames = {"limelight-one", "limelight-two"};
+    public static final String[] kLimelightNames = {"limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
-    public static final double kAmbiguity = 0.9;
+    public static final double kAmbiguity = 10000;
+    public static final double kBaseLateralDev = 0;
+    public static final double kBaseRotDev = 0;
+    public static final double kTagDistThreshold =100000;
+    public static final double kTagCountThreshold = 1;
+    public static final int kThrottle = 200;
 
     public static final boolean kIsAndyMark = false;
 
@@ -75,5 +91,13 @@ public final class Constants {
     // Andymark hub poses
     public static final Pose2d kHubPoseBlueAndyMarkMeters = new Pose2d(4.6115224, 4.0213534, Rotation2d.fromDegrees(0));
     public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
+  }
+  
+  public static class TurretConstants {
+    public static final Translation2d kTurretOffset = new Translation2d(-0.2,0);
+  }
+
+  public static class SpindexerConstants {
+    public static final double kSpindexerSpeed = 0.8;
   }
 }

@@ -7,10 +7,13 @@ package frc.robot.commands;
 import frc.robot.FieldMathHelpers;
 import frc.robot.subsystems.SwerveSubsystem;
 
+import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import static frc.robot.Constants.SwerveConstants.*;
 
@@ -24,7 +27,7 @@ public class SwerveTeleop extends Command {
   private final SwerveSubsystem mSwerveSubsystem;
   private final Supplier<Boolean> mTurnToHeading; 
 
-  private final PIDController mGyroController = new PIDController(0.05, 0, 0.0005);
+  private final PIDController mGyroController = new PIDController(0.1, 0, 0.0005);
   private double mTargetHeading;
 
   /**
@@ -45,7 +48,7 @@ public class SwerveTeleop extends Command {
     mResetHeadingInput = pResetHeadingInput;
     mSwerveSubsystem = pSwerveSubsystem;
     mTurnToHeading = pTurnToHeading;
-  
+
     mTargetHeading = mSwerveSubsystem.getHeadingDegrees();
   
     mGyroController.enableContinuousInput(0, 360);
@@ -56,7 +59,9 @@ public class SwerveTeleop extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-  
+    
+    SmartDashboard.putNumber("Distance to Hub: ", FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose()));
+
     double updatedFwdSpeedMS = mFwdInput.get() * kMaxSpeedMS;
     double updatedSideSpeedMS = mSideInput.get() * kMaxSpeedMS;
     double updatedTurnSpeedRadS =
@@ -65,6 +70,9 @@ public class SwerveTeleop extends Command {
     if(mTurnToHeading.get())
     {
       double normalizeDegrees = (mSwerveSubsystem.getHeadingDegrees() + 360) % 360;
+      // updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, 
+      // FieldMathHelpers.getHeadingToHubWithSomeSpeedInDegrees(
+      // mSwerveSubsystem.getPose(), mSwerveSubsystem.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerveSubsystem.getFieldRelativeSpeeds().vyMetersPerSecond, mFlywheelSpeed.get()));
       updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
     }
     else if(updatedTurnSpeedRadS == 0.0 && (updatedFwdSpeedMS != 0 || updatedSideSpeedMS != 0)) {

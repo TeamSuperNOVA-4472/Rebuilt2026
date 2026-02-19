@@ -2,9 +2,12 @@ package frc.robot;
 
 import java.util.Optional;
 
+import com.thethriftybot.server.msgHandler;
+
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -25,6 +28,26 @@ public class FieldMathHelpers
         Translation2d hubPoseTranslation = hubPose.getTranslation();
 
         return hubPoseTranslation.getDistance(poseTranslation);
+    }
+
+    /**
+     * Gets the distance in meters from a pose to the hub.
+     * @param pose The bot pose.
+     * @return Returns the distance in meters to the hub from the pose entered.
+     */
+    public static double getDistanceToHubWithOffset(Pose2d pose)
+    {
+        // Get vector to the shooter with respect to the field
+        Translation2d poseTranslation = pose.getTranslation();
+        double thetaOfTurretAdjusted = Constants.TurretConstants.kTurretOffset.getAngle().getRadians() + pose.getRotation().getRadians();
+        double newX = poseTranslation.getX() + Constants.TurretConstants.kTurretOffset.getNorm() * Math.cos(thetaOfTurretAdjusted);
+        double newY = poseTranslation.getY() + Constants.TurretConstants.kTurretOffset.getNorm() * Math.sin(thetaOfTurretAdjusted);
+
+        Translation2d globalTranslation = new Translation2d(newX, newY);
+
+        Translation2d hubPoseTranslation = hubPose.getTranslation();
+
+        return hubPoseTranslation.getDistance(globalTranslation);
     }
 
     /**
@@ -73,7 +96,8 @@ public class FieldMathHelpers
          * so we can get away with a smaller leading angle).
          */
 
-        return Math.asin((xVelocityMetersPerSecond * Math.sin(theta)) - (yVelocityMetersPerSecond * Math.cos(theta)) / projectileSpeed);
+        double headingInRadians = Math.asin(((xVelocityMetersPerSecond * Math.sin(theta)) - (yVelocityMetersPerSecond * Math.cos(theta))) / projectileSpeed);
+        return Units.radiansToDegrees(headingInRadians);
     }
 
     /**

@@ -11,9 +11,14 @@ import com.pathplanner.lib.auto.AutoBuilderException;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.events.EventTrigger;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.XboxController;
@@ -29,8 +34,12 @@ import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DoTheThingCommand;
 import frc.robot.commands.GoToAngleCommand;
 import frc.robot.commands.SwerveTeleop;
+import frc.robot.commands.ToggleSpindexer;
+import frc.robot.commands.calculateFlywheelSpeed;
+import frc.robot.subsystems.FlywheelSubsystem;
+import frc.robot.subsystems.SpindexerSubsystem;
+import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 
 /**
@@ -49,9 +58,16 @@ public class RobotContainer {
   private final SwerveSubsystem mSwerveSubsystem = new SwerveSubsystem();
   private final VisionSubsystem mVisionSubsystem;
 
+  private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
+  private final SpindexerSubsystem kSpindexer = SpindexerSubsystem.kSpindexer;
+
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mTurnLimiter = new SlewRateLimiter(1.0);
+
+  private final Trigger mResetPose = new Trigger(mDriver::getYButton);
+
+  private int flywheelSpeed = 0;
 
 
   private final SwerveTeleop mSwerveTeleop = new SwerveTeleop(
@@ -71,20 +87,27 @@ public class RobotContainer {
     new EventTrigger("TheEvent").onTrue(
       new InstantCommand(() -> System.out.println("The Event has triggered")));
 
-      /*theTriggerForB();
-
-      theTriggerForBackwards();
-
-      theTriggerForReset();
-
-      theTriggerForGoToAngle();*/
-
-      mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees,
-      (PoseEstimate pose) -> {
-        mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds);
-        mSwerveSubsystem.addStandardDeviations(Constants.VisionConstants.kStandardDeviations);
+      mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees, mSwerveSubsystem::getAngularVelocity,
+      (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
+        mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);
       }
       );
+
+    Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
+    flyWheelToggle.onTrue(new InstantCommand(() -> {
+      kFlywheel.setMode(FlywheelMode.SPINNING);
+      kFlywheel.setTargetSpeed(Constants.FlywheelConstants.kDistanceToVelocity.get((FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose()))));
+    }));
+
+    Trigger flyWheelToggleOff = new Trigger(mDriver::getRightBumperButtonPressed);
+    flyWheelToggleOff.onTrue(new InstantCommand(() -> {
+      kFlywheel.setMode(FlywheelMode.OFF);
+      kFlywheel.setTargetSpeed(0);
+    }));
+
+    Trigger spindexerToggle = new Trigger(mDriver::getLeftStickButton);
+    spindexerToggle.onTrue(new ToggleSpindexer(kSpindexer));
+    
   }
 
 
@@ -99,68 +122,6 @@ public class RobotContainer {
     } catch (AutoBuilderException e) {
       return new InstantCommand();
     }
-  }
-//
-  private final TurretSubsystem mTurretSubsystem = new TurretSubsystem();
-
-  Trigger turretTrigger = new Trigger(() -> mDriver.getBButton());
-
-  Trigger turretBackwardTrigger = new Trigger(() -> mDriver.getXButton());
-
-  Trigger turretToAngleTrigger = new Trigger(() -> mDriver.getYButton());
-  
-  Trigger turretResetTrigger = new Trigger(() -> mDriver.getAButton());
-
-
-  private void theTriggerForB() 
-  {
-    turretTrigger.whileTrue
-    (
-        new StartEndCommand
-        (
-            () -> mTurretSubsystem.rotateVoltage(0.5),
-            () -> mTurretSubsystem.stop(),
-            mTurretSubsystem
-        )
-    );
-  }
-
-  private void theTriggerForBackwards()
-  {
-    turretBackwardTrigger.whileTrue
-    (
-        new StartEndCommand
-        (
-            () -> mTurretSubsystem.rotateVoltage(-0.5),
-            () -> mTurretSubsystem.stop(),
-            mTurretSubsystem
-        )
-    );
-  }
-
-  private void theTriggerForGoToAngle() 
-  {
-    turretToAngleTrigger.whileTrue
-    (
-      new RunCommand(() -> mTurretSubsystem.turnToSetpoint(
-        Degrees.of(mSwerveSubsystem.getHeadingDegrees()),
-        Degrees.of(90), 
-        mSwerveSubsystem.getAngularVelocity()),
-        mTurretSubsystem)
-    );
-  }
-
-    private void theTriggerForReset()
-  {
-    turretResetTrigger.whileTrue
-    (
-        new StartEndCommand
-        (
-            () -> mTurretSubsystem.resetPosition(),
-            () -> mTurretSubsystem.stop(),
-            mTurretSubsystem
-        )
-    );
   }
 
 }
