@@ -96,10 +96,18 @@ public class FieldMathHelpers
          * so we can get away with a smaller leading angle).
          */
 
-        double headingInRadians = Math.asin(((xVelocityMetersPerSecond * Math.sin(theta)) - (yVelocityMetersPerSecond * Math.cos(theta))) / projectileSpeed);
+        double headingInRadians =  getHeadingToHubInRadians(botPose) + Math.asin(((xVelocityMetersPerSecond * Math.sin(theta)) - (yVelocityMetersPerSecond * Math.cos(theta))) / projectileSpeed);
         return Units.radiansToDegrees(headingInRadians);
     }
 
+    public static double getFlywheelSpeedWithSomeSpeedInDegrees(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond, double projectileSpeed)
+    {
+        double theta = getHeadingToHubInRadians(botPose);
+        double adjustedSpeed = projectileSpeed + ((-1 * xVelocityMetersPerSecond * Math.cos(theta)) + (-1 * yVelocityMetersPerSecond * Math.sin(theta)));
+
+        return Units.radiansToDegrees(adjustedSpeed);
+    }
+    
     /**
      * Calculates the field relative speed of an object with a known offset from the robot center (i.e., the turret)
      * @param robotHeadingDegrees The current robot heading given in degrees.
@@ -126,6 +134,10 @@ public class FieldMathHelpers
 
         return new Pair<Double, Double>(fieldRelativeXVelocity, fieldRelativeYVelocity);
     }
+    /*public static Pose2d getFieldRelativePositionOfTurret(Pose2d botpose, double robotHeadingDegrees)
+    {
+         Translation2d turretOfHeadingAdjustedOffset
+    } */
 
     /**
      * Checks if the robot is on the red alliance.

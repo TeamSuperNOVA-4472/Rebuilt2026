@@ -17,6 +17,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.AngleUnit;
@@ -78,10 +80,10 @@ public class RobotContainer {
     mDriver::getXButton,
     mSwerveSubsystem);
 
-
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    SparkMax flywheel = new SparkMax(33, MotorType.kBrushless);
+    flywheel.set(0);
     mSwerveSubsystem.setDefaultCommand(mSwerveTeleop);
     NamedCommands.registerCommand("DoTheThingCommand", new DoTheThingCommand());
     new EventTrigger("TheEvent").onTrue(
@@ -96,6 +98,10 @@ public class RobotContainer {
     Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
     flyWheelToggle.onTrue(new InstantCommand(() -> {
       kFlywheel.setMode(FlywheelMode.SPINNING);
+      Pose2d botpose = mSwerveSubsystem.getPose();
+      ChassisSpeeds botSpeeds = mSwerveSubsystem.getFieldRelativeSpeeds();
+      double flywheelSpeed = Constants.FlywheelConstants.kDistanceToVelocity.get((FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose())));
+      double speed = FieldMathHelpers.getFlywheelSpeedWithSomeSpeedInDegrees(botpose, botSpeeds.vxMetersPerSecond, botSpeeds.vyMetersPerSecond, flywheelSpeed);
       kFlywheel.setTargetSpeed(Constants.FlywheelConstants.kDistanceToVelocity.get((FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose()))));
     }));
 

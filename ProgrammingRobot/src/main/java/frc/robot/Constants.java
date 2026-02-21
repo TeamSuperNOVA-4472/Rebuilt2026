@@ -47,10 +47,10 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToVelocity = new InterpolatingDoubleTreeMap();
     static {
-        kDistanceToVelocity.put(1.85,48.0);
-        kDistanceToVelocity.put(2.0,50.0);
-        kDistanceToVelocity.put(2.5,52.0);
-        kDistanceToVelocity.put(3.5,58.0);
+        kDistanceToVelocity.put(1.85,50.0);
+        kDistanceToVelocity.put(2.0,52.0);
+        kDistanceToVelocity.put(2.5,54.0);
+        kDistanceToVelocity.put(3.5,62.0);
     }
   }
 

@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
+
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
@@ -65,7 +67,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     public double getTangentialSpeed()
     {
-       return getTargetSpeed() * ((3.14*2*0.0508));
+       return getTargetSpeed() * ((3.14*2*0.0508));    
     }
 
     public double getSpinSpeed(){

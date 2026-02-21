@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import frc.robot.Constants;
 import frc.robot.FieldMathHelpers;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -11,6 +12,7 @@ import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,7 +29,7 @@ public class SwerveTeleop extends Command {
   private final SwerveSubsystem mSwerveSubsystem;
   private final Supplier<Boolean> mTurnToHeading; 
 
-  private final PIDController mGyroController = new PIDController(0.1, 0, 0.0005);
+  private final PIDController mGyroController = new PIDController(0.14, 0, 0.0005);
   private double mTargetHeading;
 
   /**
@@ -70,10 +72,24 @@ public class SwerveTeleop extends Command {
     if(mTurnToHeading.get())
     {
       double normalizeDegrees = (mSwerveSubsystem.getHeadingDegrees() + 360) % 360;
-      // updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, 
-      // FieldMathHelpers.getHeadingToHubWithSomeSpeedInDegrees(
-      // mSwerveSubsystem.getPose(), mSwerveSubsystem.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerveSubsystem.getFieldRelativeSpeeds().vyMetersPerSecond, mFlywheelSpeed.get()));
-      updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
+      double flywheelSpeed = Constants.FlywheelConstants.kDistanceToVelocity.get(FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose())) * (2 * 3.14 * 0.0508);
+      double xVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vxMetersPerSecond;
+      double yVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vyMetersPerSecond;
+      Pose2d botpose = mSwerveSubsystem.getPose();
+
+      // double adjustedFlywheelSpeed = FieldMathHelpers.getFlywheelSpeedWithSomeSpeedInDegrees(botpose, xVelo, yVelo, flywheelSpeed);
+      double spd = 0.15;
+      SmartDashboard.putNumber("X Velocity: ", xVelo);
+      SmartDashboard.putNumber("Y Velocity: ", yVelo);
+      SmartDashboard.putNumber("Adjusted Flywheel Speed: ", spd);
+
+      //(3.14*2*0.0508);
+      double heading = FieldMathHelpers.getHeadingToHubWithSomeSpeedInDegrees(botpose, xVelo, yVelo, spd);
+
+      SmartDashboard.putNumber("Alpha: ", heading);
+      SmartDashboard.putNumber("Heading: ", FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
+
+      updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, heading);
     }
     else if(updatedTurnSpeedRadS == 0.0 && (updatedFwdSpeedMS != 0 || updatedSideSpeedMS != 0)) {
       updatedTurnSpeedRadS = mGyroController.calculate(mSwerveSubsystem.getHeadingDegrees(), mTargetHeading);
