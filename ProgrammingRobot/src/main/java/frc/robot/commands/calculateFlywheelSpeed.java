@@ -10,9 +10,9 @@ public class calculateFlywheelSpeed extends Command {
     private FlywheelSubsystem kFlywheel;
     private SwerveSubsystem kSwerve;
     private FlywheelMode kFlyMode;
-    private int kChange;
+    private double kChange;
 
-    public calculateFlywheelSpeed(FlywheelSubsystem mFlywheel, SwerveSubsystem mSwerve, FlywheelMode mFlyMode, int change){
+    public calculateFlywheelSpeed(FlywheelSubsystem mFlywheel, SwerveSubsystem mSwerve, FlywheelMode mFlyMode, double change){
         kFlywheel = mFlywheel;
         kFlyMode = mFlyMode;
         kSwerve = mSwerve;
@@ -22,7 +22,7 @@ public class calculateFlywheelSpeed extends Command {
     @Override
     public void initialize(){
         kFlywheel.setMode(kFlyMode);
-        kFlywheel.setTargetSpeed(kFlywheel.getTargetSpeed() + kChange);
+        kFlywheel.setTargetSpeed(kChange);
     }
 
     private double calculateTargetSpeed()

@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DoTheThingCommand;
+import frc.robot.commands.FlywheelTestCommand;
 import frc.robot.commands.GoToAngleCommand;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.commands.ToggleSpindexer;
@@ -82,8 +83,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    SparkMax flywheel = new SparkMax(33, MotorType.kBrushless);
-    flywheel.set(0);
     mSwerveSubsystem.setDefaultCommand(mSwerveTeleop);
     NamedCommands.registerCommand("DoTheThingCommand", new DoTheThingCommand());
     new EventTrigger("TheEvent").onTrue(
@@ -124,7 +123,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     try {
-      return new PathPlannerAuto("DriveDoTheThingDriveBack");
+      return new FlywheelTestCommand(mSwerveSubsystem, kFlywheel, kSpindexer);
     } catch (AutoBuilderException e) {
       return new InstantCommand();
     }

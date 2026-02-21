@@ -115,7 +115,7 @@ public class SwerveSubsystem extends SubsystemBase {
         ChassisSpeeds fieldOrientedVelocity =
           ChassisSpeeds.fromFieldRelativeSpeeds(
             pVelocity,
-            mSwerveDrive.getYaw().plus(Rotation2d.fromRadians(Math.PI)));
+            mSwerveDrive.getOdometryHeading().plus(Rotation2d.fromRadians(Math.PI)));
         mSwerveDrive.drive(fieldOrientedVelocity);
       }
       else {
