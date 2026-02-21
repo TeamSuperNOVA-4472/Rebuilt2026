@@ -8,6 +8,7 @@ import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
     public static final SpindexerSubsystem kInstance = new SpindexerSubsystem();
+     public static final double kSpindexerSpeed = 0.9;
 
     public enum SpindexerMode{
         OFF,
@@ -31,8 +32,8 @@ public class SpindexerSubsystem extends SubsystemBase {
             break;
 
         case LOAD:
-            kSpindexterMotor.set(Constants.kSpindexerSpeed);
-            kToFlywheelMotor.set(Constants.kSpindexerSpeed);
+            kSpindexterMotor.set(kSpindexerSpeed);
+            kToFlywheelMotor.set(kSpindexerSpeed);
             break;
         }
     }
