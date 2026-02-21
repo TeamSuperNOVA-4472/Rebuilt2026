@@ -8,8 +8,10 @@ import java.util.function.Supplier;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.LimelightHelpers.RawFiducial;
 
 
 public class VisionSubsystem extends SubsystemBase
@@ -35,6 +37,29 @@ public class VisionSubsystem extends SubsystemBase
         mListeners.add(consumer);
     }
 
+    private boolean underAmbiguityThreshold(PoseEstimate pose)
+    {
+        // Check through all tags seen
+        for (RawFiducial id : pose.rawFiducials)
+        {
+            // Accept update if at least one tag has an ambiguity under the threshold
+            if (id.ambiguity < Constants.VisionConstants.kAmbiguity) return true;
+        }
+        return false;
+    }
+
+    private boolean rejectUpdate(PoseEstimate pose)
+    {
+        // Check if the update passes all thresholds
+        if (pose.avgTagDist <= Constants.VisionConstants.kTagDistThreshold && 
+            pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
+            underAmbiguityThreshold(pose))
+        {
+            return false;
+        }
+        return true;
+    }
+
     //Estimate position of robot based off of limelight data
     public Optional<PoseEstimate> calculatePosition(String limelight)
     {
@@ -45,10 +70,8 @@ public class VisionSubsystem extends SubsystemBase
             //Localization--will not return location update if a Limelight can't see an Apriltag
             LimelightHelpers.SetRobotOrientation(limelight, mGetGyroPosition.get(), 0, 0, 0, 0, 0);
             pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
-            /*if(pose.tagCount == 0)
-            {
-                rejectUpdate = true;
-            }*/
+            //Tester for the rejectUpdate function from the programming robot.
+            rejectUpdate = rejectUpdate(pose);
         }
         else
         {
