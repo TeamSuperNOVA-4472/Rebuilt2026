@@ -177,7 +177,7 @@ public class VisionSubsystem extends SubsystemBase
             {
                 updatePose(pose.get());            
             }
-                            
+             
         }
     }
 }
