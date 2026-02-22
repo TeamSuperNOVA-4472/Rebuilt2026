@@ -92,7 +92,7 @@ public class RobotContainer {
     Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
     flyWheelToggle.onTrue(new InstantCommand(() -> {
       kFlywheel.setMode(FlywheelMode.SPINNING);
-      kFlywheel.setTargetSpeed(54.0);
+      kFlywheel.setTargetSpeed(60.0);
       /*Pose2d botpose = mSwerveSubsystem.getPose();
       ChassisSpeeds botSpeeds = mSwerveSubsystem.getFieldRelativeSpeeds();
       double distance = FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(botpose, botSpeeds.vxMetersPerSecond, botSpeeds.vyMetersPerSecond).getNorm();

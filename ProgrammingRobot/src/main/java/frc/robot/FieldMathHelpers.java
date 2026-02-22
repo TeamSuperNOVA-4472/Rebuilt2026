@@ -89,7 +89,7 @@ public class FieldMathHelpers
         // Calculate translations and distances
         Translation2d translationToHub = getTranslationToHub(botPose);
         double distanceToHub = translationToHub.getNorm();
-        double dt = distanceToHub / Constants.FlywheelConstants.kDistanceToVelocity.get(distanceToHub);
+        double dt = Constants.FlywheelConstants.kDistanceToTime.get(distanceToHub);
 
         // Calculate offsets
         double dx = xVelocityMetersPerSecond * dt;
@@ -97,7 +97,7 @@ public class FieldMathHelpers
         Translation2d deltaChange = new Translation2d(dx,dy);
 
         // Calculate adjusted translation
-        Translation2d adjustedTranslation = translationToHub.minus(deltaChange);
+        Translation2d adjustedTranslation = translationToHub.plus(deltaChange);
         return adjustedTranslation;
     }
 

@@ -66,22 +66,20 @@ public class SwerveTeleop extends Command {
     double updatedSideSpeedMS = mSideInput.get() * kMaxSpeedMS;
     double updatedTurnSpeedRadS =
       mTurnInput.get() * kMetersPerSecondToRadiansPerSecond * kMaxSpeedMS;
+    
+    double normalizeDegrees = (mSwerveSubsystem.getHeadingDegrees() + 360) % 360;
+    double xVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vxMetersPerSecond;
+    double yVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vyMetersPerSecond;
+    Pose2d botpose = mSwerveSubsystem.getPose();
 
+    SmartDashboard.putNumber("X Velocity: ", xVelo);
+    SmartDashboard.putNumber("Y Velocity: ", yVelo);
+
+    double heading = FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(botpose, xVelo, yVelo).getAngle().getDegrees();
+    SmartDashboard.putNumber("Alpha: ", heading);
+    SmartDashboard.putNumber("Heading: ", FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
     if(mTurnToHeading.get())
     {
-      double normalizeDegrees = (mSwerveSubsystem.getHeadingDegrees() + 360) % 360;
-      double xVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vxMetersPerSecond;
-      double yVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vyMetersPerSecond;
-      Pose2d botpose = mSwerveSubsystem.getPose();
-
-      SmartDashboard.putNumber("X Velocity: ", xVelo);
-      SmartDashboard.putNumber("Y Velocity: ", yVelo);
-
-      double heading = FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(botpose, xVelo, yVelo).getAngle().getDegrees();
-
-      SmartDashboard.putNumber("Alpha: ", heading);
-      SmartDashboard.putNumber("Heading: ", FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
-
       updatedTurnSpeedRadS = mGyroController.calculate(normalizeDegrees, heading);
     }
     else if(updatedTurnSpeedRadS == 0.0 && (updatedFwdSpeedMS != 0 || updatedSideSpeedMS != 0)) {

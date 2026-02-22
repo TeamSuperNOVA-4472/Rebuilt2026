@@ -47,15 +47,20 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToVelocity = new InterpolatingDoubleTreeMap();
     static {
-        kDistanceToVelocity.put(1.85,50.0);
-        kDistanceToVelocity.put(2.0,52.0);
-        kDistanceToVelocity.put(2.5,54.0);
-        kDistanceToVelocity.put(3.5,62.0);
+      kDistanceToVelocity.put(1.85,50.0);
+      kDistanceToVelocity.put(2.0,52.0);
+      kDistanceToVelocity.put(2.5,54.0);
+      kDistanceToVelocity.put(3.5,62.0);
     }
 
-    public static final InterpolatingDoubleTreeMap kVelocityToTangentialSpeed = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap kDistanceToTime = new InterpolatingDoubleTreeMap();
     static {
-      // TODO: add table values
+      kDistanceToTime.put(3.7592,1.053333333);
+      kDistanceToTime.put(3.945466667, 1.103333333);
+      kDistanceToTime.put(4.182533333, 1.226666667);
+      kDistanceToTime.put(4.5466, 1.32);
+      kDistanceToTime.put(4.605866667, 1.34);
+      kDistanceToTime.put(5.046133333, 1.403333333);
     }
   }
 
