@@ -22,12 +22,12 @@ public class FieldMathHelpers
      * @param pose The bot pose.
      * @return Returns the distance in meters to the hub from the pose entered.
      */
-    public static double getDistanceToHub(Pose2d pose)
+    public static Translation2d getTranslationToHub(Pose2d pose)
     {
         Translation2d poseTranslation = pose.getTranslation();
         Translation2d hubPoseTranslation = hubPose.getTranslation();
 
-        return hubPoseTranslation.getDistance(poseTranslation);
+        return hubPoseTranslation.minus(poseTranslation);
     }
 
     /**
@@ -84,20 +84,21 @@ public class FieldMathHelpers
      * @param projectileSpeed The constant projectile speed in meters per second.
      * @return The desired field relative heading from 0-360 where 0 is in line with the positive x axis.
      */
-    public static double getHeadingToHubWithSomeSpeedInDegrees(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond, double projectileSpeed)
+    public static Translation2d getTranslation2dToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
-        double theta = getHeadingToHubInRadians(botPose);
-        /*
-         * The whole gist of this is we need the tangential component of our projectile to cancel the tangential
-         * component of the robot.
-         * 1. Rotate the coordinate system to be hub-relative.
-         * 2. Find the tangential components of the x and y velocities using some trig.
-         * 3. Divide by the projectile speed (a faster projectile is going to have a bigger tangential component, 
-         * so we can get away with a smaller leading angle).
-         */
+        // Calculate translations and distances
+        Translation2d translationToHub = getTranslationToHub(botPose);
+        double distanceToHub = translationToHub.getNorm();
+        double dt = distanceToHub / Constants.FlywheelConstants.kDistanceToVelocity.get(distanceToHub);
 
-        double headingInRadians =  getHeadingToHubInRadians(botPose) + Math.asin(((xVelocityMetersPerSecond * Math.sin(theta)) - (yVelocityMetersPerSecond * Math.cos(theta))) / projectileSpeed);
-        return Units.radiansToDegrees(headingInRadians);
+        // Calculate offsets
+        double dx = xVelocityMetersPerSecond * dt;
+        double dy = yVelocityMetersPerSecond * dt;
+        Translation2d deltaChange = new Translation2d(dx,dy);
+
+        // Calculate adjusted translation
+        Translation2d adjustedTranslation = translationToHub.minus(deltaChange);
+        return adjustedTranslation;
     }
 
     public static double getFlywheelSpeedWithSomeSpeedInDegrees(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond, double projectileSpeed)

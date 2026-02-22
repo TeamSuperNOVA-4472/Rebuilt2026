@@ -41,6 +41,7 @@ import static frc.robot.Constants.SwerveConstants.*;
 public class SwerveSubsystem extends SubsystemBase {
 
   private final SwerveDrive mSwerveDrive;
+  private double mYawGyroOffset = 0;
 
   private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
@@ -129,10 +130,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void driveRobotOriented(ChassisSpeeds pVelocity) {
     mSwerveDrive.drive(pVelocity);
+    
   }
 
   public void resetOdometry(Pose2d pPose) {
     mSwerveDrive.resetOdometry(pPose);
+    mYawGyroOffset = ((pPose.getRotation().getDegrees() - mSwerveDrive.getYaw().getDegrees()) % 360 + 360) % 360;
   }
 
   public void resetHeading() {
@@ -148,7 +151,8 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    return getPose().getRotation().getDegrees();
+    return (mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360;
+
   }
 
   public double getAngularVelocity() {

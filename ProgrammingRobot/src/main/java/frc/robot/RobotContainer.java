@@ -68,11 +68,6 @@ public class RobotContainer {
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mTurnLimiter = new SlewRateLimiter(1.0);
 
-  private final Trigger mResetPose = new Trigger(mDriver::getYButton);
-
-  private int flywheelSpeed = 0;
-
-
   private final SwerveTeleop mSwerveTeleop = new SwerveTeleop(
     () -> mFwdLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getLeftY())), 
     () -> mSideLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getLeftX())),
@@ -97,11 +92,11 @@ public class RobotContainer {
     Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
     flyWheelToggle.onTrue(new InstantCommand(() -> {
       kFlywheel.setMode(FlywheelMode.SPINNING);
-      Pose2d botpose = mSwerveSubsystem.getPose();
+      kFlywheel.setTargetSpeed(54.0);
+      /*Pose2d botpose = mSwerveSubsystem.getPose();
       ChassisSpeeds botSpeeds = mSwerveSubsystem.getFieldRelativeSpeeds();
-      double flywheelSpeed = Constants.FlywheelConstants.kDistanceToVelocity.get((FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose())));
-      double speed = FieldMathHelpers.getFlywheelSpeedWithSomeSpeedInDegrees(botpose, botSpeeds.vxMetersPerSecond, botSpeeds.vyMetersPerSecond, flywheelSpeed);
-      kFlywheel.setTargetSpeed(Constants.FlywheelConstants.kDistanceToVelocity.get((FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose()))));
+      double distance = FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(botpose, botSpeeds.vxMetersPerSecond, botSpeeds.vyMetersPerSecond).getNorm();
+      kFlywheel.setTargetSpeed(Constants.FlywheelConstants.kDistanceToVelocity.get((distance)));*/
     }));
 
     Trigger flyWheelToggleOff = new Trigger(mDriver::getRightBumperButtonPressed);

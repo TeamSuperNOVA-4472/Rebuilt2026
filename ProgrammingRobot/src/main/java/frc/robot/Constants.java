@@ -52,6 +52,11 @@ public final class Constants {
         kDistanceToVelocity.put(2.5,54.0);
         kDistanceToVelocity.put(3.5,62.0);
     }
+
+    public static final InterpolatingDoubleTreeMap kVelocityToTangentialSpeed = new InterpolatingDoubleTreeMap();
+    static {
+      // TODO: add table values
+    }
   }
 
   public static class OperatorConstants {

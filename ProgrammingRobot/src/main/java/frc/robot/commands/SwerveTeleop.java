@@ -62,8 +62,6 @@ public class SwerveTeleop extends Command {
   @Override
   public void execute() {
     
-    SmartDashboard.putNumber("Distance to Hub: ", FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose()));
-
     double updatedFwdSpeedMS = mFwdInput.get() * kMaxSpeedMS;
     double updatedSideSpeedMS = mSideInput.get() * kMaxSpeedMS;
     double updatedTurnSpeedRadS =
@@ -72,19 +70,14 @@ public class SwerveTeleop extends Command {
     if(mTurnToHeading.get())
     {
       double normalizeDegrees = (mSwerveSubsystem.getHeadingDegrees() + 360) % 360;
-      double flywheelSpeed = Constants.FlywheelConstants.kDistanceToVelocity.get(FieldMathHelpers.getDistanceToHub(mSwerveSubsystem.getPose())) * (2 * 3.14 * 0.0508);
       double xVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vxMetersPerSecond;
       double yVelo = mSwerveSubsystem.getFieldRelativeSpeeds().vyMetersPerSecond;
       Pose2d botpose = mSwerveSubsystem.getPose();
 
-      // double adjustedFlywheelSpeed = FieldMathHelpers.getFlywheelSpeedWithSomeSpeedInDegrees(botpose, xVelo, yVelo, flywheelSpeed);
-      double spd = 0.15;
       SmartDashboard.putNumber("X Velocity: ", xVelo);
       SmartDashboard.putNumber("Y Velocity: ", yVelo);
-      SmartDashboard.putNumber("Adjusted Flywheel Speed: ", spd);
 
-      //(3.14*2*0.0508);
-      double heading = FieldMathHelpers.getHeadingToHubWithSomeSpeedInDegrees(botpose, xVelo, yVelo, spd);
+      double heading = FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(botpose, xVelo, yVelo).getAngle().getDegrees();
 
       SmartDashboard.putNumber("Alpha: ", heading);
       SmartDashboard.putNumber("Heading: ", FieldMathHelpers.getHeadingToHubInDegrees(mSwerveSubsystem.getPose()));
