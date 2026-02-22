@@ -29,7 +29,7 @@ public class SwerveTeleop extends Command {
   private final SwerveSubsystem mSwerveSubsystem;
   private final Supplier<Boolean> mTurnToHeading; 
 
-  private final PIDController mGyroController = new PIDController(0.14, 0, 0.0005);
+  private final PIDController mGyroController = new PIDController(0.12, 0, 0.0005);
   private double mTargetHeading;
 
   /**

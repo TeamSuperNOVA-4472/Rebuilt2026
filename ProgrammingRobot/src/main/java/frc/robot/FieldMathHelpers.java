@@ -94,10 +94,10 @@ public class FieldMathHelpers
         // Calculate offsets
         double dx = xVelocityMetersPerSecond * dt;
         double dy = yVelocityMetersPerSecond * dt;
-        Translation2d deltaChange = new Translation2d(dx,dy);
+        Translation2d delta = new Translation2d(dx,dy);
 
         // Calculate adjusted translation
-        Translation2d adjustedTranslation = translationToHub.plus(deltaChange);
+        Translation2d adjustedTranslation = translationToHub.minus(delta);
         return adjustedTranslation;
     }
 

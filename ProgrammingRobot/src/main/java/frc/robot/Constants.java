@@ -47,10 +47,10 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToVelocity = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToVelocity.put(1.85,50.0);
-      kDistanceToVelocity.put(2.0,52.0);
-      kDistanceToVelocity.put(2.5,54.0);
-      kDistanceToVelocity.put(3.5,62.0);
+      kDistanceToVelocity.put(1.92,48.0);
+      kDistanceToVelocity.put(2.07,50.0);
+      kDistanceToVelocity.put(2.57,52.0);
+      kDistanceToVelocity.put(3.57,60.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToTime = new InterpolatingDoubleTreeMap();
@@ -85,10 +85,10 @@ public final class Constants {
     public static final boolean kUseMegatag2 = true; 
     public static final String[] kLimelightNames = {"limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
-    public static final double kAmbiguity = 10000;
-    public static final double kBaseLateralDev = 0;
-    public static final double kBaseRotDev = 0;
-    public static final double kTagDistThreshold =100000;
+    public static final double kAmbiguity = .9;
+    public static final double kBaseLateralDev = 0.3;
+    public static final double kBaseRotDev = 0.1;
+    public static final double kTagDistThreshold = 10;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
 

@@ -14,7 +14,7 @@ public class FlywheelTestCommand extends ParallelCommandGroup{
     private SwerveSubsystem kSwerve;
     private FlywheelSubsystem kFlywheel;
     private SpindexerSubsystem kSpindexer;
-    public FlywheelTestCommand(SwerveSubsystem mSwerve, FlywheelSubsystem mFlywheel, SpindexerSubsystem mSpindexer){
+    /* public FlywheelTestCommand(SwerveSubsystem mSwerve, FlywheelSubsystem mFlywheel, SpindexerSubsystem mSpindexer){
         kSwerve = mSwerve;
         kFlywheel = mFlywheel;
         kSpindexer = mSpindexer;
@@ -23,5 +23,5 @@ public class FlywheelTestCommand extends ParallelCommandGroup{
             new calculateFlywheelSpeed(mFlywheel, mSwerve, FlywheelMode.SPINNING, FlywheelConstants.kDistanceToVelocity.get(2.6)),
             new FireInFrontOfHub(mSwerve, mSpindexer)
         );
-    }
+    } */
 }

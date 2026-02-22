@@ -60,7 +60,7 @@ public class VisionSubsystem extends SubsystemBase
         mUpdateRobotPose = pUpdateRobotPose; // Allows us to pass the calculated pose to the drivetrain with estimated deviations
         mGetRobotAngularVelocity = pGetRobotAngularVelocity; // Supplies us the rotation velocity of the chassis
 
-        mRobotEnabled = new Trigger(RobotState::isEnabled); // Trigger to check if robot is enabled
+        mRobotEnabled = new Trigger(DriverStation::isEnabled); // Trigger to check if robot is enabled
 
         mField = new Field2d();
         SmartDashboard.putData("Subsystems/VisionSubsystem/Vision Pose", mField);
@@ -172,7 +172,7 @@ public class VisionSubsystem extends SubsystemBase
             // Set the robot orientation to the current heading (required for limelight's algorithm)
             LimelightHelpers.SetRobotOrientation(limelight, mGetRobotRotation.get(), 0, 0, 0, 0, 0);
             Optional<PoseEstimate> pose = calculatePosition(limelight); // Get update
-
+            
             if(!pose.isEmpty()) // Update robot pose if all checks are passed
             {
                 updatePose(pose.get());            

@@ -52,8 +52,6 @@ import frc.robot.subsystems.VisionSubsystem;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
-
   private final XboxController mDriver =
       new XboxController(OperatorConstants.kDriverControllerPort);
 
@@ -89,23 +87,11 @@ public class RobotContainer {
       }
       );
 
-    Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
-    flyWheelToggle.onTrue(new InstantCommand(() -> {
-      kFlywheel.setMode(FlywheelMode.SPINNING);
-      kFlywheel.setTargetSpeed(60.0);
-      /*Pose2d botpose = mSwerveSubsystem.getPose();
-      ChassisSpeeds botSpeeds = mSwerveSubsystem.getFieldRelativeSpeeds();
-      double distance = FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(botpose, botSpeeds.vxMetersPerSecond, botSpeeds.vyMetersPerSecond).getNorm();
-      kFlywheel.setTargetSpeed(Constants.FlywheelConstants.kDistanceToVelocity.get((distance)));*/
-    }));
+    Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButton);
+    flyWheelToggle.whileTrue(new calculateFlywheelSpeed(kFlywheel, mSwerveSubsystem::getPose, mSwerveSubsystem::getFieldRelativeSpeeds, FlywheelMode.SPINNING));
+    flyWheelToggle.onFalse(new InstantCommand(() -> kFlywheel.setMode(FlywheelMode.OFF)));
 
-    Trigger flyWheelToggleOff = new Trigger(mDriver::getRightBumperButtonPressed);
-    flyWheelToggleOff.onTrue(new InstantCommand(() -> {
-      kFlywheel.setMode(FlywheelMode.OFF);
-      kFlywheel.setTargetSpeed(0);
-    }));
-
-    Trigger spindexerToggle = new Trigger(mDriver::getLeftStickButton);
+    Trigger spindexerToggle = new Trigger(mDriver::getRightBumperButton);
     spindexerToggle.onTrue(new ToggleSpindexer(kSpindexer));
     
   }
@@ -118,7 +104,8 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     try {
-      return new FlywheelTestCommand(mSwerveSubsystem, kFlywheel, kSpindexer);
+      //return new FlywheelTestCommand(mSwerveSubsystem, kFlywheel, kSpindexer);
+      return new InstantCommand();
     } catch (AutoBuilderException e) {
       return new InstantCommand();
     }
