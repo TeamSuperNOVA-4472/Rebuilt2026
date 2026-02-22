@@ -1,56 +1,99 @@
 package frc.robot.commands;
 
+import java.util.function.Supplier;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldMathHelpers;
 import frc.robot.subsystems.FlywheelSubsystem;
-import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 
-public class calculateFlywheelSpeed extends Command {
-    private FlywheelSubsystem kFlywheel;
-    private SwerveSubsystem kSwerve;
-    private FlywheelMode kFlyMode;
-    private double kChange;
+public class calculateFlywheelSpeed extends Command 
+{
+    private final FlywheelSubsystem kFlywheel;
 
-    public calculateFlywheelSpeed(FlywheelSubsystem mFlywheel, SwerveSubsystem mSwerve, FlywheelMode mFlyMode, double change){
-        kFlywheel = mFlywheel;
-        kFlyMode = mFlyMode;
-        kSwerve = mSwerve;
-        kChange = change;
-    }
+    private final FlywheelMode kFlyMode;
 
-    @Override
-    public void initialize(){
-        kFlywheel.setMode(kFlyMode);
-        kFlywheel.setTargetSpeed(kChange);
-    }
+    private final Supplier<Pose2d> position;
 
-    private double calculateTargetSpeed()
+    private final Supplier<ChassisSpeeds> velocities;
+
+    private final InterpolatingDoubleTreeMap kDistanceToFinalSpeed = new InterpolatingDoubleTreeMap();
+
+    private double theSpeed = 0;
+
+    public calculateFlywheelSpeed
+    (
+        FlywheelSubsystem mFlywheel,
+        Supplier<Pose2d> mPosition,
+        Supplier<ChassisSpeeds> mVelocities,
+        FlywheelMode mFlyMode
+    )
     {
-        final double gravity = 9.81;
-        final double angle = 0.69813;
-        final double parallelSpeed = 0;
-        final double height = 0.99695;
-        final double dis = 1.9;
-        final double outVel = (Math.pow(1/Math.cos(angle),2)*
-        Math.sqrt(2*(Math.pow(Math.cos(angle)*gravity*dis, 2)*
-        (Math.sin(angle)*Math.cos(angle)*gravity*dis+
-        Math.pow(Math.sin(angle)*parallelSpeed,2)/2-
-        Math.pow(Math.cos(angle),2)*gravity*height)))-
-        parallelSpeed*
-        (gravity*dis*Math.tan(angle)-
-        2*gravity*height))/
-        (2*gravity*dis*Math.sin(angle)-2*gravity*height*Math.cos(angle));
-        final double MOIFuel = 0.00048375;
-        final double fuelRad = 0.075;
-        final double flyRad = 0.0508;
-        final double fuelMass = 0.215;
-        final double flyVel = (outVel+((MOIFuel*outVel)/(fuelMass*Math.pow(fuelRad,2))))/flyRad;
-        return flyVel/(2*Math.PI)*1.77;
+        kFlywheel = mFlywheel;
+
+        kFlyMode = mFlyMode;
+
+        position = mPosition;
+
+        velocities = mVelocities;
+
+        addRequirements(kFlywheel);
     }
 
     @Override
-    public boolean isFinished(){
-        return kFlywheel.getMode() == FlywheelMode.OFF || Math.abs(kFlywheel.getSpinSpeed()-kFlywheel.getTargetSpeed()) < 0.5;
+    public void initialize()
+    {
+        /*
+        Pose2d pose = position.get();
+
+        ChassisSpeeds speeds = velocities.get();
+
+        Translation2d toHub = FieldMathHelpers.getTranslationToHub(pose);
+
+        double theDistance = toHub.getNorm();
+
+        double theTime = theDistance / theSpeed;
+
+        Translation2d distanceTheRobotMovesWhileBallIsInTheAir = new Translation2d(speeds.vxMetersPerSecond * theTime, speeds.vyMetersPerSecond * theTime);
+
+        Translation2d leading = toHub.minus(distanceTheRobotMovesWhileBallIsInTheAir);
+
+        double theChangingDistance = leading.getNorm();
+
+        double theTargetSpeed = kDistanceToFinalSpeed.get(theChangingDistance);
+
+        kFlywheel.setMode(kFlyMode);
+
+        kFlywheel.setTargetSpeed(theTargetSpeed);
+        */
+    }
+
+    @Override
+    public void execute()
+    {
+        Pose2d pose = position.get();
+
+        ChassisSpeeds speeds = velocities.get();
+
+        Translation2d toHub = FieldMathHelpers.getTranslationToHub(pose);
+
+        double theDistance = toHub.getNorm();
+
+        double theTime = theDistance / theSpeed;
+
+        Translation2d distanceTheRobotMovesWhileBallIsInTheAir = new Translation2d(speeds.vxMetersPerSecond * theTime, speeds.vyMetersPerSecond * theTime);
+
+        Translation2d leading = toHub.minus(distanceTheRobotMovesWhileBallIsInTheAir);
+
+        double theChangingDistance = leading.getNorm();
+
+        double theTargetSpeed = kDistanceToFinalSpeed.get(theChangingDistance);
+
+        kFlywheel.setMode(kFlyMode);
+
+        kFlywheel.setTargetSpeed(theTargetSpeed);
     }
 }
