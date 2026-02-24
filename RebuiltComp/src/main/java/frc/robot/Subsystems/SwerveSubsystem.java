@@ -7,32 +7,43 @@ package frc.robot.Subsystems;
 import java.io.File;
 import java.io.IOException;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.FieldMathHelpers;
+import frc.robot.Robot;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
- import static frc.robot.Constants.SwerveConstants.*;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static frc.robot.Constants.SwerveConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
+  public static final SwerveSubsystem kSwerve = new SwerveSubsystem();
+  private final SwerveDrive mSwerveDrive;
+  private double mYawGyroOffset = 0;
 
-  //private final SwerveDrive mSwerveDrive;
-
-  /*private static SwerveDrive readSwerveConfig() {
+  private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     try {
@@ -55,7 +66,7 @@ public class SwerveSubsystem extends SubsystemBase {
       // Configure AutoBuilder last
       AutoBuilder.configure(
         pSwerveSubsystem::getPose, // Robot pose supplier
-        pSwerveSubsystem::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+        (Pose2d pose) -> pSwerveSubsystem.resetOdometry(pose), // Method to reset odometry (will be called if your auto has a starting pose)
         pSwerveSubsystem::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
         (speeds, feedforwards) ->pSwerveSubsystem.driveRobotOriented(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
@@ -80,17 +91,17 @@ public class SwerveSubsystem extends SubsystemBase {
       // Handle exception as needed
       e.printStackTrace();
     }
-  }*/
-
-  /** Creates a new ExampleSubsystem. */
-  public SwerveSubsystem() {
-    // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    /*mSwerveDrive = readSwerveConfig();
-    mSwerveDrive.setHeadingCorrection(false);
-    configAutoBuilder(this);*/
   }
 
-  /*private boolean isRedAlliance() {
+  /** Creates a new ExampleSubsystem. */
+  private SwerveSubsystem() {
+    mSwerveDrive = readSwerveConfig();
+    mSwerveDrive.setHeadingCorrection(false);
+    configAutoBuilder(this);
+    resetHeading();
+  }
+
+  private boolean isRedAlliance() {
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       return alliance.get() == DriverStation.Alliance.Red;
@@ -105,21 +116,26 @@ public class SwerveSubsystem extends SubsystemBase {
         ChassisSpeeds fieldOrientedVelocity =
           ChassisSpeeds.fromFieldRelativeSpeeds(
             pVelocity,
-            mSwerveDrive.getYaw().plus(Rotation2d.fromRadians(Math.PI)));
+            mSwerveDrive.getOdometryHeading().plus(Rotation2d.fromRadians(Math.PI)));
         mSwerveDrive.drive(fieldOrientedVelocity);
       }
       else {
         mSwerveDrive.driveFieldOriented(pVelocity);
       }
   }
+  public void addVisionMeasurement(Pose2d pose, double timestamp, Matrix<N3, N1> stdDevs)
+  {
+    mSwerveDrive.addVisionMeasurement(pose, timestamp, stdDevs);
+  }
 
   public void driveRobotOriented(ChassisSpeeds pVelocity) {
     mSwerveDrive.drive(pVelocity);
+    
   }
 
   public void resetOdometry(Pose2d pPose) {
-    mSwerveDrive.setGyro(new Rotation3d(0, 0, pPose.getRotation().getRadians()));
     mSwerveDrive.resetOdometry(pPose);
+    mYawGyroOffset = ((pPose.getRotation().getDegrees() - mSwerveDrive.getYaw().getDegrees()) % 360 + 360) % 360;
   }
 
   public void resetHeading() {
@@ -135,10 +151,26 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    return mSwerveDrive.getPose().getRotation().getDegrees();
+    return (mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360;
+
+  }
+
+  public double getAngularVelocity() {
+    return Units.radiansToDegrees(getRobotRelativeSpeeds().omegaRadiansPerSecond);
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return mSwerveDrive.getRobotVelocity();
-  }*/
+  }
+
+  public ChassisSpeeds getFieldRelativeSpeeds() {
+    return mSwerveDrive.getFieldVelocity();
+  }
+
+  @Override
+  public void periodic() {
+    mSwerveDrive.updateOdometry();
+    SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
+    SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
+  }
 }

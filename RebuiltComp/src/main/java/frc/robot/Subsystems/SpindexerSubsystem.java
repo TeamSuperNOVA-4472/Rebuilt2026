@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class SpindexerSubsystem extends SubsystemBase {
-    public static final SpindexerSubsystem kInstance = new SpindexerSubsystem();
+    public static final SpindexerSubsystem kSpindexer = new SpindexerSubsystem();
      public static final double kSpindexerSpeed = 0.9;
 
     public enum SpindexerMode{
