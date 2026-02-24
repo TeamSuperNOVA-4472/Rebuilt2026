@@ -64,12 +64,6 @@ public class FlywheelSubsystem extends SubsystemBase {
                         m_velocity.mut_replace(kFlywheelMotor.getEncoder().getVelocity()/60.0, RotationsPerSecond));
               }, this));
     }
-
-    public double getTangentialSpeed()
-    {
-       return getTargetSpeed() * ((3.14*2*0.0508));    
-    }
-
     public double getSpinSpeed(){
         return kFlywheelMotor.get();
     }
@@ -94,7 +88,6 @@ public class FlywheelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Actual Speed", kFlywheelSpeed.magnitude());
         SmartDashboard.putNumber("Flywheel Feed Forward", kFlywheelFeedforward.calculate(kTargetSpeed));
         SmartDashboard.putNumber("Target Speed", kTargetSpeed);
-        SmartDashboard.putNumber("Tangential Speed: ", getTangentialSpeed());
     }
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return kRoutine.dynamic(direction);

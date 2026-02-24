@@ -6,6 +6,22 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DoTheThingCommand;
+import frc.robot.commands.ShooterSysIdCommand;
+import frc.robot.commands.SwerveTeleop;
+import frc.robot.commands.ToggleSpindexer;
+import frc.robot.commands.calculateFlywheelSpeed;
+import frc.robot.subsystems.FlywheelSubsystem;
+import frc.robot.subsystems.SpindexerSubsystem;
+import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
+
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+import org.json.simple.parser.ParseException;
 
 import com.pathplanner.lib.auto.AutoBuilderException;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -44,6 +60,10 @@ import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -73,6 +93,9 @@ public class RobotContainer {
     mDriver::getAButton,
     mDriver::getXButton,
     mSwerveSubsystem);
+
+  private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
+  private final SpindexerSubsystem kSpindexer = SpindexerSubsystem.kInstance;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
