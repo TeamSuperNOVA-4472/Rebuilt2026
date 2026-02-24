@@ -5,13 +5,16 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DriveDistanceAndHeading;
 import frc.robot.commands.SwerveTeleop;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.VisionSubsystem;
 
 import java.util.List;
 import java.util.Set;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,6 +43,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem mSwerveSubsystem = new SwerveSubsystem();
+  private final VisionSubsystem mVisionSubsystem;
 
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(1.0);
@@ -58,7 +62,11 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     mSwerveSubsystem.setDefaultCommand(mSwerveTeleop);
-
+    mVisionSubsystem = new VisionSubsystem(mSwerveSubsystem::getHeadingDegrees);
+    mVisionSubsystem.addMeasurementListener((PoseEstimate pose) -> {
+      mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds);
+      mSwerveSubsystem.addStandardDeviations(VecBuilder.fill(.7,.7,9999999));
+    });
   }
 
   /**

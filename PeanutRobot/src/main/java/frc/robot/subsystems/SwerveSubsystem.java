@@ -12,11 +12,14 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -93,7 +96,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void addVisionMeasurement(Pose2d visionPose, double timestamp)
   {
-      mSwerveDrive.addVisionMeasurement(visionPose, timestamp);
+    mSwerveDrive.addVisionMeasurement(visionPose, timestamp);
+  }
+  
+  public void addStandardDeviations(Matrix<N3, N1> stdDevs)
+  {
+    mSwerveDrive.setVisionMeasurementStdDevs(stdDevs);
   }
 
   // Drive in some direction with its reference point set to the field itself.
