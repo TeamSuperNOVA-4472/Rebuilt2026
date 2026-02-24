@@ -79,9 +79,6 @@ public class RobotContainer {
   private final SwerveSubsystem mSwerveSubsystem = new SwerveSubsystem();
   private final VisionSubsystem mVisionSubsystem;
 
-  private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
-  private final SpindexerSubsystem kSpindexer = SpindexerSubsystem.kSpindexer;
-
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(1.0);
   private final SlewRateLimiter mTurnLimiter = new SlewRateLimiter(1.0);
