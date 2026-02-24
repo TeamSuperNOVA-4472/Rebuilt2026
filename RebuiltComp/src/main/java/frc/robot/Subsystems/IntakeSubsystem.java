@@ -1,6 +1,10 @@
 package frc.robot.Subsystems;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -55,6 +59,36 @@ public class IntakeSubsystem extends SubsystemBase {
         kSimRoot = kSimSpace.getRoot("base", 10, 30);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Intake", kIntakeSim.getPositionMeters()*Constants.IntakeSubsystemConstants.kSimLenMult, Constants.IntakeSubsystemConstants.kIntakeAngle));
         SmartDashboard.putData("IntakeSim", kSimSpace);
+
+        TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
+        CurrentLimitsConfigs kIntakeCurrentConfig = new CurrentLimitsConfigs();
+        MotorOutputConfigs kIntakeMotorConfig = new MotorOutputConfigs();
+        kIntakeMotor.getConfigurator().refresh(kIntakeConfig);
+        kIntakeMotor.getConfigurator().refresh(kIntakeCurrentConfig);
+        kIntakeMotor.getConfigurator().refresh(kIntakeMotorConfig);
+        kIntakeCurrentConfig.SupplyCurrentLimit = 10;
+        kIntakeCurrentConfig.SupplyCurrentLimitEnable = true;
+        kIntakeCurrentConfig.StatorCurrentLimitEnable = true;
+        kIntakeCurrentConfig.StatorCurrentLimit = 10;
+        kIntakeMotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kIntakeConfig.withCurrentLimits(kIntakeCurrentConfig);
+        kIntakeConfig.withMotorOutput(kIntakeMotorConfig);
+        kIntakeMotor.getConfigurator().apply(kIntakeConfig);
+
+        TalonFXConfiguration kSliderConfig = new TalonFXConfiguration();
+        CurrentLimitsConfigs kSliderCurrentConfig = new CurrentLimitsConfigs();
+        MotorOutputConfigs kSliderMotorConfig = new MotorOutputConfigs();
+        kIntakeSlider.getConfigurator().refresh(kSliderConfig);
+        kIntakeSlider.getConfigurator().refresh(kSliderCurrentConfig);
+        kIntakeSlider.getConfigurator().refresh(kSliderMotorConfig);
+        kSliderCurrentConfig.SupplyCurrentLimit = 10;
+        kSliderCurrentConfig.SupplyCurrentLimitEnable = true;
+        kSliderCurrentConfig.StatorCurrentLimitEnable = true;
+        kSliderCurrentConfig.StatorCurrentLimit = 10;
+        kSliderMotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kSliderConfig.withCurrentLimits(kSliderCurrentConfig);
+        kSliderConfig.withMotorOutput(kSliderMotorConfig);
+        kIntakeSlider.getConfigurator().apply(kSliderConfig);
     }
 
     private void moveToState(){
