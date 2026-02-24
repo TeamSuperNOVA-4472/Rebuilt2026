@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -30,7 +31,7 @@ public class RobotContainer {
   private final IntakeSubsystem mIntake = IntakeSubsystem.kIntake;
   private final SpindexerSubsystem mSpindexer = SpindexerSubsystem.kSpindexer;
   private final VisionSubsystem mVisionSubsystem;
-  private final XboxController mDriver = new XboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController mDriver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final TurretSubsystem mTurret = TurretSubsystem.kTurret;
   private final SwerveSubsystem mSwerve = SwerveSubsystem.kSwerve;
   
@@ -42,7 +43,7 @@ public class RobotContainer {
     () -> mFwdLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getLeftY())), 
     () -> mSideLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getLeftX())),
     () -> mTurnLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getRightX())),
-    mDriver::getAButton,
+    () -> mDriver.a().getAsBoolean(),
     mSwerve);
 
 
@@ -58,15 +59,11 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    Trigger intakeToggle = new Trigger(mDriver::getLeftBumperButtonPressed);
-    intakeToggle.onTrue(new setIntake(mIntake, IntakeMode.INTAKE));
-    Trigger outtakeToggle = new Trigger(mDriver::getRightBumperButton);
-    outtakeToggle.onTrue(new setIntake(mIntake, IntakeMode.OUTTAKE));
-    Trigger spindexerHold = new Trigger(mDriver::getAButton);
-    spindexerHold.onTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
-    spindexerHold.onFalse(new setSpindexer(mSpindexer, SpindexerMode.OFF));
-    Trigger TurretTest = new Trigger(mDriver::getBButton);
-    TurretTest.onTrue(new moveTurretAbsolute(mTurret, mSwerve, 90));
+    mDriver.leftBumper().onTrue(new setIntake(mIntake, IntakeMode.INTAKE));
+    mDriver.rightBumper().onTrue(new setIntake(mIntake, IntakeMode.OUTTAKE));
+    mDriver.a().onTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    mDriver.a().onFalse(new setSpindexer(mSpindexer, SpindexerMode.OFF));
+    mDriver.b().onTrue(new moveTurretAbsolute(mTurret, mSwerve, 90));
   }
 
   public Command getAutonomousCommand() {
