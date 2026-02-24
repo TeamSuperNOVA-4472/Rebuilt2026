@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import swervelib.SwerveDrive;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
@@ -30,9 +31,9 @@ import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
 public class SwerveSubsystem extends SubsystemBase {
 
-  //private final SwerveDrive mSwerveDrive;
+  private final SwerveDrive mSwerveDrive;
 
-  /*private static SwerveDrive readSwerveConfig() {
+  private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
     File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
     try {
@@ -80,17 +81,22 @@ public class SwerveSubsystem extends SubsystemBase {
       // Handle exception as needed
       e.printStackTrace();
     }
-  }*/
+  }
 
   /** Creates a new ExampleSubsystem. */
   public SwerveSubsystem() {
     // SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
-    /*mSwerveDrive = readSwerveConfig();
-    mSwerveDrive.setHeadingCorrection(false);
-    configAutoBuilder(this);*/
+    //TODO: Test if it works in sim without the Robot.isReal().
+    if (Robot.isReal()){
+      mSwerveDrive = readSwerveConfig();
+      mSwerveDrive.setHeadingCorrection(false);
+      configAutoBuilder(this);
+    } else {
+      mSwerveDrive = null;
+    }
   }
 
-  /*private boolean isRedAlliance() {
+  private boolean isRedAlliance() {
     var alliance = DriverStation.getAlliance();
     if (alliance.isPresent()) {
       return alliance.get() == DriverStation.Alliance.Red;
@@ -140,5 +146,5 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return mSwerveDrive.getRobotVelocity();
-  }*/
+  }
 }
