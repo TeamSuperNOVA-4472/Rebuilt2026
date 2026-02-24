@@ -5,6 +5,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FlywheelSubsystem extends SubsystemBase {
@@ -23,6 +29,12 @@ public class FlywheelSubsystem extends SubsystemBase {
     private boolean kHoodAtTarget;
     private SimpleMotorFeedforward kFlywheelFeedforward;
     private PIDController kFlywheelFeedback;
+    private SingleJointedArmSim kFlywheelHoodSim;
+    private DCMotor kFlywheelHoodSimMotor;
+    private double kOutput;
+    private Mechanism2d kSimSpace;
+    private MechanismRoot2d kSimRoot;
+    private MechanismLigament2d kSimDisp;
 
     private FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
@@ -33,6 +45,13 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheelFeedforward = new SimpleMotorFeedforward(0.0001, 0.0075);
         kFlywheelFeedback = new PIDController(0.13,0, 0.001);
         kTargetAngle = 90;
+        kFlywheelHoodSimMotor = DCMotor.getKrakenX44(1);
+        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, 24.668, 0.011, 0.2159, 0,  Math.PI / 180.0, false, 0, 0, 0);
+        kSimSpace = new Mechanism2d(60, 60);
+        kSimRoot = kSimSpace.getRoot("base", 30, 30);
+        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kFlywheelHoodSim.getAngleRads() * 180 / Math.PI));
+        SmartDashboard.putData("TurretSim", kSimSpace);
+
     }
     private void moveFlywheel(){
         switch (kMode) {
@@ -67,5 +86,13 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheelHoodMotor.set(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble(),kTargetAngle));
         kFlywheelMotor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheelMotor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheelFeedforward.calculate(kFlywheelMotor.getVelocity().getValueAsDouble()), -11, 11));
     }
+    @Override
+    public void simulationPeriodic() {
+      kFlywheelHoodSim.setInput(kOutput * 12.0);
 
+      kFlywheelHoodSim.update(0.02);
+
+      kSimDisp.setAngle(kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
+      SmartDashboard.putNumber("FlywheelHood", kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
+    }
 }
