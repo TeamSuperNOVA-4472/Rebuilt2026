@@ -2,7 +2,11 @@ package frc.robot.Subsystems;
 
 import java.lang.annotation.Target;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -54,6 +58,21 @@ public class TurretSubsystem extends SubsystemBase
         kSimRoot = kSimSpace.getRoot("base", 30, 30);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kTurretSim.getAngleRads() * 180 / Math.PI));
         SmartDashboard.putData("TurretSim", kSimSpace);
+
+        TalonFXConfiguration kTurretConfig = new TalonFXConfiguration();
+        CurrentLimitsConfigs kTurretCurrentConfig = new CurrentLimitsConfigs();
+        MotorOutputConfigs kTurretMotorConfig = new MotorOutputConfigs();
+        kTurretMotor.getConfigurator().refresh(kTurretConfig);
+        kTurretMotor.getConfigurator().refresh(kTurretCurrentConfig);
+        kTurretMotor.getConfigurator().refresh(kTurretMotorConfig);
+        kTurretCurrentConfig.SupplyCurrentLimit = 10;
+        kTurretCurrentConfig.SupplyCurrentLimitEnable = true;
+        kTurretCurrentConfig.StatorCurrentLimitEnable = true;
+        kTurretCurrentConfig.StatorCurrentLimit = 10;
+        kTurretMotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kTurretConfig.withCurrentLimits(kTurretCurrentConfig);
+        kTurretConfig.withMotorOutput(kTurretMotorConfig);
+        kTurretMotor.getConfigurator().apply(kTurretConfig);
     }
 
     public void rotate(double speed) 
