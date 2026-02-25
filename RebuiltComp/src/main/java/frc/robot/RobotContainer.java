@@ -16,14 +16,17 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.SwerveTeleop;
-import frc.robot.Commands.MoveTurretAbsolute;
+import frc.robot.Commands.moveTurretAbsolute;
+import frc.robot.Commands.setFlywheelHoodAngle;
 import frc.robot.Commands.setIntake;
 import frc.robot.Commands.setSpindexer;
+import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Subsystems.TurretSubsystem;
 import frc.robot.Subsystems.VisionSubsystem;
+import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeMode;
 import frc.robot.Subsystems.SpindexerSubsystem.SpindexerMode;
 
@@ -34,6 +37,7 @@ public class RobotContainer {
   private final CommandXboxController mDriver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final TurretSubsystem mTurret = TurretSubsystem.kTurret;
   private final SwerveSubsystem mSwerve = SwerveSubsystem.kSwerve;
+  private final FlywheelSubsystem mFlywheel = FlywheelSubsystem.kFlywheel;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -45,8 +49,7 @@ public class RobotContainer {
     () -> mTurnLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getRightX())),
     () -> mDriver.a().getAsBoolean(),
     mSwerve);
-  
-  private final MoveTurretAbsolute mMoveTurretAbsolute = new MoveTurretAbsolute(
+  private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees, 
       () -> FieldMathHelpers.getRotationToHubWithSomeSpeed(
@@ -54,10 +57,9 @@ public class RobotContainer {
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
 
-
   public RobotContainer() {
     mSwerve.setDefaultCommand(mSwerveTeleop);
-    mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    if (Robot.isReal())mTurret.setDefaultCommand(mMoveTurretAbsolute);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -72,6 +74,7 @@ public class RobotContainer {
     mDriver.rightBumper().onTrue(new setIntake(mIntake, IntakeMode.OUTTAKE));
     mDriver.a().onTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
     mDriver.a().onFalse(new setSpindexer(mSpindexer, SpindexerMode.OFF));
+    mDriver.b().onTrue(new setFlywheelHoodAngle(mFlywheel,35));
     //TODO: add controls for flywheel + add correct bindings
   }
 

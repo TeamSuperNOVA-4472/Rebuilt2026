@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 
 public class FlywheelSubsystem extends SubsystemBase {
     public static final FlywheelSubsystem kFlywheel = new FlywheelSubsystem();
@@ -48,17 +49,17 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1Motor = new TalonFX(7);
         kFlywheel2Motor = new TalonFX(33);
         kFlywheelHoodMotor = new TalonFX(6);
-        kHoodPidController = new PIDController(0,0,0);
+        kHoodPidController = new PIDController(0.01,0,0);
         kFlywheel1Feedforward = new SimpleMotorFeedforward(0.0001, 0.0075);
         kFlywheel2Feedforward = new SimpleMotorFeedforward(0.0001, 0.0075);
         kFlywheelFeedback = new PIDController(0.13,0, 0.001);
-        kTargetAngle = 90;
+        kTargetAngle = 19;
         kFlywheelHoodSimMotor = DCMotor.getKrakenX44(1);
-        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, 24.668, 0.011, 0.2159, 0,  Math.PI / 180.0, false, 0, 0, 0);
+        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, 58.824, 0.011, 0.2159, 19 * Math.PI / 180.0,  45 * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
         kSimRoot = kSimSpace.getRoot("base", 30, 30);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kFlywheelHoodSim.getAngleRads() * 180 / Math.PI));
-        SmartDashboard.putData("TurretSim", kSimSpace);
+        SmartDashboard.putData("FlyWheelHoodSim", kSimSpace);
         TalonFXConfiguration kFlywheel1Config = new TalonFXConfiguration();
         CurrentLimitsConfigs kFlywheel1CurrentConfig = new CurrentLimitsConfigs();
         MotorOutputConfigs kFlywheel1MotorConfig = new MotorOutputConfigs();
@@ -134,7 +135,9 @@ public class FlywheelSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         kHoodAtTarget = kHoodPidController.atSetpoint();
-        kFlywheelHoodMotor.set(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble(),kTargetAngle));
+        if (Robot.isReal())kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble(),kTargetAngle), -1 , 1);
+        else kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodSim.getAngleRads() * 180 / Math.PI,kTargetAngle), -1 , 1);
+        kFlywheelHoodMotor.set(kOutput);
         kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel1Feedforward.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble()), -11, 11));
         kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel2Feedforward.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()), -11, 11));
     }

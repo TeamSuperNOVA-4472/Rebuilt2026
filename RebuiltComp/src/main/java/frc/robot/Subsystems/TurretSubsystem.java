@@ -53,7 +53,7 @@ public class TurretSubsystem extends SubsystemBase
         kPidController = new PIDController(kP, kI, kD);
 
         kTurretSimMotor = DCMotor.getKrakenX44(1);
-        kTurretSim = new SingleJointedArmSim(kTurretSimMotor, 24.668, 0.291, 0.2921, 0, kDeadband * Math.PI / 180.0, false, 0, 0, 0);
+        kTurretSim = new SingleJointedArmSim(kTurretSimMotor, 24.668, 0.356, 0.2921, 0, kDeadband * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
         kSimRoot = kSimSpace.getRoot("base", 30, 30);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kTurretSim.getAngleRads() * 180 / Math.PI));

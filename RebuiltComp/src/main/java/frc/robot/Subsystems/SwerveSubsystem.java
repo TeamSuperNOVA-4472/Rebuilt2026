@@ -150,7 +150,9 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
+    if (Robot.isReal())
     return mSwerveDrive.getPose();
+    else return new Pose2d();
   }
 
   public double getHeadingDegrees() {
@@ -167,7 +169,9 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getFieldRelativeSpeeds() {
+    if (Robot.isReal())
     return mSwerveDrive.getFieldVelocity();
+    else return new ChassisSpeeds();
   }
 
   @Override
