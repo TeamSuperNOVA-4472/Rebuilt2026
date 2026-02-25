@@ -94,10 +94,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new ExampleSubsystem. */
   private SwerveSubsystem() {
-    mSwerveDrive = readSwerveConfig();
-    mSwerveDrive.setHeadingCorrection(false);
-    configAutoBuilder(this);
-    resetHeading();
+    if (Robot.isReal()){
+      mSwerveDrive = readSwerveConfig();
+      mSwerveDrive.setHeadingCorrection(false);
+      configAutoBuilder(this);
+      resetHeading();
+    } else {
+      mSwerveDrive = null;
+    }
   }
 
   private boolean isRedAlliance() {
@@ -146,12 +150,14 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getPose() {
+    if (Robot.isReal())
     return mSwerveDrive.getPose();
+    else return new Pose2d();
   }
 
   public double getHeadingDegrees() {
-    return (mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360;
-
+    if (Robot.isReal()) return (mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360;
+    else return 0;
   }
 
   public double getAngularVelocity() {
@@ -163,13 +169,17 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public ChassisSpeeds getFieldRelativeSpeeds() {
+    if (Robot.isReal())
     return mSwerveDrive.getFieldVelocity();
+    else return new ChassisSpeeds();
   }
 
   @Override
   public void periodic() {
-    mSwerveDrive.updateOdometry();
-    SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
-    SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
+    if (Robot.isReal()){ 
+      mSwerveDrive.updateOdometry();
+      SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
+      SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
+    }
   }
 }
