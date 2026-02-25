@@ -17,6 +17,8 @@ public class FieldMathHelpers
     // Store the position of the hub
     private static final Pose2d hubPose = getHubPose();
 
+    // TODO: add math for turret position offset from center, test equations for velocity, change flywheel from rpm to dist vs angle
+
     /**
      * Gets the distance in meters from a pose to the hub.
      * @param pose The bot pose.
@@ -84,7 +86,7 @@ public class FieldMathHelpers
      * @param projectileSpeed The constant projectile speed in meters per second.
      * @return The desired field relative heading from 0-360 where 0 is in line with the positive x axis.
      */
-    public static Translation2d getTranslation2dToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    private static Translation2d getTranslation2dToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
         // Calculate translations and distances
         Translation2d translationToHub = getTranslationToHub(botPose);
@@ -101,12 +103,14 @@ public class FieldMathHelpers
         return adjustedTranslation;
     }
 
-    public static double getFlywheelSpeedWithSomeSpeedInDegrees(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond, double projectileSpeed)
+    public static double getRotationToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
-        double theta = getHeadingToHubInRadians(botPose);
-        double adjustedSpeed = projectileSpeed + ((-1 * xVelocityMetersPerSecond * Math.cos(theta)) + (-1 * yVelocityMetersPerSecond * Math.sin(theta)));
+        return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getAngle().getDegrees();
+    }
 
-        return Units.radiansToDegrees(adjustedSpeed);
+    public static double getDistanceToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    {
+        return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getNorm();
     }
     
     /**
@@ -135,10 +139,6 @@ public class FieldMathHelpers
 
         return new Pair<Double, Double>(fieldRelativeXVelocity, fieldRelativeYVelocity);
     }
-    /*public static Pose2d getFieldRelativePositionOfTurret(Pose2d botpose, double robotHeadingDegrees)
-    {
-         Translation2d turretOfHeadingAdjustedOffset
-    } */
 
     /**
      * Checks if the robot is on the red alliance.
