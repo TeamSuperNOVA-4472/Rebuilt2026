@@ -1,5 +1,7 @@
 package frc.robot.Subsystems;
 
+import static frc.robot.Constants.SwerveConstants.kA;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -25,12 +27,19 @@ import frc.robot.Robot;
 public class IntakeSubsystem extends SubsystemBase {
     public static final IntakeSubsystem kIntake = new IntakeSubsystem();
 
-    public enum IntakeMode{
+    public enum IntakeStorageMode{
         STORED,
-        INTAKE,
-        OUTTAKE
+        OUT
     }
-    private IntakeMode kMode;
+
+    public enum IntakeActionMode{
+        INTAKE,
+        OUTTAKE,
+        OFF
+    }
+
+    private IntakeStorageMode kStorageMode;
+    private IntakeActionMode kActionMode;
 
     private boolean kIsAtState;
     private double kSliderTarget; 
@@ -47,7 +56,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private MechanismLigament2d kSimDisp;
 
     private IntakeSubsystem(){
-        kMode = IntakeMode.STORED;
+        kStorageMode = IntakeStorageMode.STORED;
+        kActionMode = IntakeActionMode.OFF;
         kIsAtState = true;
         kIntakeMotor = new TalonFX(Constants.IntakeSubsystemConstants.kIntakeMotorPort);
         kIntakeSlider = new TalonFX(Constants.IntakeSubsystemConstants.kSliderMotorPort);
@@ -91,36 +101,61 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeSlider.getConfigurator().apply(kSliderConfig);
     }
 
-    private void moveToState(){
-        switch (kMode){
+    private void moveToStorageState(){
+        switch (kStorageMode){
         case STORED:
+            kActionMode = IntakeActionMode.OFF;
             kSliderTarget = Constants.IntakeSubsystemConstants.kStoredPos;
-            kIntakeMotor.set(0);
             break;
-        
-        case INTAKE:
+
+        case OUT:
             kSliderTarget = Constants.IntakeSubsystemConstants.kOutPos;
-            kIntakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
-            break;
-        
-        case OUTTAKE:
-            kSliderTarget = Constants.IntakeSubsystemConstants.kOutPos;
-            kIntakeMotor.set(-Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
             break;
         
         }
     }
+
+    private void setActionState(){
+        switch (kActionMode){
+        case INTAKE:
+            kIntakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
+            break;
+        
+        case OUTTAKE:
+            kIntakeMotor.set(-Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
+            break;
+        
+        case OFF:
+            kIntakeMotor.set(0);
+            break;
+        }
+    }
     
-    public void setIntake(IntakeMode mNewMode){
-        kMode = mNewMode;
-        moveToState();
+    public void setIntakeAction(IntakeActionMode mNewMode){
+        if (kStorageMode.equals(IntakeStorageMode.OUT))
+        {
+            kActionMode = mNewMode;
+            setActionState();
+        }
     }
-    public IntakeMode getMode(){
-        return kMode;
+
+    public void setIntakeStorage(IntakeStorageMode mNewMode){
+        kStorageMode = mNewMode;
+        moveToStorageState();
     }
+
+    public IntakeActionMode getActionMode(){
+        return kActionMode;
+    }
+
+    public IntakeStorageMode getStorageMode(){
+        return kStorageMode;
+    }
+
     public boolean isReady(){
         return kIsAtState;
     }
+
     public double getIntakeSpeed(){
         return kIntakeMotor.get();
     }
@@ -135,7 +170,8 @@ public class IntakeSubsystem extends SubsystemBase {
             PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*39.3701,kSliderTarget), -1, 1);
         }
         kIntakeSlider.set(PIDOutput);
-        SmartDashboard.putNumber("Current Mode", kMode.ordinal());
+        SmartDashboard.putNumber("Current Action Mode: ", kActionMode.ordinal());
+        SmartDashboard.putNumber("Current Storage Mode: ", kStorageMode.ordinal());
     }
 
     @Override

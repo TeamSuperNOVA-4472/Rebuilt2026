@@ -14,9 +14,16 @@ public class setSpindexer extends InstantCommand {
     public setSpindexer(SpindexerSubsystem mSpindexer, SpindexerMode mNewMode){ 
         kSpindexer = mSpindexer;
         kNewMode = mNewMode;
+        addRequirements(kSpindexer);
     }
+
     @Override
     public void initialize(){
         kSpindexer.setMode(kNewMode);
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        kSpindexer.setMode(SpindexerMode.OFF);
     }
 }

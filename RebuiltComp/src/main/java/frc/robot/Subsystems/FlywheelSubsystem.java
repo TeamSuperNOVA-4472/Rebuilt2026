@@ -111,6 +111,8 @@ public class FlywheelSubsystem extends SubsystemBase {
     public void setHoodTarget(double mNewTarget){
         kTargetAngle = mNewTarget;
     }
+
+    //TODO: turn encoder angle to hood angle 
     public boolean getHoodAtTartget(){
         return kHoodAtTarget;
     }
