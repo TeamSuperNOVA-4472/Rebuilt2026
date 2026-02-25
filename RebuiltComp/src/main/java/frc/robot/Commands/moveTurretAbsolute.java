@@ -1,28 +1,31 @@
 package frc.robot.Commands;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Subsystems.TurretSubsystem;
 
-public class moveTurretAbsolute extends InstantCommand{
-    private TurretSubsystem kTurret;
-    private SwerveSubsystem kSwerveSubsystem;
-    private double kAbsTargetAngle;
+public class MoveTurretAbsolute extends InstantCommand{
+    private final TurretSubsystem kTurret;
+    private final Supplier<Double> kGetHeadingDegrees;
+    private final Supplier<Double> kAbsTargetAngle;
 
-
-    public moveTurretAbsolute(TurretSubsystem mTurret, SwerveSubsystem mSwerveSubsystem, double mAbsTargetAngle)
+    public MoveTurretAbsolute(TurretSubsystem mTurret, Supplier<Double> mGetHeadingDegrees, Supplier<Double> mAbsTargetAngle)
     {
         kAbsTargetAngle = mAbsTargetAngle;
-        kSwerveSubsystem = mSwerveSubsystem;
+        kGetHeadingDegrees = mGetHeadingDegrees;
         kTurret = mTurret;
+
         addRequirements(kTurret);
     }
+
     @Override
-    public void initialize(){
-        // double kRelativeAngle = kSwerveSubsystem.getHeadingDegrees() + kAbsTargetAngle;
-        // double kConstrainedAngle = (kRelativeAngle % 360 + 360) % 360;
-        kTurret.setTargetAngle(kAbsTargetAngle);
+    public void execute() {
+        double kRelativeAngle = kGetHeadingDegrees.get() + kAbsTargetAngle.get();
+        double kConstrainedAngle = (kRelativeAngle % 360 + 360) % 360;
+        kTurret.setTargetAngle(kConstrainedAngle);
     }
 
 }
