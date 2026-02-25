@@ -26,11 +26,11 @@ public class TurretSubsystem extends SubsystemBase
 
     private static final double kRevolutions = 2048;
 
-    private static final double kP = 0.045;
+    private static final double kP = 0.013;
 
     private static final double kI = 0.0;
 
-    private static final double kD = 0.001;
+    private static final double kD = 0.0008;
 
     private final PIDController kPidController;
 
@@ -52,7 +52,7 @@ public class TurretSubsystem extends SubsystemBase
 
         kPidController = new PIDController(kP, kI, kD);
 
-        kTurretSimMotor = DCMotor.getKrakenX60(1);
+        kTurretSimMotor = DCMotor.getKrakenX44(1);
         kTurretSim = new SingleJointedArmSim(kTurretSimMotor, 24.668, 0.291, 0.2921, 0, kDeadband * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
         kSimRoot = kSimSpace.getRoot("base", 30, 30);

@@ -6,6 +6,7 @@ package frc.robot.Commands;
 
 import frc.robot.Constants;
 import frc.robot.FieldMathHelpers;
+import frc.robot.Robot;
 import frc.robot.Subsystems.SwerveSubsystem;
 
 import java.lang.reflect.Field;
@@ -73,7 +74,7 @@ public class SwerveTeleop extends Command {
       updatedFwdSpeedMS,
       updatedSideSpeedMS, 
       updatedTurnSpeedRadS);
-    mSwerveSubsystem.driveFieldOriented(updatedSpeeds);
+    if (Robot.isReal()) mSwerveSubsystem.driveFieldOriented(updatedSpeeds);
 
     if(mResetHeadingInput.get()) {
       mSwerveSubsystem.resetHeading();

@@ -53,7 +53,7 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeSlider = new TalonFX(Constants.IntakeSubsystemConstants.kSliderMotorPort);
         kSliderPID = new PIDController(Constants.IntakeSubsystemConstants.kSliderP, Constants.IntakeSubsystemConstants.kSliderI, Constants.IntakeSubsystemConstants.kSliderD);
         kSliderPID.setTolerance(Constants.IntakeSubsystemConstants.kSlideThreshold, Constants.IntakeSubsystemConstants.kSlideSpeedThreshold);
-        kIntakeSimMotor = DCMotor.getKrakenX60(1);
+        kIntakeSimMotor = DCMotor.getKrakenX44(1);
         kIntakeSim = new ElevatorSim(kIntakeSimMotor, Constants.IntakeSubsystemConstants.kGearing, Constants.IntakeSubsystemConstants.kMass, Constants.IntakeSubsystemConstants.kDrumRadius, 0, Constants.IntakeSubsystemConstants.kMaxLen, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
         kSimRoot = kSimSpace.getRoot("base", 10, 30);
