@@ -136,12 +136,12 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
     @Override
     public void periodic(){
-        /*kHoodAtTarget = kHoodPidController.atSetpoint();
+        kHoodAtTarget = kHoodPidController.atSetpoint();
         if (Robot.isReal())kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble(),kTargetAngle), -1 , 1);
         else kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodSim.getAngleRads() * 180 / Math.PI,kTargetAngle), -1 , 1);
         kFlywheelHoodMotor.set(kOutput);
         kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel1Feedforward.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble()), -11, 11));
-        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel2Feedforward.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()), -11, 11));*/
+        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel2Feedforward.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()), -11, 11));
     }
     @Override
     public void simulationPeriodic() {

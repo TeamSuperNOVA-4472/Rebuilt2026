@@ -116,9 +116,9 @@ public class TurretSubsystem extends SubsystemBase
 
     @Override
     public void periodic() {
-        /*if (isValidAngle()) {
+        if (isValidAngle()) {
             goToAngle(kTurretTargetAngle);
-        }*/
+        }
     }
 
     @Override

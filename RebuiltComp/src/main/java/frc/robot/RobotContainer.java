@@ -69,9 +69,9 @@ public class RobotContainer {
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
 
   public RobotContainer() {
-    //mSwerve.setDefaultCommand(mSwerveTeleop);
-    //mTurret.setDefaultCommand(mMoveTurretAbsolute);
-    //mFlywheel.setDefaultCommand(mSetFlywheel);
+    mSwerve.setDefaultCommand(mSwerveTeleop);
+    mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    mFlywheel.setDefaultCommand(mSetFlywheel);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -82,12 +82,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    //mDriver.rightBumper().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
-    //mDriver.rightTrigger().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
+    mDriver.rightBumper().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
+    mDriver.rightTrigger().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
-    //mDriver.leftBumper().whileTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    mDriver.leftBumper().whileTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
 
-    //mDriver.back().onTrue(new toggleIntakeStorage(mIntake));
+    mDriver.back().onTrue(new toggleIntakeStorage(mIntake));
 
     //TODO: add controls for flywheel + add correct bindings
   }
