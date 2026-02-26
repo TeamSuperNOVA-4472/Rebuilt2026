@@ -24,7 +24,7 @@ public class TurretSubsystem extends SubsystemBase
 {
     private final TalonFX kTurretMotor;
 
-    private static final double kRevolutions = 2048;
+    private static final double kRevolutions = 24.668;
 
     private static final double kP = 0.013;
 
@@ -116,9 +116,9 @@ public class TurretSubsystem extends SubsystemBase
 
     @Override
     public void periodic() {
-        if (isValidAngle()) {
+        /*if (isValidAngle()) {
             goToAngle(kTurretTargetAngle);
-        }
+        }*/
     }
 
     @Override

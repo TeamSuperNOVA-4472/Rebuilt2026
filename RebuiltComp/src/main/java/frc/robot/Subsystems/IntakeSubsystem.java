@@ -162,7 +162,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        kIsAtState = kSliderPID.atSetpoint();
+        /*kIsAtState = kSliderPID.atSetpoint();
         if (Robot.isReal()){
             //TODO: Fix kEncoderToInchesMult BEFORE TESTING
             PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -1, 1);
@@ -171,7 +171,7 @@ public class IntakeSubsystem extends SubsystemBase {
         }
         kIntakeSlider.set(PIDOutput);
         SmartDashboard.putNumber("Current Action Mode: ", kActionMode.ordinal());
-        SmartDashboard.putNumber("Current Storage Mode: ", kStorageMode.ordinal());
+        SmartDashboard.putNumber("Current Storage Mode: ", kStorageMode.ordinal());*/
     }
 
     @Override

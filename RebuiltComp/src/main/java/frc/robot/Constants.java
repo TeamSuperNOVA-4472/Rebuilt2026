@@ -138,6 +138,6 @@ public final class Constants {
     public static final double kMaxLen = 0.4572;
     public static final double kSimLenMult = 39.3701*3;
     //TODO: Calculate the actual value for this.
-    public static final double kEncoderToInchesMult = 0.01;
+    public static final double kEncoderToInchesMult = 3.1875 ;
   }
 }
