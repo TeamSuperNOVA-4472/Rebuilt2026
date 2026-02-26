@@ -7,12 +7,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Subsystems.TurretSubsystem;
 
-public class MoveTurretAbsolute extends InstantCommand{
+public class moveTurretAbsolute extends InstantCommand{
     private final TurretSubsystem kTurret;
     private final Supplier<Double> kGetHeadingDegrees;
     private final Supplier<Double> kAbsTargetAngle;
 
-    public MoveTurretAbsolute(TurretSubsystem mTurret, Supplier<Double> mGetHeadingDegrees, Supplier<Double> mAbsTargetAngle)
+    public moveTurretAbsolute(TurretSubsystem mTurret, Supplier<Double> mGetHeadingDegrees, Supplier<Double> mAbsTargetAngle)
     {
         kAbsTargetAngle = mAbsTargetAngle;
         kGetHeadingDegrees = mGetHeadingDegrees;

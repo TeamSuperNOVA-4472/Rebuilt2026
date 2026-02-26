@@ -18,7 +18,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.SwerveTeleop;
 import frc.robot.Commands.setFlywheel;
-import frc.robot.Commands.MoveTurretAbsolute;
+import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
@@ -60,7 +60,7 @@ public class RobotContainer {
     () -> mDriver.leftTrigger().getAsBoolean());
 
   
-  private final MoveTurretAbsolute mMoveTurretAbsolute = new MoveTurretAbsolute(
+  private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees, 
       () -> FieldMathHelpers.getRotationToHubWithSomeSpeed(
