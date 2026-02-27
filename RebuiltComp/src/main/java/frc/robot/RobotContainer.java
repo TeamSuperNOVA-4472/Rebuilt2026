@@ -8,6 +8,8 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.units.VoltageUnit;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -18,6 +20,7 @@ import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.SwerveTeleop;
+import frc.robot.Commands.flywheelSysIDCommand;
 import frc.robot.Commands.setFlywheel;
 import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
@@ -93,6 +96,12 @@ public class RobotContainer {
     mDriver.rightTrigger(0.2).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
     mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
+    mDriver.leftTrigger(0.2).onTrue(new InstantCommand(() -> {
+      mFlywheel.setFlywheelVoltageDouble(5);
+    }));
+    mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
+      mFlywheel.setFlywheelVoltageDouble(0);
+    }));
 
     //mDriver.y().onTrue(new InstantCommand(() -> mIntake.moveIntake(0.1)));
     //mDriver.x().onTrue(new InstantCommand(() -> mIntake.moveIntake(-0.1)));
@@ -103,6 +112,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return new flywheelSysIDCommand(mFlywheel);
   }
 }
