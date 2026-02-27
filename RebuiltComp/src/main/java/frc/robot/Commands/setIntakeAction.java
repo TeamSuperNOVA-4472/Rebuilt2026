@@ -19,10 +19,4 @@ public class setIntakeAction extends Command {
     public void initialize(){
         kIntake.setIntakeAction(kActionMode);
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        kIntake.setIntakeAction(IntakeActionMode.OFF);
-    }
-    
 }

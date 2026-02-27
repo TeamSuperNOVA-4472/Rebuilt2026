@@ -96,6 +96,7 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveSubsystem() {
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
+
     configAutoBuilder(this);
     resetHeading();
   }
@@ -167,7 +168,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    mSwerveDrive.updateOdometry();
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
   }

@@ -11,6 +11,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FlywheelConstants;
@@ -69,7 +70,7 @@ public class RobotContainer {
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
 
   public RobotContainer() {
-    //mSwerve.setDefaultCommand(mSwerveTeleop);
+    mSwerve.setDefaultCommand(mSwerveTeleop);
     //mTurret.setDefaultCommand(mMoveTurretAbsolute);
     //mFlywheel.setDefaultCommand(mSetFlywheel);
 
@@ -85,9 +86,18 @@ public class RobotContainer {
     //mDriver.rightBumper().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
     //mDriver.rightTrigger().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
-    //mDriver.leftBumper().whileTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    mDriver.leftBumper().onTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    mDriver.leftBumper().onFalse(new setSpindexer(mSpindexer, SpindexerMode.OFF));
 
-    //mDriver.back().onTrue(new toggleIntakeStorage(mIntake));
+    mDriver.rightBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
+    mDriver.rightTrigger(0.2).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
+
+    mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
+
+    //mDriver.y().onTrue(new InstantCommand(() -> mIntake.moveIntake(0.1)));
+    //mDriver.x().onTrue(new InstantCommand(() -> mIntake.moveIntake(-0.1)));
+    //mDriver.y().or(mDriver.x()).onFalse(new InstantCommand(() -> mIntake.stopIntake()));
+    mDriver.y().onTrue(new toggleIntakeStorage(mIntake));
 
     //TODO: add controls for flywheel + add correct bindings
   }

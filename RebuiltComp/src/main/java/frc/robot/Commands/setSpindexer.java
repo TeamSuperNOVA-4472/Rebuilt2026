@@ -21,9 +21,4 @@ public class setSpindexer extends InstantCommand {
     public void initialize(){
         kSpindexer.setMode(kNewMode);
     }
-
-    @Override
-    public void end(boolean interrupted) {
-        kSpindexer.setMode(SpindexerMode.OFF);
-    }
 }

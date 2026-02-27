@@ -10,7 +10,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.networktables.NetworkTableEvent.Kind;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
@@ -20,9 +22,12 @@ import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.IntakeSubsystemConstants;
 
 public class IntakeSubsystem extends SubsystemBase {
     public static final IntakeSubsystem kIntake = new IntakeSubsystem();
@@ -38,6 +43,8 @@ public class IntakeSubsystem extends SubsystemBase {
         OFF
     }
 
+    // private final Trigger kStatorLimitExceeded;
+
     private IntakeStorageMode kStorageMode;
     private IntakeActionMode kActionMode;
 
@@ -45,23 +52,23 @@ public class IntakeSubsystem extends SubsystemBase {
     private double kSliderTarget; 
     private double PIDOutput;
 
-    private TalonFX kIntakeMotor;
-    private TalonFX kIntakeSlider;
-    private PIDController kSliderPID;
+    private final TalonFX kIntakeMotor;
+    private final TalonFX kIntakeSlider;
+    private final ProfiledPIDController kSliderPID;
 
-    private DCMotor kIntakeSimMotor;
-    private ElevatorSim kIntakeSim;
-    private Mechanism2d kSimSpace;
-    private MechanismRoot2d kSimRoot;
-    private MechanismLigament2d kSimDisp;
+    private final DCMotor kIntakeSimMotor;
+    private final ElevatorSim kIntakeSim;
+    private final Mechanism2d kSimSpace;
+    private final MechanismRoot2d kSimRoot;
+    private final MechanismLigament2d kSimDisp;
 
     private IntakeSubsystem(){
         kStorageMode = IntakeStorageMode.STORED;
         kActionMode = IntakeActionMode.OFF;
         kIsAtState = true;
-        kIntakeMotor = new TalonFX(Constants.IntakeSubsystemConstants.kIntakeMotorPort);
-        kIntakeSlider = new TalonFX(Constants.IntakeSubsystemConstants.kSliderMotorPort);
-        kSliderPID = new PIDController(Constants.IntakeSubsystemConstants.kSliderP, Constants.IntakeSubsystemConstants.kSliderI, Constants.IntakeSubsystemConstants.kSliderD);
+        kIntakeMotor = new TalonFX(Constants.IntakeSubsystemConstants.kIntakeMotorPort, "rio");
+        kIntakeSlider = new TalonFX(Constants.IntakeSubsystemConstants.kSliderMotorPort, "rio");
+        kSliderPID = new ProfiledPIDController(Constants.IntakeSubsystemConstants.kSliderP, Constants.IntakeSubsystemConstants.kSliderI, Constants.IntakeSubsystemConstants.kSliderD, new TrapezoidProfile.Constraints(24,12));
         kSliderPID.setTolerance(Constants.IntakeSubsystemConstants.kSlideThreshold, Constants.IntakeSubsystemConstants.kSlideSpeedThreshold);
         kIntakeSimMotor = DCMotor.getKrakenX44(1);
         kIntakeSim = new ElevatorSim(kIntakeSimMotor, Constants.IntakeSubsystemConstants.kGearing, Constants.IntakeSubsystemConstants.kMass, Constants.IntakeSubsystemConstants.kDrumRadius, 0, Constants.IntakeSubsystemConstants.kMaxLen, false, 0, 0, 0);
@@ -76,10 +83,10 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeMotor.getConfigurator().refresh(kIntakeConfig);
         kIntakeMotor.getConfigurator().refresh(kIntakeCurrentConfig);
         kIntakeMotor.getConfigurator().refresh(kIntakeMotorConfig);
-        kIntakeCurrentConfig.SupplyCurrentLimit = 10;
+        kIntakeCurrentConfig.SupplyCurrentLimit = 30;
         kIntakeCurrentConfig.SupplyCurrentLimitEnable = true;
         kIntakeCurrentConfig.StatorCurrentLimitEnable = true;
-        kIntakeCurrentConfig.StatorCurrentLimit = 10;
+        kIntakeCurrentConfig.StatorCurrentLimit = 30;
         kIntakeMotorConfig.NeutralMode = NeutralModeValue.Coast;
         kIntakeConfig.withCurrentLimits(kIntakeCurrentConfig);
         kIntakeConfig.withMotorOutput(kIntakeMotorConfig);
@@ -91,14 +98,16 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeSlider.getConfigurator().refresh(kSliderConfig);
         kIntakeSlider.getConfigurator().refresh(kSliderCurrentConfig);
         kIntakeSlider.getConfigurator().refresh(kSliderMotorConfig);
-        kSliderCurrentConfig.SupplyCurrentLimit = 10;
+        kSliderCurrentConfig.SupplyCurrentLimit = 30;
         kSliderCurrentConfig.SupplyCurrentLimitEnable = true;
         kSliderCurrentConfig.StatorCurrentLimitEnable = true;
-        kSliderCurrentConfig.StatorCurrentLimit = 10;
+        kSliderCurrentConfig.StatorCurrentLimit = 30;
         kSliderMotorConfig.NeutralMode = NeutralModeValue.Coast;
         kSliderConfig.withCurrentLimits(kSliderCurrentConfig);
         kSliderConfig.withMotorOutput(kSliderMotorConfig);
         kIntakeSlider.getConfigurator().apply(kSliderConfig);
+        kIntakeSlider.setPosition(0);
+
     }
 
     private void moveToStorageState(){
@@ -160,19 +169,31 @@ public class IntakeSubsystem extends SubsystemBase {
         return kIntakeMotor.get();
     }
 
+    public void moveIntake(double speed){
+        kIntakeSlider.set(speed);
+    }
+
+    public void stopIntake(){
+        kIntakeSlider.set(0);
+    }
+
     @Override
     public void periodic(){
-        /*kIsAtState = kSliderPID.atSetpoint();
+        kIsAtState = kSliderPID.atSetpoint();
+        PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -.5, .5);
         if (Robot.isReal()){
             //TODO: Fix kEncoderToInchesMult BEFORE TESTING
-            PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -1, 1);
+            //PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble(),kSliderTarget), -0.1, 0.1);
         } else{
-            PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*39.3701,kSliderTarget), -1, 1);
+            //PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*39.3701,kSliderTarget), -1, 1);
         }
         kIntakeSlider.set(PIDOutput);
+        SmartDashboard.putNumber("Intake Rack PID Output: ", PIDOutput);
         SmartDashboard.putNumber("Current Action Mode: ", kActionMode.ordinal());
-        SmartDashboard.putNumber("Current Storage Mode: ", kStorageMode.ordinal());*/
-    }
+        SmartDashboard.putNumber("Current Storage Mode: ", kStorageMode.ordinal());
+        SmartDashboard.putNumber("Current Intake Rack Encoder: ", kIntakeSlider.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Current Intake Rack Output: ", kIntakeSlider.getStatorCurrent().getValueAsDouble());
+    } 
 
     @Override
     public void simulationPeriodic(){
