@@ -83,14 +83,14 @@ public class FlywheelSubsystem extends SubsystemBase {
                 log.motor("FlywheelMotor1")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                            kFlywheel1Motor.getMotorVoltage().getValueAsDouble() * RobotController.getBatteryVoltage(), Volts))
+                            kFlywheel1Motor.get() * RobotController.getBatteryVoltage(), Volts))
                     .angularPosition(m_angle.mut_replace(kFlywheel1Motor.getPosition().getValueAsDouble(), Rotations))
                     .angularVelocity(
                         m_velocity.mut_replace(kFlywheel1Motor.getVelocity().getValueAsDouble(), RotationsPerSecond));
                 log.motor("FlywheelMotor2")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                            kFlywheel2Motor.getMotorVoltage().getValueAsDouble() * RobotController.getBatteryVoltage(), Volts))
+                            kFlywheel2Motor.get() * RobotController.getBatteryVoltage(), Volts))
                     .angularPosition(m_angle.mut_replace(kFlywheel2Motor.getPosition().getValueAsDouble(), Rotations))
                     .angularVelocity(
                         m_velocity.mut_replace(kFlywheel2Motor.getVelocity().getValueAsDouble(), RotationsPerSecond));
