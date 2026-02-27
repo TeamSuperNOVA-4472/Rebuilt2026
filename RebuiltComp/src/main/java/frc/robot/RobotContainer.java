@@ -57,13 +57,6 @@ public class RobotContainer {
     () -> mDriver.a().getAsBoolean(),
     mSwerve);
   
-    
-  private final setFlywheel mSetFlywheel = new setFlywheel(
-    mFlywheel,
-    () -> 20.0, 
-    () -> mDriver.x().getAsBoolean());
-
-  
   private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees, 
@@ -75,7 +68,6 @@ public class RobotContainer {
   public RobotContainer() {
     mSwerve.setDefaultCommand(mSwerveTeleop);
     //mTurret.setDefaultCommand(mMoveTurretAbsolute);
-    mFlywheel.setDefaultCommand(mSetFlywheel);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -96,11 +88,9 @@ public class RobotContainer {
     mDriver.rightTrigger(0.2).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
     mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
-    mDriver.leftTrigger(0.2).onTrue(new InstantCommand(() -> {
-      mFlywheel.setFlywheelVoltageDouble(5);
-    }));
+    mDriver.leftTrigger(0.2).whileTrue(new setFlywheel(mFlywheel, () -> 30.0));
     mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
-      mFlywheel.setFlywheelVoltageDouble(0);
+      mFlywheel.setMode(FlywheelMode.OFF);
     }));
 
     //mDriver.y().onTrue(new InstantCommand(() -> mIntake.moveIntake(0.1)));

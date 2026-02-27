@@ -9,23 +9,16 @@ import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 public class setFlywheel extends Command {
     private final FlywheelSubsystem kFlywheel;
     private final Supplier<Double> kAngle;
-    private final Supplier<Boolean> kButton;
 
-    public setFlywheel(FlywheelSubsystem mFlywheelSubsystem, Supplier<Double> mAngle, Supplier<Boolean> mButton){
+    public setFlywheel(FlywheelSubsystem mFlywheelSubsystem, Supplier<Double> mAngle){
         kAngle = mAngle;
         kFlywheel = mFlywheelSubsystem;
-        kButton = mButton;
         addRequirements(kFlywheel);
     }
 
     @Override
     public void execute(){
         kFlywheel.setHoodTarget(kAngle.get());
-
-        if (kButton.get()){
-            kFlywheel.setMode(FlywheelMode.SPINNING);
-        } else {
-            kFlywheel.setMode(FlywheelMode.OFF);
-        }
+        kFlywheel.setMode(FlywheelMode.SPINNING);
     }
 }
