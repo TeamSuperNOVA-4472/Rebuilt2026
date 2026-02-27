@@ -65,6 +65,10 @@ public final class Constants {
       kDistanceToTime.put(4.605866667, 1.34);
       kDistanceToTime.put(5.046133333, 1.403333333);
     }
+
+    public static final double kHoodEncoderMultiplier = 1/58.824;
+    public static final double kHoodMinAngle = 19.0;
+    public static final double khoodMaxAngle = 45.0;
   }
 
   public static class OperatorConstants {

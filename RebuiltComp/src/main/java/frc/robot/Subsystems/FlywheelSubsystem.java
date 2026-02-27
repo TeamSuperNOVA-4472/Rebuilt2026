@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants;
 import frc.robot.Robot;
 
 public class FlywheelSubsystem extends SubsystemBase {
@@ -68,12 +69,12 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel2Motor = new TalonFX(20, "CANivore");
         kFlywheelHoodMotor = new TalonFX(6);
         kHoodPidController = new PIDController(0.01,0,0);
-        kFlywheel1Feedforward = new SimpleMotorFeedforward(0, 1.249, 0.70345);
-        kFlywheel2Feedforward = new SimpleMotorFeedforward(0, 1.2435, 0.65849);
+        kFlywheel1Feedforward = new SimpleMotorFeedforward(0.44, 0.137, 0);
+        kFlywheel2Feedforward = new SimpleMotorFeedforward(0.44, 0.137, 0);
         kFlywheelFeedback = new PIDController(0,0, 0);
         kTargetAngle = 19;
         kFlywheelHoodSimMotor = DCMotor.getKrakenX44(1);
-        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, 58.824, 0.011, 0.2159, 19 * Math.PI / 180.0,  45 * Math.PI / 180.0, false, 0, 0, 0);
+        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, 58.824, 0.011, 0.2159, Constants.FlywheelConstants.kHoodMinAngle * Math.PI / 180.0,  Constants.FlywheelConstants.khoodMaxAngle * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(60, 60);
         kSimRoot = kSimSpace.getRoot("base", 30, 30);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kFlywheelHoodSim.getAngleRads() * 180 / Math.PI));
@@ -146,9 +147,8 @@ public class FlywheelSubsystem extends SubsystemBase {
         case OFF:
             kTargetSpeed = 0;
             break;
-        
         case SPINNING:
-            kTargetSpeed = 0.8;
+            kTargetSpeed = 10;
             break;
         }
     }
@@ -171,21 +171,23 @@ public class FlywheelSubsystem extends SubsystemBase {
         moveFlywheel();
     }
     public void setHoodTarget(double mNewTarget){
-        kTargetAngle = mNewTarget;
+        if (kTargetAngle >= Constants.FlywheelConstants.kHoodMinAngle && kTargetAngle <= Constants.FlywheelConstants.khoodMaxAngle) kTargetAngle = mNewTarget;
     }
-
-    //TODO: turn encoder angle to hood angle 
+ 
     public boolean getHoodAtTartget(){
         return kHoodAtTarget;
     }
     @Override
     public void periodic(){
-        /*kHoodAtTarget = kHoodPidController.atSetpoint();
-        if (Robot.isReal())kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble(),kTargetAngle), -1 , 1);
+        kHoodAtTarget = kHoodPidController.atSetpoint();
+        if (Robot.isReal()) kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble() * Constants.FlywheelConstants.kHoodEncoderMultiplier + Constants.FlywheelConstants.kHoodMinAngle,kTargetAngle), -0.1 , 0.1);
         else kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodSim.getAngleRads() * 180 / Math.PI,kTargetAngle), -1 , 1);
         kFlywheelHoodMotor.set(kOutput);
-        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel1Feedforward.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble()), -11, 11));
-        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()/512.0, kTargetSpeed) + kFlywheel2Feedforward.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble()), -11, 11));*/
+        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -11, 11));
+        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -11, 11));
+        SmartDashboard.putNumber("Actual Flywheel Speed 1", kFlywheel1Motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Actual Flywheel Speed 2", kFlywheel2Motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Target Flywheel Speed", kTargetSpeed);
     }
     @Override
     public void simulationPeriodic() {
