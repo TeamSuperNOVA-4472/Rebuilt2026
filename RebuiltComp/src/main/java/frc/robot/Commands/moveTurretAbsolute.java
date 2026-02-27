@@ -23,7 +23,7 @@ public class moveTurretAbsolute extends InstantCommand{
 
     @Override
     public void execute() {
-        double kRelativeAngle = kGetHeadingDegrees.get() + kAbsTargetAngle.get() + 179;
+        double kRelativeAngle = - kGetHeadingDegrees.get() + kAbsTargetAngle.get() + 179;
         double kConstrainedAngle = (kRelativeAngle % 360 + 360) % 360;
         kTurret.setTargetAngle(kConstrainedAngle);
     }

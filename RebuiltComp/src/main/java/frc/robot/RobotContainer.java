@@ -74,7 +74,7 @@ public class RobotContainer {
 
   public RobotContainer() {
     mSwerve.setDefaultCommand(mSwerveTeleop);
-    //mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    mTurret.setDefaultCommand(mMoveTurretAbsolute);
     //mFlywheel.setDefaultCommand(mSetFlywheel);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
@@ -98,9 +98,6 @@ public class RobotContainer {
     mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
     mDriver.leftTrigger(0.2).onTrue(new InstantCommand(() -> {
       mFlywheel.setFlywheelVoltageDouble(5);
-    }));
-    mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
-      mFlywheel.setFlywheelVoltageDouble(0);
     }));
 
     //mDriver.y().onTrue(new InstantCommand(() -> mIntake.moveIntake(0.1)));

@@ -74,7 +74,7 @@ public class SwerveTeleop extends Command {
       updatedFwdSpeedMS,
       updatedSideSpeedMS, 
       updatedTurnSpeedRadS);
-    if (Robot.isReal()) mSwerveSubsystem.driveFieldOriented(updatedSpeeds);
+    mSwerveSubsystem.driveFieldOriented(updatedSpeeds);
 
     if(mResetHeadingInput.get()) {
       mSwerveSubsystem.resetHeading();

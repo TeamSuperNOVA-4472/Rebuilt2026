@@ -11,6 +11,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.numbers.N1;
@@ -109,7 +110,7 @@ public final class Constants {
   }
   
   public static class TurretConstants {
-    public static final Translation2d kTurretOffset = new Translation2d(-0.2,0);
+    public static final Transform2d kTurretOffset = new Transform2d(-0.2,0, new Rotation2d());
   }
 
   public static class SpindexerConstants {

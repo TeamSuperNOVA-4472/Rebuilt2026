@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.FieldMathHelpers;
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
 
@@ -33,8 +34,6 @@ public class VisionSubsystem extends SubsystemBase
     private final Supplier<Double> mGetRobotRotation;
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
-
-    private final Trigger mRobotEnabled;
 
     private final Field2d mField;
 
@@ -60,16 +59,10 @@ public class VisionSubsystem extends SubsystemBase
         mUpdateRobotPose = pUpdateRobotPose; // Allows us to pass the calculated pose to the drivetrain with estimated deviations
         mGetRobotAngularVelocity = pGetRobotAngularVelocity; // Supplies us the rotation velocity of the chassis
 
-        mRobotEnabled = new Trigger(DriverStation::isEnabled); // Trigger to check if robot is enabled
-
         mField = new Field2d();
         SmartDashboard.putData("Subsystems/VisionSubsystem/Vision Pose", mField);
 
         setIMUMode(VisionMode.SEEDING); // Set initial mode to seed from gyro
-
-        mRobotEnabled.onTrue(mixLimelightIMU().andThen(removeThrottle())); // When robot is enabled, remove throttle and mix IMU measurements
-        mRobotEnabled.onFalse(seedLimelightIMU().andThen(setThrottle())); // When robot is disabled, add throttle and seed IMU from gyro
-
     }
 
     private void updatePose(PoseEstimate pose)
@@ -93,6 +86,20 @@ public class VisionSubsystem extends SubsystemBase
         for (String limelight : Constants.VisionConstants.kLimelightNames)
         {
             LimelightHelpers.SetThrottle(limelight, throttle);
+        }
+    }
+
+    private void adjustThrottleAndIMU()
+    {
+        if (DriverStation.isEnabled())
+        {
+            setIMUMode(VisionMode.MIXED);
+            setIMUThrottle(0);
+        }
+        else
+        {
+            setIMUMode(VisionMode.SEEDING);
+            setIMUThrottle(VisionConstants.kThrottle);
         }
     }
 
@@ -155,13 +162,6 @@ public class VisionSubsystem extends SubsystemBase
         return Optional.empty();
     }
 
-    // Command interfaces
-    private Command seedLimelightIMU() { return new InstantCommand(() -> setIMUMode(VisionMode.SEEDING)); } 
-    private Command mixLimelightIMU() { return new InstantCommand(() -> setIMUMode(VisionMode.MIXED)); }
-
-    private Command setThrottle() { return new InstantCommand(() -> setIMUThrottle(Constants.VisionConstants.kThrottle)); }
-    private Command removeThrottle() { return new InstantCommand(() -> setIMUThrottle(0)); }
-
     // Calculate position, update position if present
     @Override
     public void periodic() {
@@ -177,7 +177,8 @@ public class VisionSubsystem extends SubsystemBase
             {
                 updatePose(pose.get());            
             }
-             
+
+            adjustThrottleAndIMU();
         }
     }
 }

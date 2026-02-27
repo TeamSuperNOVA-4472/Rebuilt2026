@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.TurretConstants;
 
 public class FieldMathHelpers
 {
@@ -30,26 +31,6 @@ public class FieldMathHelpers
         Translation2d hubPoseTranslation = hubPose.getTranslation();
 
         return hubPoseTranslation.minus(poseTranslation);
-    }
-
-    /**
-     * Gets the distance in meters from a pose to the hub.
-     * @param pose The bot pose.
-     * @return Returns the distance in meters to the hub from the pose entered.
-     */
-    public static double getDistanceToHubWithOffset(Pose2d pose)
-    {
-        // Get vector to the shooter with respect to the field
-        Translation2d poseTranslation = pose.getTranslation();
-        double thetaOfTurretAdjusted = Constants.TurretConstants.kTurretOffset.getAngle().getRadians() + pose.getRotation().getRadians();
-        double newX = poseTranslation.getX() + Constants.TurretConstants.kTurretOffset.getNorm() * Math.cos(thetaOfTurretAdjusted);
-        double newY = poseTranslation.getY() + Constants.TurretConstants.kTurretOffset.getNorm() * Math.sin(thetaOfTurretAdjusted);
-
-        Translation2d globalTranslation = new Translation2d(newX, newY);
-
-        Translation2d hubPoseTranslation = hubPose.getTranslation();
-
-        return hubPoseTranslation.getDistance(globalTranslation);
     }
 
     /**
@@ -88,8 +69,10 @@ public class FieldMathHelpers
      */
     private static Translation2d getTranslation2dToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
+        Pose2d turretPose = botPose.transformBy(TurretConstants.kTurretOffset);
+
         // Calculate translations and distances
-        Translation2d translationToHub = getTranslationToHub(botPose);
+        Translation2d translationToHub = getTranslationToHub(turretPose);
         double distanceToHub = translationToHub.getNorm();
         double dt = Constants.FlywheelConstants.kDistanceToTime.get(distanceToHub);
 
