@@ -180,10 +180,8 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         kIsAtState = kSliderPID.atSetpoint();
-        PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -.5, .5);
         if (Robot.isReal()){
-            //TODO: Fix kEncoderToInchesMult BEFORE TESTING
-            //PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble(),kSliderTarget), -0.1, 0.1);
+            PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -.5, .5);
         } else{
             //PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*39.3701,kSliderTarget), -1, 1);
         }

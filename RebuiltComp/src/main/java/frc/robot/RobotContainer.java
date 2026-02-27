@@ -83,8 +83,8 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    //mDriver.rightBumper().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
-    //mDriver.rightTrigger().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
+    mDriver.rightBumper().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
+    mDriver.rightTrigger().whileTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
     mDriver.leftBumper().onTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
     mDriver.leftBumper().onFalse(new setSpindexer(mSpindexer, SpindexerMode.OFF));
