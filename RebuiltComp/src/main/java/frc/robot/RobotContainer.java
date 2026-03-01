@@ -38,6 +38,11 @@ import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeActionMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeStorageMode;
 import frc.robot.Subsystems.SpindexerSubsystem.SpindexerMode;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
+
 
 public class RobotContainer {
   private double mAngle = 30;
@@ -77,6 +82,12 @@ public class RobotContainer {
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
       mSwerve.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);
     });
+
+    NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
+    NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF));
+    NamedCommands.registerCommand("SpindexerOn", new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    NamedCommands.registerCommand("IntakeOn", new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
+    NamedCommands.registerCommand("IntakeOff", new setIntakeAction(mIntake, IntakeActionMode.OFF));
 
     configureBindings();
   }
