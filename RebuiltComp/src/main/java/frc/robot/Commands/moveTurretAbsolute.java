@@ -2,6 +2,7 @@ package frc.robot.Commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Subsystems.SwerveSubsystem;
@@ -23,7 +24,7 @@ public class moveTurretAbsolute extends InstantCommand{
 
     @Override
     public void execute() {
-        double kRelativeAngle = - kGetHeadingDegrees.get() + kAbsTargetAngle.get() + 179;
+        double kRelativeAngle = kGetHeadingDegrees.get() + kAbsTargetAngle.get() + 177;
         double kConstrainedAngle = (kRelativeAngle % 360 + 360) % 360;
         kTurret.setTargetAngle(kConstrainedAngle);
     }

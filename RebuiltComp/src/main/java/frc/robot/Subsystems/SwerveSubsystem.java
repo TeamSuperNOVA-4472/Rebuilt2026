@@ -151,7 +151,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    return (mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360;
+    return (((mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360) + 360) % 360;
   }
 
   public double getAngularVelocity() {

@@ -26,15 +26,15 @@ public class TurretSubsystem extends SubsystemBase
 
     private static final double kRevolutions = 24.668;
 
-    private static final double kP = 0.013;
+    private static final double kP = 0.0035;
 
     private static final double kI = 0.0;
 
-    private static final double kD = 0.0008;
+    private static final double kD = 0.000; // 0.0008
 
     private final PIDController kPidController;
 
-    private static final double kDeadband = 330.0;
+    private static final double kDeadband = 230.0;
 
     private double kTurretTargetAngle = 0.0;
 
@@ -48,7 +48,7 @@ public class TurretSubsystem extends SubsystemBase
 
     private TurretSubsystem() 
     {
-        kTurretMotor = new TalonFX(24);
+        kTurretMotor = new TalonFX(24, "CANivore");
 
         kPidController = new PIDController(kP, kI, kD);
 
@@ -65,14 +65,16 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.getConfigurator().refresh(kTurretConfig);
         kTurretMotor.getConfigurator().refresh(kTurretCurrentConfig);
         kTurretMotor.getConfigurator().refresh(kTurretMotorConfig);
-        kTurretCurrentConfig.SupplyCurrentLimit = 10;
+        kTurretCurrentConfig.SupplyCurrentLimit = 20;
         kTurretCurrentConfig.SupplyCurrentLimitEnable = true;
         kTurretCurrentConfig.StatorCurrentLimitEnable = true;
-        kTurretCurrentConfig.StatorCurrentLimit = 10;
+        kTurretCurrentConfig.StatorCurrentLimit = 20;
         kTurretMotorConfig.NeutralMode = NeutralModeValue.Coast;
         kTurretConfig.withCurrentLimits(kTurretCurrentConfig);
         kTurretConfig.withMotorOutput(kTurretMotorConfig);
         kTurretMotor.getConfigurator().apply(kTurretConfig);
+
+        kTurretMotor.setPosition(0);
     }
 
     public void rotate(double speed) 
@@ -99,6 +101,7 @@ public class TurretSubsystem extends SubsystemBase
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
         kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -1, 1);
+        SmartDashboard.putNumber("Turret Encoder: ", kTurretMotor.getPosition().getValueAsDouble());
 
         kTurretMotor.set(kOutput);
     }
@@ -118,7 +121,12 @@ public class TurretSubsystem extends SubsystemBase
     public void periodic() {
         if (isValidAngle()) {
             goToAngle(kTurretTargetAngle);
+        } else {
+            goToAngle(kDeadband);
         }
+        SmartDashboard.putNumber("Current Turret Angle: ", getAngle());
+        SmartDashboard.putNumber("Deadband: ", kDeadband);
+        SmartDashboard.putNumber("Goal Angle: ", kTurretTargetAngle);
     }
 
     @Override

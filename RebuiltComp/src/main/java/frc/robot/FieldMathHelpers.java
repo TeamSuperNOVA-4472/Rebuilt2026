@@ -74,7 +74,16 @@ public class FieldMathHelpers
         // Calculate translations and distances
         Translation2d translationToHub = getTranslationToHub(turretPose);
         double distanceToHub = translationToHub.getNorm();
-        double dt = Constants.FlywheelConstants.kDistanceToTime.get(distanceToHub);
+        double dt;
+        if (distanceToHub > 2.54)
+        {
+            dt = Constants.FlywheelConstants.kDistanceToHoodAngleTime.get(distanceToHub);
+
+        }
+        else
+        {
+            dt = Constants.FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub);
+        }
 
         // Calculate offsets
         double dx = xVelocityMetersPerSecond * dt;

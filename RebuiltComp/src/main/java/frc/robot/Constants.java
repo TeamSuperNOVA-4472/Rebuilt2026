@@ -49,23 +49,35 @@ public final class Constants {
   }
 
   public static class FlywheelConstants {
-    public static final InterpolatingDoubleTreeMap kDistanceToVelocity = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToVelocity.put(1.92,48.0);
-      kDistanceToVelocity.put(2.07,50.0);
-      kDistanceToVelocity.put(2.57,52.0);
-      kDistanceToVelocity.put(3.57,60.0);
+      kDistanceToFlywheelSpeed.put(2.0193,40.0);
+      kDistanceToFlywheelSpeed.put(2.416175,45.0);
     }
 
-    public static final InterpolatingDoubleTreeMap kDistanceToTime = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToTime.put(3.7592,1.053333333);
-      kDistanceToTime.put(3.945466667, 1.103333333);
-      kDistanceToTime.put(4.182533333, 1.226666667);
-      kDistanceToTime.put(4.5466, 1.32);
-      kDistanceToTime.put(4.605866667, 1.34);
-      kDistanceToTime.put(5.046133333, 1.403333333);
+      kDistanceToFlywheelSpeedTime.put(2.0193, 1.13);
+      kDistanceToFlywheelSpeedTime.put(2.416175,1.38);
     }
+
+    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
+    static {
+      kDistanceToFlywheelSpeed.put(1.5,32.0);
+      kDistanceToFlywheelSpeed.put(2.91465,27.9);
+      kDistanceToFlywheelSpeed.put(3.63855,22.6);
+      kDistanceToFlywheelSpeed.put(5.0,20.0);
+    }
+
+    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngleTime = new InterpolatingDoubleTreeMap();
+    static {
+      kDistanceToFlywheelSpeedTime.put(2.91465,1.16);
+      kDistanceToFlywheelSpeedTime.put(3.63855, 1.2);
+    }
+
+    public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
+    public static final double kHoodMinAngle = 20.0;
+    public static final double khoodMaxAngle = 45.0;
   }
 
   public static class OperatorConstants {
@@ -89,13 +101,13 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2 = true; 
-    public static final String[] kLimelightNames = {"limelight-two"};
+    public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.1;
     public static final double kTagDistThreshold = 10;
-    public static final double kTagCountThreshold = 1;
+    public static final double kTagCountThreshold = 2;
     public static final int kThrottle = 200;
 
     public static final boolean kIsAndyMark = false;
@@ -110,7 +122,7 @@ public final class Constants {
   }
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(-0.2,0, new Rotation2d());
+    public static final Transform2d kTurretOffset = new Transform2d(0.1016,-0.1778, new Rotation2d());
   }
 
   public static class SpindexerConstants {
@@ -120,8 +132,8 @@ public final class Constants {
   public static class IntakeSubsystemConstants {
     //TODO: Find real values for the constants.
     public static final double kSliderOffset = 0.0;
-    public static final double kStoredPos = 2.0;
-    public static final double kOutPos = 10.5;
+    public static final double kStoredPos = 0.0;
+    public static final double kOutPos = 11.5;
     public static final double kIntakeAngle = 345.0;
     public static final double kIntakeMotorSpeed = 0.8;
     public static final double kSlideThreshold = 0.20;
