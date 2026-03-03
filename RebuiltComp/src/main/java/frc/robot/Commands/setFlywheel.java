@@ -22,17 +22,11 @@ public class setFlywheel extends Command {
         double angle;
         double speed;
         double distance = kDistance.get();
-        if (kDistance.get() < 2.7)
-        {
-            speed = (distance * 22.964) - 2.4943;
-            angle = 20;
+        if (distance >= FlywheelConstants.kDistanceThresholdInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
+            speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
+            angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
+            kFlywheel.setHoodTarget(angle);
+            kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
         }
-        else
-        {
-            speed = (distance * 12.24) + 6.6129;
-            angle = 30;
-        }
-        kFlywheel.setHoodTarget(angle);
-        kFlywheel.setMode(FlywheelMode.SPINNING, speed);
     }
 }

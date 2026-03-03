@@ -54,14 +54,29 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeed.put(2.0193,40.0);
-      kDistanceToFlywheelSpeed.put(2.416175,45.0);
+      kDistanceToFlywheelSpeed.put(1.8161, 40.0);
+      kDistanceToFlywheelSpeed.put(2.5781,50.0);
+      kDistanceToFlywheelSpeed.put(3.3401,60.0);
+      kDistanceToFlywheelSpeed.put(4.1021, 70.0);
+      kDistanceToFlywheelSpeed.put(4.8641, 90.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeedTime.put(2.0193, 1.13);
-      kDistanceToFlywheelSpeedTime.put(2.416175,1.38);
+      kDistanceToFlywheelSpeedTime.put(1.8161, 1.04);
+      kDistanceToFlywheelSpeedTime.put(2.5781, 1.07);
+      kDistanceToFlywheelSpeedTime.put(3.3401,1.05);
+      kDistanceToFlywheelSpeedTime.put(4.1021, 1.08);
+      kDistanceToFlywheelSpeedTime.put(4.8641, 1.24);
+    }
+
+    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
+    static {
+      kDistanceToHoodAngle.put(1.8161, 20.0);
+      kDistanceToHoodAngle.put(2.5781, 25.0);
+      kDistanceToHoodAngle.put(3.3401,30.0);
+      kDistanceToHoodAngle.put(4.1021, 35.0);
+      kDistanceToHoodAngle.put(4.8641, 35.0);
     }
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
@@ -69,7 +84,8 @@ public final class Constants {
     public static final double kHoodMaxAngle = 45.0;
     public static final double kConstantHood = 20;
     public static final double kConstantFlywheelSpeed = 50;
-    public static final double kDistanceThresholdInMeters = 2.54;
+    public static final double kDistanceThresholdInMeters = 1.8161;
+    public static final double kDistanceMaximumInMeters = 4.8641;
 
     public static final int kFlywheel1MotorPort = 60;
     public static final String kFlywheel1Canbus = "CANivore";

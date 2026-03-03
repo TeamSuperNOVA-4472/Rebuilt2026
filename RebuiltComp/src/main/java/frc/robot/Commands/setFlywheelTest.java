@@ -43,11 +43,11 @@ public class setFlywheelTest extends Command {
 
         if (kHoodUp.get())
         {
-            hood += 5;
+            hood += 1;
         }
         else if (kHoodDown.get())
         {
-            hood -= 5;
+            hood -= 1;
         }
 
         kFlywheel.setHoodTarget(hood);

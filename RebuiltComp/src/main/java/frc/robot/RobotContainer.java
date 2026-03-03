@@ -93,17 +93,20 @@ public class RobotContainer {
     mDriver.rightTrigger(0.2).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
     mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
-    /*mDriver.leftTrigger(0.2).whileTrue(new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
+    mDriver.leftTrigger(0.2).whileTrue(new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
         mSwerve.getPose(), 
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));*/
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
+    mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
+      mFlywheel.setHoodTarget(20);
+    }));
         
-    mDriver.leftTrigger(0.2).whileTrue(new setFlywheelTest(
+    /*mDriver.leftTrigger(0.2).whileTrue(new setFlywheelTest(
         mFlywheel, 
         mDriver.povUp()::getAsBoolean, 
         mDriver.povDown()::getAsBoolean,
         mDriver.povLeft()::getAsBoolean,
-        mDriver.povRight()::getAsBoolean));
+        mDriver.povRight()::getAsBoolean));*/
 
     mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0);
