@@ -9,10 +9,10 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.SpindexerConstants;
 
 public class SpindexerSubsystem extends SubsystemBase {
     public static final SpindexerSubsystem kSpindexer = new SpindexerSubsystem();
-     public static final double kSpindexerSpeed = -0.9;
 
     public enum SpindexerMode{
         OFF,
@@ -24,8 +24,8 @@ public class SpindexerSubsystem extends SubsystemBase {
 
     private SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
-        kSpindexerMotor = new TalonFX(30,"rio");
-        kKickerMotor = new TalonFX(51, "CANivore");
+        kSpindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorPort,SpindexerConstants.kSpindexerCanbus);
+        kKickerMotor = new TalonFX(SpindexerConstants.kKickerMotorPort, SpindexerConstants.kKickerCanbus);
 
         TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kSpindexerCurrentConfig = new CurrentLimitsConfigs();
@@ -33,11 +33,11 @@ public class SpindexerSubsystem extends SubsystemBase {
         kSpindexerMotor.getConfigurator().refresh(kSpindexerConfig);
         kSpindexerMotor.getConfigurator().refresh(kSpindexerCurrentConfig);
         kSpindexerMotor.getConfigurator().refresh(kSpindexerMotorConfig);
-        kSpindexerCurrentConfig.SupplyCurrentLimit = 40;
-        kSpindexerCurrentConfig.SupplyCurrentLimitEnable = true;
-        kSpindexerCurrentConfig.StatorCurrentLimitEnable = true;
-        kSpindexerCurrentConfig.StatorCurrentLimit = 40;
-        kSpindexerMotorConfig.NeutralMode = NeutralModeValue.Brake;
+        kSpindexerCurrentConfig.SupplyCurrentLimit = SpindexerConstants.kSpindexerSupplyLimit;
+        kSpindexerCurrentConfig.SupplyCurrentLimitEnable = SpindexerConstants.kSpindexerSupplyLimitEnabled;
+        kSpindexerCurrentConfig.StatorCurrentLimitEnable = SpindexerConstants.kSpindexerStatorLimitEnabled;
+        kSpindexerCurrentConfig.StatorCurrentLimit = SpindexerConstants.kSpindexerStatorLimit;
+        kSpindexerMotorConfig.NeutralMode = SpindexerConstants.kSpindexerNeutralMode;
         kSpindexerConfig.withCurrentLimits(kSpindexerCurrentConfig);
         kSpindexerConfig.withMotorOutput(kSpindexerMotorConfig);
         kSpindexerMotor.getConfigurator().apply(kSpindexerConfig);
@@ -48,11 +48,11 @@ public class SpindexerSubsystem extends SubsystemBase {
         kKickerMotor.getConfigurator().refresh(kKickerConfig);
         kKickerMotor.getConfigurator().refresh(kKickerCurrentConfig);
         kKickerMotor.getConfigurator().refresh(kKickerMotorConfig);
-        kKickerCurrentConfig.SupplyCurrentLimit = 40;
-        kKickerCurrentConfig.SupplyCurrentLimitEnable = true;
-        kKickerCurrentConfig.StatorCurrentLimitEnable = true;
-        kKickerCurrentConfig.StatorCurrentLimit = 40;
-        kKickerMotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kKickerCurrentConfig.SupplyCurrentLimit = SpindexerConstants.kKickerSupplyLimit;
+        kKickerCurrentConfig.SupplyCurrentLimitEnable = SpindexerConstants.kKickerSupplyLimitEnabled;
+        kKickerCurrentConfig.StatorCurrentLimitEnable = SpindexerConstants.kKickerStatorLimitEnabled;
+        kKickerCurrentConfig.StatorCurrentLimit = SpindexerConstants.kKickerStatorLimit;
+        kKickerMotorConfig.NeutralMode = SpindexerConstants.kKickerNeutralMode;
         kKickerConfig.withCurrentLimits(kKickerCurrentConfig);
         kKickerConfig.withMotorOutput(kKickerMotorConfig);
         kKickerMotor.getConfigurator().apply(kKickerConfig);
@@ -66,8 +66,8 @@ public class SpindexerSubsystem extends SubsystemBase {
             break;
 
         case LOAD:
-            kSpindexerMotor.set(kSpindexerSpeed);
-            kKickerMotor.set(kSpindexerSpeed);
+            kSpindexerMotor.set(SpindexerConstants.kSpindexerSpeed);
+            kKickerMotor.set(SpindexerConstants.kSpindexerSpeed);
             break;
         }
     }
@@ -80,7 +80,12 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
     public void setMode(SpindexerMode mNewMode){
         kMode = mNewMode;
-        SmartDashboard.putNumber("Spindexer Mode", kMode.ordinal());
+        SmartDashboard.putString("Subsystems/SpindexerSubsystem/Spindexer Mode: ", kMode.name());
         moveSpindexer();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpinSpeed());
     }
 }

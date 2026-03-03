@@ -2,9 +2,7 @@ package frc.robot.Commands;
 
 import java.util.function.Supplier;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
@@ -24,19 +22,17 @@ public class setFlywheel extends Command {
         double angle;
         double speed;
         double distance = kDistance.get();
-        /* 
-        if (kDistance.get() > 2.54)
+        if (kDistance.get() < 2.7)
         {
-            speed = 47.5;
-            angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
+            speed = (distance * 22.964) - 2.4943;
+            angle = 20;
         }
         else
         {
-            speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
-            angle = 20;
-        }*/
-        SmartDashboard.putNumber("Distance To Hub: ", distance);
-        //kFlywheel.setHoodTarget(angle);
-        //kFlywheel.setMode(FlywheelMode.SPINNING, speed);
+            speed = (distance * 12.24) + 6.6129;
+            angle = 30;
+        }
+        kFlywheel.setHoodTarget(angle);
+        kFlywheel.setMode(FlywheelMode.SPINNING, speed);
     }
 }

@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.VoltageUnit;
@@ -20,10 +22,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.TurretConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.SwerveTeleop;
 import frc.robot.Commands.flywheelSysIDCommand;
 import frc.robot.Commands.setFlywheel;
+import frc.robot.Commands.setFlywheelTest;
 import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
@@ -63,15 +67,14 @@ public class RobotContainer {
   private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      /*() -> FieldMathHelpers.getRotationToHubWithSomeSpeed(
-        mSwerve.getPose(), 
+      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+        mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond))*/
-        () -> -FieldMathHelpers.getTranslationToHub(mSwerve.getPose()).getAngle().getDegrees());
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
 
   public RobotContainer() {
     mSwerve.setDefaultCommand(mSwerveTeleop);
-    mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    //mTurret.setDefaultCommand(mMoveTurretAbsolute);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -90,7 +93,18 @@ public class RobotContainer {
     mDriver.rightTrigger(0.2).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
     mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
-    mDriver.leftTrigger(0.2).whileTrue(new setFlywheel(mFlywheel, () -> FieldMathHelpers.getTranslationToHub(mSwerve.getPose()).getNorm()));
+    /*mDriver.leftTrigger(0.2).whileTrue(new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
+        mSwerve.getPose(), 
+        mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));*/
+        
+    mDriver.leftTrigger(0.2).whileTrue(new setFlywheelTest(
+        mFlywheel, 
+        mDriver.povUp()::getAsBoolean, 
+        mDriver.povDown()::getAsBoolean,
+        mDriver.povLeft()::getAsBoolean,
+        mDriver.povRight()::getAsBoolean));
+
     mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
@@ -98,7 +112,7 @@ public class RobotContainer {
     //mDriver.y().onTrue(new InstantCommand(() -> mIntake.moveIntake(0.1)));
     //mDriver.x().onTrue(new InstantCommand(() -> mIntake.moveIntake(-0.1)));
     //mDriver.y().or(mDriver.x()).onFalse(new InstantCommand(() -> mIntake.stopIntake()));
-    mDriver.y().onTrue(new toggleIntakeStorage(mIntake));
+    mDriver.back().onTrue(new toggleIntakeStorage(mIntake));
 
     //TODO: add controls for flywheel + add correct bindings
   }
