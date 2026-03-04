@@ -73,10 +73,10 @@ public final class Constants {
     public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
     static {
       kDistanceToHoodAngle.put(1.8161, 20.0);
-      kDistanceToHoodAngle.put(2.5781, 25.0);
-      kDistanceToHoodAngle.put(3.3401,30.0);
-      kDistanceToHoodAngle.put(4.1021, 35.0);
-      kDistanceToHoodAngle.put(4.8641, 35.0);
+      kDistanceToHoodAngle.put(2.5781, 24.0);
+      kDistanceToHoodAngle.put(3.3401,28.0);
+      kDistanceToHoodAngle.put(4.1021, 33.0);
+      kDistanceToHoodAngle.put(4.8641, 33.0);
     }
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
@@ -167,8 +167,9 @@ public final class Constants {
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
     public static final double kBaseLateralDev = 0.3;
-    public static final double kBaseRotDev = 0.1;
+    public static final double kBaseRotDev = 0.3;
     public static final double kTagDistThreshold = 10;
+    public static final double kLatencyLagInSeconds = 0.2;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 360;
@@ -186,9 +187,10 @@ public final class Constants {
     public static final Pose2d kHubPoseBlueAndyMarkMeters = new Pose2d(4.6115224, 4.0213534, Rotation2d.fromDegrees(0));
     public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
   }
+
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(0.1016,-0.06, new Rotation2d());
+    public static final Transform2d kTurretOffset = new Transform2d(0.1397,-0.172, new Rotation2d());
     public static final double kStartingAngleOffset = 120;
 
     public static final int kTurretMotorPort = 24;
@@ -240,7 +242,7 @@ public final class Constants {
     public static final boolean kKickerStatorLimitEnabled = true;
     public static final NeutralModeValue kKickerNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kSpindexerSpeed = -0.6;
+    public static final double kSpindexerVoltage = -9;
   }
   
   public static class IntakeSubsystemConstants {

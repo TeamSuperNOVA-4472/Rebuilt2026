@@ -62,12 +62,12 @@ public class SpindexerSubsystem extends SubsystemBase {
         switch (kMode){
         case OFF:
             kSpindexerMotor.set(0);
-            kKickerMotor.set(0);
+            kKickerMotor.setVoltage(0);
             break;
 
         case LOAD:
-            kSpindexerMotor.set(SpindexerConstants.kSpindexerSpeed);
-            kKickerMotor.set(SpindexerConstants.kSpindexerSpeed);
+            kSpindexerMotor.set(SpindexerConstants.kSpindexerVoltage);
+            kKickerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
             break;
         }
     }
