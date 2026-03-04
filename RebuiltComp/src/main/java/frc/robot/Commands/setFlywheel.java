@@ -14,6 +14,7 @@ public class setFlywheel extends Command {
     public setFlywheel(FlywheelSubsystem mFlywheelSubsystem, Supplier<Double> mDistance){
         kFlywheel = mFlywheelSubsystem;
         kDistance = mDistance;
+
         addRequirements(kFlywheel);
     }
 

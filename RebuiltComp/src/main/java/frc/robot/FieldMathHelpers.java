@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.VisionConstants;
 
@@ -71,21 +72,17 @@ public class FieldMathHelpers
      */
     private static Translation2d getTranslation2dToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
-        Pose2d turretPose = botPose.transformBy(TurretConstants.kTurretOffset);
-
         // Calculate translations and distances
-        Translation2d translationToHub = getTranslationToHub(turretPose);
+        Translation2d translationToHub = getTranslationToHub(botPose);
         double distanceToHub = translationToHub.getNorm();
         double dt;
-        if (distanceToHub < 2.7)
+        
+        if (distanceToHub >= FlywheelConstants.kDistanceThresholdInMeters && distanceToHub <= FlywheelConstants.kDistanceMaximumInMeters)
         {
-            dt = (0.5304 * distanceToHub) + 0.1118;
+            dt = FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub) + VisionConstants.kLatencyLagInSeconds;
+        } else {
+            dt = 0;
         }
-        else
-        {
-            dt = (0.1524 * distanceToHub) + 0.7261;
-        }
-
         // Calculate offsets
         double dx = xVelocityMetersPerSecond * dt;
         double dy = yVelocityMetersPerSecond * dt;
