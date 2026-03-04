@@ -66,19 +66,22 @@ public class FlywheelSubsystem extends SubsystemBase {
     private FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
         //TODO: Values below should be constants.
-        kFlywheel1Motor = new TalonFX(60, "CANivore");
-        kFlywheel2Motor = new TalonFX(20, "CANivore");
-        kFlywheelHoodMotor = new TalonFX(41, "CANivore");
-        kHoodPidController = new PIDController(0.037, 0,0);
-        kFlywheel1Feedforward = new SimpleMotorFeedforward(0.44, 0.12, 0);
-        kFlywheel2Feedforward = new SimpleMotorFeedforward(0.44, 0.12, 0);
-        kFlywheelFeedback = new PIDController(0,0, 0);
-        kTargetAngle = 21;
-        kFlywheelHoodSimMotor = DCMotor.getKrakenX44(1);
-        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, 35.294, 0.011, 0.2159, Constants.FlywheelConstants.kHoodMinAngle * Math.PI / 180.0,  Constants.FlywheelConstants.khoodMaxAngle * Math.PI / 180.0, false, 0, 0, 0);
-        kSimSpace = new Mechanism2d(60, 60);
-        kSimRoot = kSimSpace.getRoot("base", 30, 30);
-        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kFlywheelHoodSim.getAngleRads() * 180 / Math.PI));
+        kFlywheel1Motor = new TalonFX(FlywheelConstants.kFlywheel1MotorPort, FlywheelConstants.kFlywheel1Canbus);
+        kFlywheel2Motor = new TalonFX(FlywheelConstants.kFlywheel2MotorPort, FlywheelConstants.kFlywheel2Canbus);
+        kFlywheelHoodMotor = new TalonFX(FlywheelConstants.kFlywheelHoodMotorPort, FlywheelConstants.kFlywheelHoodCanbus);
+
+        kHoodPidController = new PIDController(FlywheelConstants.kPHood, FlywheelConstants.kIHood, FlywheelConstants.kDHood);
+        kFlywheel1Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
+        kFlywheel2Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
+        kFlywheelFeedback = new PIDController(FlywheelConstants.kPFlywheel,FlywheelConstants.kIFlywheel, FlywheelConstants.kDFlywheel);
+
+        kTargetAngle = FlywheelConstants.kStartingHoodAngle;
+
+        kFlywheelHoodSimMotor = DCMotor.getKrakenX44(FlywheelConstants.kSimNumMotors);
+        kFlywheelHoodSim = new SingleJointedArmSim(kFlywheelHoodSimMotor, FlywheelConstants.kSimGearing, FlywheelConstants.kSimjKgMetersSquared, FlywheelConstants.kSimArmLength, Constants.FlywheelConstants.kHoodMinAngle * Math.PI / 180.0,  Constants.FlywheelConstants.kHoodMaxAngle * Math.PI / 180.0, false, 0, 0, 0);
+        kSimSpace = new Mechanism2d(FlywheelConstants.kSimWidth, FlywheelConstants.kSimHeight);
+        kSimRoot = kSimSpace.getRoot(FlywheelConstants.kSimRootName, FlywheelConstants.kSimX, FlywheelConstants.kSimY);
+        kSimDisp = kSimRoot.append(new MechanismLigament2d(FlywheelConstants.kSimName, FlywheelConstants.kSimLength, kFlywheelHoodSim.getAngleRads() * 180 / Math.PI));
 
         kRoutine = new SysIdRoutine(new SysIdRoutine.Config(), new SysIdRoutine.Mechanism(this::setFlywheelVoltage, log -> {
                 // Record a frame for the shooter motor.
@@ -97,6 +100,7 @@ public class FlywheelSubsystem extends SubsystemBase {
                     .angularVelocity(
                         m_velocity.mut_replace(kFlywheel2Motor.getVelocity().getValueAsDouble(), RotationsPerSecond));
               }, this));
+
         SmartDashboard.putData("FlyWheelHoodSim", kSimSpace);
         TalonFXConfiguration kFlywheel1Config = new TalonFXConfiguration();
         CurrentLimitsConfigs kFlywheel1CurrentConfig = new CurrentLimitsConfigs();
@@ -104,11 +108,11 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1Motor.getConfigurator().refresh(kFlywheel1Config);
         kFlywheel1Motor.getConfigurator().refresh(kFlywheel1CurrentConfig);
         kFlywheel1Motor.getConfigurator().refresh(kFlywheel1MotorConfig);
-        kFlywheel1CurrentConfig.SupplyCurrentLimit = 40;
-        kFlywheel1CurrentConfig.SupplyCurrentLimitEnable = true;
-        kFlywheel1CurrentConfig.StatorCurrentLimitEnable = true;
-        kFlywheel1CurrentConfig.StatorCurrentLimit = 40;
-        kFlywheel1MotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kFlywheel1CurrentConfig.SupplyCurrentLimit = FlywheelConstants.kFlywheel1SupplyLimit;
+        kFlywheel1CurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheel1SupplyLimitEnabled;
+        kFlywheel1CurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheel1StatorLimitEnabled;
+        kFlywheel1CurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheel1StatorLimit;
+        kFlywheel1MotorConfig.NeutralMode = FlywheelConstants.kFlywheel1NeutralMode;
         kFlywheel1Config.withCurrentLimits(kFlywheel1CurrentConfig);
         kFlywheel1Config.withMotorOutput(kFlywheel1MotorConfig);
         kFlywheel1Motor.getConfigurator().apply(kFlywheel1Config);
@@ -119,29 +123,34 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel2Motor.getConfigurator().refresh(kFlywheel2Config);
         kFlywheel2Motor.getConfigurator().refresh(kFlywheel2CurrentConfig);
         kFlywheel2Motor.getConfigurator().refresh(kFlywheel2MotorConfig);
-        kFlywheel2CurrentConfig.SupplyCurrentLimit = 40;
-        kFlywheel2CurrentConfig.SupplyCurrentLimitEnable = true;
-        kFlywheel2CurrentConfig.StatorCurrentLimitEnable = true;
-        kFlywheel2CurrentConfig.StatorCurrentLimit = 40;
-        kFlywheel2MotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kFlywheel2CurrentConfig.SupplyCurrentLimit = FlywheelConstants.kFlywheel2SupplyLimit;
+        kFlywheel2CurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheel2SupplyLimitEnabled;
+        kFlywheel2CurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheel2StatorLimitEnabled;
+        kFlywheel2CurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheel2StatorLimit;
+        kFlywheel2MotorConfig.NeutralMode = FlywheelConstants.kFlywheel2NeutralMode;
         kFlywheel2Config.withCurrentLimits(kFlywheel2CurrentConfig);
         kFlywheel2Config.withMotorOutput(kFlywheel2MotorConfig);
         kFlywheel2Motor.getConfigurator().apply(kFlywheel2Config);
 
+        // Config for the Hood motor 
         TalonFXConfiguration kFlywheelHoodConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kFlywheelHoodCurrentConfig = new CurrentLimitsConfigs();
         MotorOutputConfigs kFlywheelHoodMotorConfig = new MotorOutputConfigs();
         kFlywheelHoodMotor.getConfigurator().refresh(kFlywheelHoodConfig);
         kFlywheelHoodMotor.getConfigurator().refresh(kFlywheelHoodCurrentConfig);
         kFlywheelHoodMotor.getConfigurator().refresh(kFlywheelHoodMotorConfig);
-        kFlywheelHoodCurrentConfig.SupplyCurrentLimit = 20;
-        kFlywheelHoodCurrentConfig.SupplyCurrentLimitEnable = true;
-        kFlywheelHoodCurrentConfig.StatorCurrentLimitEnable = true;
-        kFlywheelHoodCurrentConfig.StatorCurrentLimit = 20;
-        kFlywheelHoodMotorConfig.NeutralMode = NeutralModeValue.Brake;
+        
+        // Set current supply and stator limits for the hood motor
+        kFlywheelHoodCurrentConfig.SupplyCurrentLimit = FlywheelConstants.kFlywheelHoodSupplyLimit;
+        kFlywheelHoodCurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheelHoodSupplyLimitEnabled;
+        kFlywheelHoodCurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheelHoodStatorLimitEnabled;
+        kFlywheelHoodCurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheelHoodStatorLimit;
+        kFlywheelHoodMotorConfig.NeutralMode = FlywheelConstants.kFlywheelHoodNeutralMode; // Set mode to braking
         kFlywheelHoodConfig.withCurrentLimits(kFlywheelHoodCurrentConfig);
         kFlywheelHoodConfig.withMotorOutput(kFlywheelHoodMotorConfig);
         kFlywheelHoodMotor.getConfigurator().apply(kFlywheelHoodConfig);
+
+        kFlywheelHoodMotor.setPosition(0);
     }
     private void moveFlywheel(double speed){
         switch (kMode) {
@@ -172,7 +181,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         moveFlywheel(speed);
     }
     public void setHoodTarget(double mNewTarget){
-        if (kTargetAngle >= Constants.FlywheelConstants.kHoodMinAngle && kTargetAngle <= Constants.FlywheelConstants.khoodMaxAngle) kTargetAngle = mNewTarget;
+        if (mNewTarget >= Constants.FlywheelConstants.kHoodMinAngle && mNewTarget <= Constants.FlywheelConstants.kHoodMaxAngle) kTargetAngle = mNewTarget;
     }
 
     public double getHoodAngle()
@@ -186,23 +195,26 @@ public class FlywheelSubsystem extends SubsystemBase {
     @Override
     public void periodic(){
         kHoodAtTarget = kHoodPidController.atSetpoint();
-        if (Robot.isReal()) kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble() * Constants.FlywheelConstants.kHoodEncoderMultiplier + Constants.FlywheelConstants.kHoodMinAngle,kTargetAngle), -1, 1);
-        else kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodSim.getAngleRads() * 180 / Math.PI,kTargetAngle), -1 , 1);
+        if (Robot.isReal()) kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble() * Constants.FlywheelConstants.kHoodEncoderMultiplier + Constants.FlywheelConstants.kHoodMinAngle,kTargetAngle), -FlywheelConstants.kMaxSpeed, FlywheelConstants.kMaxSpeed);
+        else kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodSim.getAngleRads() * 180 / Math.PI,kTargetAngle), -FlywheelConstants.kMaxSpeed , FlywheelConstants.kMaxSpeed);
         kFlywheelHoodMotor.set(kOutput);
-        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -11, 11));
-        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -11, 11));
-        SmartDashboard.putNumber("Actual Flywheel Speed 1", kFlywheel1Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Actual Flywheel Speed 2", kFlywheel2Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Target Flywheel Speed", kTargetSpeed);
-        SmartDashboard.putNumber("Hood angle", getHoodAngle());
-        SmartDashboard.putNumber("Hood Target", kTargetAngle);
-        SmartDashboard.putNumber("PID Output", kOutput);
+        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
+        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
+        
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 2: ", kFlywheel2Motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Voltage 1: ", kFlywheel1Motor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Voltage 2: ", kFlywheel2Motor.getMotorVoltage().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Flywheel Speed: ", kTargetSpeed);
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Current Hood Angle: ", getHoodAngle());
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Hood PID Output: ", kOutput);
     }
     @Override
     public void simulationPeriodic() {
       kFlywheelHoodSim.setInput(kOutput * 12.0);
 
-      kFlywheelHoodSim.update(0.02);
+      kFlywheelHoodSim.update(FlywheelConstants.kSimdt);
 
       kSimDisp.setAngle(kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
       SmartDashboard.putNumber("FlywheelHood", kFlywheelHoodSim.getAngleRads()*180 / Math.PI);

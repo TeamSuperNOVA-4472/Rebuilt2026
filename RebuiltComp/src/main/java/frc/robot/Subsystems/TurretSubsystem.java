@@ -2,6 +2,8 @@ package frc.robot.Subsystems;
 
 import java.lang.annotation.Target;
 
+import javax.xml.transform.TransformerConfigurationException;
+
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -10,6 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -19,44 +22,34 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
+import frc.robot.Constants.TurretConstants;
 
 public class TurretSubsystem extends SubsystemBase 
 {
     private final TalonFX kTurretMotor;
 
-    private static final double kRevolutions = 24.668;
-
-    private static final double kP = 0.0035;
-
-    private static final double kI = 0.0;
-
-    private static final double kD = 0.000; // 0.0008
-
     private final PIDController kPidController;
 
-    private static final double kDeadband = 230.0;
-
     private double kTurretTargetAngle = 0.0;
-
-    private DCMotor kTurretSimMotor;
-    private SingleJointedArmSim kTurretSim;
-    private Mechanism2d kSimSpace;
-    private MechanismRoot2d kSimRoot;
-    private MechanismLigament2d kSimDisp;
     private double kOutput;
+
+    private final DCMotor kTurretSimMotor;
+    private final SingleJointedArmSim kTurretSim;
+    private final Mechanism2d kSimSpace;
+    private final MechanismRoot2d kSimRoot;
+    private final MechanismLigament2d kSimDisp;
     public static TurretSubsystem kTurret = new TurretSubsystem();
 
     private TurretSubsystem() 
     {
-        kTurretMotor = new TalonFX(24, "CANivore");
+        kTurretMotor = new TalonFX(TurretConstants.kTurretMotorPort, TurretConstants.kTurretCanbus);
 
-        kPidController = new PIDController(kP, kI, kD);
-
-        kTurretSimMotor = DCMotor.getKrakenX44(1);
-        kTurretSim = new SingleJointedArmSim(kTurretSimMotor, 24.668, 0.356, 0.2921, 0, kDeadband * Math.PI / 180.0, false, 0, 0, 0);
-        kSimSpace = new Mechanism2d(60, 60);
-        kSimRoot = kSimSpace.getRoot("base", 30, 30);
-        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",10 , kTurretSim.getAngleRads() * 180 / Math.PI));
+        kPidController = new PIDController(TurretConstants.kTurretP, TurretConstants.kTurretI, TurretConstants.kTurretD);
+        kTurretSimMotor = DCMotor.getKrakenX44(TurretConstants.kSimNumMotor);
+        kTurretSim = new SingleJointedArmSim(kTurretSimMotor, TurretConstants.kGearing, TurretConstants.kSimjKgMetersSquared, TurretConstants.kSimArmLength, 0, TurretConstants.kDeadband * Math.PI / 180.0, false, 0, 0, 0);
+        kSimSpace = new Mechanism2d(TurretConstants.kSimWidth, TurretConstants.kSimHeight);
+        kSimRoot = kSimSpace.getRoot(TurretConstants.kSimRootName, TurretConstants.kSimX, TurretConstants.kSimY);
+        kSimDisp = kSimRoot.append(new MechanismLigament2d("Turret",TurretConstants.kSimLength, kTurretSim.getAngleRads() * 180 / Math.PI));
         SmartDashboard.putData("TurretSim", kSimSpace);
 
         TalonFXConfiguration kTurretConfig = new TalonFXConfiguration();
@@ -65,11 +58,11 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.getConfigurator().refresh(kTurretConfig);
         kTurretMotor.getConfigurator().refresh(kTurretCurrentConfig);
         kTurretMotor.getConfigurator().refresh(kTurretMotorConfig);
-        kTurretCurrentConfig.SupplyCurrentLimit = 20;
-        kTurretCurrentConfig.SupplyCurrentLimitEnable = true;
-        kTurretCurrentConfig.StatorCurrentLimitEnable = true;
-        kTurretCurrentConfig.StatorCurrentLimit = 20;
-        kTurretMotorConfig.NeutralMode = NeutralModeValue.Coast;
+        kTurretCurrentConfig.SupplyCurrentLimit = TurretConstants.kTurretSupplyLimit;
+        kTurretCurrentConfig.SupplyCurrentLimitEnable = TurretConstants.kTurretSupplyLimitEnabled;
+        kTurretCurrentConfig.StatorCurrentLimitEnable = TurretConstants.kTurretStatorLimitEnabled;
+        kTurretCurrentConfig.StatorCurrentLimit = TurretConstants.kTurretStatorLimit;
+        kTurretMotorConfig.NeutralMode = TurretConstants.kTurretNeutralMode;
         kTurretConfig.withCurrentLimits(kTurretCurrentConfig);
         kTurretConfig.withMotorOutput(kTurretMotorConfig);
         kTurretMotor.getConfigurator().apply(kTurretConfig);
@@ -91,7 +84,7 @@ public class TurretSubsystem extends SubsystemBase
     {
         double encoderPosition = kTurretMotor.getPosition().getValueAsDouble();
 
-        return (encoderPosition / kRevolutions) * 360;
+        return (encoderPosition / TurretConstants.kGearing) * 360;
     }
 
     public void goToAngle(double targetAngle) 
@@ -100,14 +93,14 @@ public class TurretSubsystem extends SubsystemBase
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -1, 1);
+        kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput) + TurretConstants.kTurretF;
         SmartDashboard.putNumber("Turret Encoder: ", kTurretMotor.getPosition().getValueAsDouble());
-
-        kTurretMotor.set(kOutput);
+        double addition = kOutput >= 0 ? TurretConstants.kTurretF : -TurretConstants.kTurretF;
+        kTurretMotor.set(kOutput + addition);
     }
 
     public boolean isValidAngle() {
-        if (kTurretTargetAngle >= kDeadband) {
+        if (kTurretTargetAngle >= TurretConstants.kDeadband) {
             return false;
         } else{
             return true;
@@ -122,18 +115,18 @@ public class TurretSubsystem extends SubsystemBase
         if (isValidAngle()) {
             goToAngle(kTurretTargetAngle);
         } else {
-            goToAngle(kDeadband);
+            goToAngle(TurretConstants.kDeadband);
         }
-        SmartDashboard.putNumber("Current Turret Angle: ", getAngle());
-        SmartDashboard.putNumber("Deadband: ", kDeadband);
-        SmartDashboard.putNumber("Goal Angle: ", kTurretTargetAngle);
+        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Relative Angle: ", getAngle());
+        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Deadband: ", TurretConstants.kDeadband);
+        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Goal Angle: ", kTurretTargetAngle);
     }
 
     @Override
     public void simulationPeriodic() {
-      kTurretSim.setInput(kOutput * 12.0);
+      kTurretSim.setInput(kOutput * TurretConstants.kSimMultiplier);
 
-      kTurretSim.update(0.02);
+      kTurretSim.update(TurretConstants.kSimdt);
 
       kSimDisp.setAngle(kTurretSim.getAngleRads()*180 / Math.PI);
       SmartDashboard.putNumber("Turret Angle", kTurretSim.getAngleRads()*180 / Math.PI);

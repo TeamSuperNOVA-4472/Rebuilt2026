@@ -12,6 +12,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.VisionConstants;
 
 public class FieldMathHelpers
 {
@@ -27,6 +28,7 @@ public class FieldMathHelpers
      */
     public static Translation2d getTranslationToHub(Pose2d pose)
     {
+        pose = pose.transformBy(TurretConstants.kTurretOffset);
         Translation2d poseTranslation = pose.getTranslation();
         Translation2d hubPoseTranslation = hubPose.getTranslation();
 
@@ -75,14 +77,13 @@ public class FieldMathHelpers
         Translation2d translationToHub = getTranslationToHub(turretPose);
         double distanceToHub = translationToHub.getNorm();
         double dt;
-        if (distanceToHub > 2.54)
+        if (distanceToHub < 2.7)
         {
-            dt = Constants.FlywheelConstants.kDistanceToHoodAngleTime.get(distanceToHub);
-
+            dt = (0.5304 * distanceToHub) + 0.1118;
         }
         else
         {
-            dt = Constants.FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub);
+            dt = (0.1524 * distanceToHub) + 0.7261;
         }
 
         // Calculate offsets
@@ -103,6 +104,30 @@ public class FieldMathHelpers
     public static double getDistanceToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
         return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getNorm();
+    }
+
+    public static boolean isInScoringZone(Pose2d botPose)
+    {
+        if (isRedAlliance())
+        {
+            return botPose.getX() > VisionConstants.kNeutralZoneThresholdRed ? true : false;
+        }
+        else
+        {
+            return botPose.getX() < VisionConstants.kNeutralZoneThresholdBlue ? true : false;
+        }
+    }
+
+    public static double getRotationToPassOrShootWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    {
+        if (isInScoringZone(botPose))
+        {
+            return getRotationToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond);
+        }
+        else
+        {
+            return isRedAlliance() ? 0 : 180;
+        }
     }
     
     /**

@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
@@ -51,33 +54,92 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeed.put(2.0193,40.0);
-      kDistanceToFlywheelSpeed.put(2.416175,45.0);
+      kDistanceToFlywheelSpeed.put(1.8161, 40.0);
+      kDistanceToFlywheelSpeed.put(2.5781,50.0);
+      kDistanceToFlywheelSpeed.put(3.3401,60.0);
+      kDistanceToFlywheelSpeed.put(4.1021, 70.0);
+      kDistanceToFlywheelSpeed.put(4.8641, 90.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeedTime.put(2.0193, 1.13);
-      kDistanceToFlywheelSpeedTime.put(2.416175,1.38);
+      kDistanceToFlywheelSpeedTime.put(1.8161, 1.04);
+      kDistanceToFlywheelSpeedTime.put(2.5781, 1.07);
+      kDistanceToFlywheelSpeedTime.put(3.3401,1.05);
+      kDistanceToFlywheelSpeedTime.put(4.1021, 1.08);
+      kDistanceToFlywheelSpeedTime.put(4.8641, 1.24);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeed.put(1.5,32.0);
-      kDistanceToFlywheelSpeed.put(2.91465,27.9);
-      kDistanceToFlywheelSpeed.put(3.63855,22.6);
-      kDistanceToFlywheelSpeed.put(5.0,20.0);
-    }
-
-    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngleTime = new InterpolatingDoubleTreeMap();
-    static {
-      kDistanceToFlywheelSpeedTime.put(2.91465,1.16);
-      kDistanceToFlywheelSpeedTime.put(3.63855, 1.2);
+      kDistanceToHoodAngle.put(1.8161, 20.0);
+      kDistanceToHoodAngle.put(2.5781, 25.0);
+      kDistanceToHoodAngle.put(3.3401,30.0);
+      kDistanceToHoodAngle.put(4.1021, 35.0);
+      kDistanceToHoodAngle.put(4.8641, 35.0);
     }
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
     public static final double kHoodMinAngle = 20.0;
-    public static final double khoodMaxAngle = 45.0;
+    public static final double kHoodMaxAngle = 45.0;
+    public static final double kConstantHood = 20;
+    public static final double kConstantFlywheelSpeed = 50;
+    public static final double kDistanceThresholdInMeters = 1.8161;
+    public static final double kDistanceMaximumInMeters = 4.8641;
+
+    public static final int kFlywheel1MotorPort = 60;
+    public static final String kFlywheel1Canbus = "CANivore";
+    public static final double kFlywheel1SupplyLimit = 40;
+    public static final double kFlywheel1StatorLimit = 40;
+    public static final boolean kFlywheel1SupplyLimitEnabled = true;
+    public static final boolean kFlywheel1StatorLimitEnabled = true;
+    public static final NeutralModeValue kFlywheel1NeutralMode = NeutralModeValue.Coast;
+
+    public static final int kFlywheel2MotorPort = 20;
+    public static final String kFlywheel2Canbus = "CANivore";
+    public static final double kFlywheel2SupplyLimit = 40;
+    public static final double kFlywheel2StatorLimit = 40;
+    public static final boolean kFlywheel2SupplyLimitEnabled = true;
+    public static final boolean kFlywheel2StatorLimitEnabled = true;
+    public static final NeutralModeValue kFlywheel2NeutralMode = NeutralModeValue.Coast;
+
+    public static final int kFlywheelHoodMotorPort = 41;
+    public static final String kFlywheelHoodCanbus = "CANivore";
+    public static final double kFlywheelHoodSupplyLimit = 20;
+    public static final double kFlywheelHoodStatorLimit = 20;
+    public static final boolean kFlywheelHoodSupplyLimitEnabled = true;
+    public static final boolean kFlywheelHoodStatorLimitEnabled = true;
+    public static final NeutralModeValue kFlywheelHoodNeutralMode = NeutralModeValue.Brake;
+
+    public static final double kPHood = 0.037;
+    public static final double kIHood = 0;
+    public static final double kDHood = 0;
+
+    public static final double kSFlywheel = 0.44;
+    public static final double kVFlywheel = 0.12;
+    public static final double kAFlywheel = 0;
+
+    public static final double kPFlywheel = 0.015;
+    public static final double kIFlywheel = 0;
+    public static final double kDFlywheel = 0;
+    
+    public static final double kStartingHoodAngle = 21;
+
+    public static final int kSimNumMotors = 1;
+    public static final double kSimGearing = 35.294;
+    public static final double kSimjKgMetersSquared = 0.011;
+    public static final double kSimArmLength = 0.2159;
+    public static final double kSimWidth = 60;
+    public static final double kSimHeight = 60;
+    public static final String kSimRootName = "base";
+    public static final double kSimX = 30;
+    public static final double kSimY = 30;
+    public static final String kSimName = "Turret";
+    public static final double kSimLength = 10;
+    public static final double kSimdt = 0.02;
+
+    public static final double kMaxSpeed = 1;
+    public static final double kMaxVoltage = 11.5;
   }
 
   public static class OperatorConstants {
@@ -101,14 +163,18 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2 = true; 
-    public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
+    public static final String[] kLimelightNames = {"limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.1;
     public static final double kTagDistThreshold = 10;
-    public static final double kTagCountThreshold = 2;
+    public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
+    public static final double kAngularVelocityThreshold = 360;
+
+    public static final double kNeutralZoneThresholdBlue = 4.6482;
+    public static final double kNeutralZoneThresholdRed = 11.8618;
 
     public static final boolean kIsAndyMark = false;
 
@@ -122,11 +188,59 @@ public final class Constants {
   }
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(0.1016,-0.1778, new Rotation2d());
+    public static final Transform2d kTurretOffset = new Transform2d(0.1016,-0.06, new Rotation2d());
+    public static final double kStartingAngleOffset = 120;
+
+    public static final int kTurretMotorPort = 24;
+    public static final String kTurretCanbus = "CANivore";
+    public static final double kTurretSupplyLimit = 20;
+    public static final double kTurretStatorLimit = 20;
+    public static final boolean kTurretSupplyLimitEnabled = true;
+    public static final boolean kTurretStatorLimitEnabled = true;
+    public static final NeutralModeValue kTurretNeutralMode = NeutralModeValue.Coast;
+
+    public static final double kTurretP = 0.004;
+    public static final double kTurretI = 0.0;
+    public static final double kTurretD = 0.0;
+
+    public static final double kTurretF = 0.01;
+
+    public static final double kDeadband = 335;
+    public static final double kGearing = 24.668;
+
+    public static final double kMaxSpeedOutput = 1;
+
+    public static final int kSimNumMotor = 1;
+    public static final double kSimjKgMetersSquared = 0.356; 
+    public static final double kSimArmLength = 0.2921;
+    public static final double kSimWidth = 60;
+    public static final double kSimHeight = 60;
+    public static final String kSimRootName = "base";
+    public static final double kSimX = 30;
+    public static final double kSimY = 30;
+    public static final double kSimLength = 10;
+    public static final double kSimMultiplier = 12;
+    public static final double kSimdt = 0.02;
   }
 
   public static class SpindexerConstants {
-    public static final double kSpindexerVoltage = 6.0;
+    public static final int kSpindexerMotorPort = 30;
+    public static final String kSpindexerCanbus = "rio";
+    public static final double kSpindexerSupplyLimit = 40;
+    public static final double kSpindexerStatorLimit = 40;
+    public static final boolean kSpindexerSupplyLimitEnabled = true;
+    public static final boolean kSpindexerStatorLimitEnabled = true;
+    public static final NeutralModeValue kSpindexerNeutralMode = NeutralModeValue.Brake;
+
+    public static final int kKickerMotorPort = 51;
+    public static final String kKickerCanbus = "CANivore";
+    public static final double kKickerSupplyLimit = 40;
+    public static final double kKickerStatorLimit = 40;
+    public static final boolean kKickerSupplyLimitEnabled = true;
+    public static final boolean kKickerStatorLimitEnabled = true;
+    public static final NeutralModeValue kKickerNeutralMode = NeutralModeValue.Coast;
+
+    public static final double kSpindexerSpeed = -0.6;
   }
   
   public static class IntakeSubsystemConstants {
@@ -138,18 +252,48 @@ public final class Constants {
     public static final double kIntakeMotorSpeed = 0.8;
     public static final double kSlideThreshold = 0.20;
     public static final double kSlideSpeedThreshold = 0.20;
+
     public static final int kIntakeMotorPort = 12;
+    public static final String kIntakeCanbus = "rio";
+    public static final double kIntakeSupplyLimit = 30;
+    public static final double kIntakeStatorLimit = 30;
+    public static final boolean kIntakeSupplyLimitEnabled = true;
+    public static final boolean kIntakeStatorLimitEnabled = true;
+    public static final NeutralModeValue kIntakeNeutralMode = NeutralModeValue.Coast;
+
     public static final int kSliderMotorPort = 31;
+    public static final String kSliderCanbus = "rio";
+    public static final double kSliderSupplyLimit = 30;
+    public static final double kSliderStatorLimit = 30;
+    public static final boolean kSliderSupplyLimitEnabled = true;
+    public static final boolean kSliderStatorLimitEnabled = true;
+    public static final NeutralModeValue kSliderNeutralMode = NeutralModeValue.Coast;
 
     public static final double kSliderP = 0.07;
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
+    public static final double kSliderMaxVelocity = 24;
+    public static final double kSliderMaxAcceleration = 12;
+
+    public static final double kSliderMaxSpeedOutput = .5;
+
+    public static final int kSimNumMotors = 1;
+    public static final double kSimWidth = 60;
+    public static final double kSimHeight = 60;
     public static final double kGearing = 5;
     public static final double kMass = 2.26796;
     public static final double kDrumRadius = 0.01524;
     public static final double kMaxLen = 0.4572;
     public static final double kSimLenMult = 39.3701*3;
+    public static final double kSimLenBaseMult = 39.3701;
+    public static final double kSimMaxSpeed = 1;
+    public static final String kSimRootName = "base";
+    public static final double kSimX = 10;
+    public static final double kSimY = 30;
+    public static final double kSimMultiplier = 12;
+    public static final double kSimdt = 0.02;
+
     //TODO: Calculate the actual value for this.
     public static final double kEncoderToInchesMult = 3.1875 / 5 ;
   }

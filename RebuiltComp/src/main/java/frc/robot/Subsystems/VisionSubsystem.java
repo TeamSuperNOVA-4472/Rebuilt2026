@@ -35,8 +35,6 @@ public class VisionSubsystem extends SubsystemBase
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
 
-    private final Field2d mField;
-
     // Limelight lib is stupid and wants integers for modes
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
     private enum VisionMode {
@@ -59,9 +57,6 @@ public class VisionSubsystem extends SubsystemBase
         mUpdateRobotPose = pUpdateRobotPose; // Allows us to pass the calculated pose to the drivetrain with estimated deviations
         mGetRobotAngularVelocity = pGetRobotAngularVelocity; // Supplies us the rotation velocity of the chassis
 
-        mField = new Field2d();
-        SmartDashboard.putData("Subsystems/VisionSubsystem/Vision Pose", mField);
-
         setIMUMode(VisionMode.SEEDING); // Set initial mode to seed from gyro
     }
 
@@ -78,6 +73,8 @@ public class VisionSubsystem extends SubsystemBase
         {
             LimelightHelpers.SetIMUMode(limelight, mode.get());
         }
+
+        SmartDashboard.putString("Subsystems/VisionSubsystem/IMU Mode: ", mode.name());
     }
 
     private void setIMUThrottle(int throttle)
@@ -87,6 +84,8 @@ public class VisionSubsystem extends SubsystemBase
         {
             LimelightHelpers.SetThrottle(limelight, throttle);
         }
+
+        SmartDashboard.putNumber("Subsystems/VisionSubsystem/Throttle: ", throttle);
     }
 
     private void adjustThrottleAndIMU()
@@ -117,6 +116,7 @@ public class VisionSubsystem extends SubsystemBase
         for (RawFiducial id : pose.rawFiducials)
         {
             // Accept update if at least one tag has an ambiguity under the threshold
+            SmartDashboard.putNumber("Subsystems/VisionSubsystem/Tag Ambiguity: ", id.ambiguity);
             if (id.ambiguity < Constants.VisionConstants.kAmbiguity) return true;
         }
         return false;
@@ -127,7 +127,8 @@ public class VisionSubsystem extends SubsystemBase
         // Check if the update passes all thresholds
         if (pose.avgTagDist <= Constants.VisionConstants.kTagDistThreshold && 
             pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
-            underAmbiguityThreshold(pose))
+            underAmbiguityThreshold(pose) &&
+            mGetRobotAngularVelocity.get() < Constants.VisionConstants.kAngularVelocityThreshold)
         {
             return false;
         }
@@ -144,6 +145,9 @@ public class VisionSubsystem extends SubsystemBase
         {
             //Localization--will not return location update if a Limelight can't see an Apriltag
             pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
+            
+            SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
+
             if(rejectUpdate(pose))
             {
                 rejectUpdate = true;
@@ -168,14 +172,14 @@ public class VisionSubsystem extends SubsystemBase
         // Check all limelights active
         for(String limelight : Constants.VisionConstants.kLimelightNames)
         {
-            // TODO: does giving angular velocity to this make measurements more consistent?
             // Set the robot orientation to the current heading (required for limelight's algorithm)
             LimelightHelpers.SetRobotOrientation(limelight, mGetRobotRotation.get(), 0, 0, 0, 0, 0);
             Optional<PoseEstimate> pose = calculatePosition(limelight); // Get update
             
             if(!pose.isEmpty()) // Update robot pose if all checks are passed
             {
-                updatePose(pose.get());            
+                updatePose(pose.get());
+                SmartDashboard.putString("Subsystems/VisionSubsystem/Pose: ", pose.get().pose.toString());
             }
 
             adjustThrottleAndIMU();
