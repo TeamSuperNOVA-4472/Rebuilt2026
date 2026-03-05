@@ -132,6 +132,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new flywheelSysIDCommand(mFlywheel);
+    return mSwerve.getSysIDCommand();
   }
 }
