@@ -30,12 +30,13 @@ public class ShootPreloadFromStandstill extends ParallelCommandGroup {
                 () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
                     swerve.getPose(), 
                     swerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-                    swerve.getFieldRelativeSpeeds().vyMetersPerSecond)),
+                    swerve.getFieldRelativeSpeeds().vyMetersPerSecond),
+                () -> true),
             new SequentialCommandGroup(
                 new WaitCommand(5.0),
-                new ConditionalCommand(
-                    new setSpindexer(spindexer, SpindexerMode.LOAD),
-                    new InstantCommand(),
+                new setSpindexer(
+                    spindexer,
+                    SpindexerMode.LOAD,
                     () -> flyWheel.getMode() == FlywheelMode.SPINNING)
             )
         );

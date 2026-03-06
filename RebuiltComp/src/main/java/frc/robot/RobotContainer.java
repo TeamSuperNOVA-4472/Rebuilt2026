@@ -94,12 +94,14 @@ public class RobotContainer {
     });
 
     NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
-    NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF));
-    NamedCommands.registerCommand("SpindexerOn", new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true));
+    NamedCommands.registerCommand("SpindexerOn",
+      new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getMode() == FlywheelMode.SPINNING));
     NamedCommands.registerCommand("FlywheelOn", new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
+      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
+      () -> true));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
     }));
