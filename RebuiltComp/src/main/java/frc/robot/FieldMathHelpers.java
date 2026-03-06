@@ -25,40 +25,15 @@ public class FieldMathHelpers
     /**
      * Gets the distance in meters from a pose to the hub.
      * @param pose The bot pose.
-     * @return Returns the distance in meters to the hub from the pose entered.
+     * @return Returns the distance in meters to the hub from the pose entered adjusted for the turret offset.
      */
-    public static Translation2d getTranslationToHub(Pose2d pose)
+    private static Translation2d getTranslationToHub(Pose2d pose)
     {
         pose = pose.transformBy(TurretConstants.kTurretOffset);
         Translation2d poseTranslation = pose.getTranslation();
         Translation2d hubPoseTranslation = hubPose.getTranslation();
 
         return hubPoseTranslation.minus(poseTranslation);
-    }
-
-    /**
-     * Finds the heading of the vector from a pose to the hub using arctangent.
-     * Uses 0-2pi coordinates where 0 is in line with the positive x axis.
-     * @param pose The pose.
-     * @return The absolute heading of the vector from the pose to the hub.
-    */
-    private static double getHeadingToHubInRadians(Pose2d pose)
-    {
-        double deltaY = hubPose.getY() - pose.getY();
-        double deltaX = hubPose.getX() - pose.getX();
-
-        return Math.atan2(deltaY, deltaX);
-    }
-
-    /**
-     * Finds the heading of the vector from a pose to the hub.
-     * Uses 0-360 coordinates where 0 is in line with the positive x axis.
-     * @param pose The pose.
-     * @return The absolute heading of the vector from the pose to the hub.
-     */
-    public static double getHeadingToHubInDegrees(Pose2d pose)
-    {
-        return Units.radiansToDegrees(getHeadingToHubInRadians(pose));
     }
 
     /**
@@ -93,9 +68,9 @@ public class FieldMathHelpers
         return adjustedTranslation;
     }
 
-    public static double getRotationToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    private static double getRotationToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
-        return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getAngle().getDegrees();
+        return normalizeDegrees(getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getAngle().getDegrees());
     }
 
     public static double getDistanceToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
@@ -162,6 +137,12 @@ public class FieldMathHelpers
     {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         return alliance.isPresent() && alliance.get().equals(Alliance.Red) ? true : false;
+    }
+
+    // Normalize from (-180, 180] to (0, 360)
+    private static double normalizeDegrees(double degrees)
+    {
+        return (degrees % 360 + 360) % 360;
     }
 
     /**

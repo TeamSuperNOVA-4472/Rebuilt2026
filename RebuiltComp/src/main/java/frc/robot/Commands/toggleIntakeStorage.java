@@ -12,7 +12,6 @@ public class toggleIntakeStorage extends InstantCommand {
 
     public toggleIntakeStorage(IntakeSubsystem mIntake){
         kIntake = mIntake;
-        addRequirements(kIntake);
     }
 
     @Override

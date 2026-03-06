@@ -48,6 +48,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     private double kTargetAngle;
     private double kTargetSpeed;
     private boolean kHoodAtTarget;
+    private boolean kFlywheelAtTarget;
     private SimpleMotorFeedforward kFlywheel1Feedforward;
     private SimpleMotorFeedforward kFlywheel2Feedforward;
     private PIDController kFlywheelFeedback;
@@ -71,9 +72,11 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheelHoodMotor = new TalonFX(FlywheelConstants.kFlywheelHoodMotorPort, FlywheelConstants.kFlywheelHoodCanbus);
 
         kHoodPidController = new PIDController(FlywheelConstants.kPHood, FlywheelConstants.kIHood, FlywheelConstants.kDHood);
+        kHoodPidController.setTolerance(FlywheelConstants.kHoodTolerance);
         kFlywheel1Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheel2Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheelFeedback = new PIDController(FlywheelConstants.kPFlywheel,FlywheelConstants.kIFlywheel, FlywheelConstants.kDFlywheel);
+        kFlywheelFeedback.setTolerance(FlywheelConstants.kFlywheelTolerance);
 
         kTargetAngle = FlywheelConstants.kStartingHoodAngle;
 
@@ -192,9 +195,15 @@ public class FlywheelSubsystem extends SubsystemBase {
     public boolean getHoodAtTarget(){
         return kHoodAtTarget;
     }
+
+    public boolean getFlywheelAtTarget(){
+        return kFlywheelAtTarget;
+    }
+
     @Override
     public void periodic(){
         kHoodAtTarget = kHoodPidController.atSetpoint();
+        kFlywheelAtTarget = kFlywheelFeedback.atSetpoint();
         if (Robot.isReal()) kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodMotor.getPosition().getValueAsDouble() * Constants.FlywheelConstants.kHoodEncoderMultiplier + Constants.FlywheelConstants.kHoodMinAngle,kTargetAngle), -FlywheelConstants.kMaxSpeed, FlywheelConstants.kMaxSpeed);
         else kOutput = MathUtil.clamp(kHoodPidController.calculate(kFlywheelHoodSim.getAngleRads() * 180 / Math.PI,kTargetAngle), -FlywheelConstants.kMaxSpeed , FlywheelConstants.kMaxSpeed);
         kFlywheelHoodMotor.set(kOutput);
@@ -212,7 +221,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     }
     @Override
     public void simulationPeriodic() {
-      kFlywheelHoodSim.setInput(kOutput * 12.0);
+      kFlywheelHoodSim.setInput(kOutput * FlywheelConstants.kSimMultiplier);
 
       kFlywheelHoodSim.update(FlywheelConstants.kSimdt);
 
