@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -33,6 +34,11 @@ import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
+import frc.robot.Commands.ResetCommands.resetHoodEncoder;
+import frc.robot.Commands.ResetCommands.resetSliderEncoder;
+import frc.robot.Commands.ResetCommands.resetTurretEncoder;
+import frc.robot.Commands.SafeCommands.moveTurretSafe;
+import frc.robot.Commands.SafeCommands.setFlywheelSafe;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
@@ -74,43 +80,76 @@ public class RobotContainer {
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
 
   public RobotContainer() {
+    // Defaults for swerve and turret
     mSwerve.setDefaultCommand(mSwerveTeleop);
     mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
+    safeModeOn.whileTrue(new moveTurretSafe(mTurret));
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
       mSwerve.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);
     });
 
-    configureBindings();
+    configureDriverBindings();
+    configureOperatorBindings();
   }
 
-  private void configureBindings() {
+  private void configureDriverBindings() {
+    // Spindexer Bindings
+    mDriver.leftBumper().whileTrue(
+      new setSpindexer(
+        mSpindexer, 
+        SpindexerMode.LOAD, 
+        () -> mFlywheel.getHoodAtTarget() && mFlywheel.getFlywheelAtTarget()));
 
-    mDriver.leftBumper().whileTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getHoodAtTarget() && mFlywheel.getFlywheelAtTarget()));
     mDriver.leftBumper().onFalse(new InstantCommand(() ->{
       mSpindexer.setMode(SpindexerMode.OFF);
     }));
 
+    // Intake Action Bindings
     mDriver.rightBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
     mDriver.rightTrigger(OperatorConstants.kTriggerThreshold).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
-
     mDriver.rightBumper().or(mDriver.rightTrigger(OperatorConstants.kTriggerThreshold)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
 
-    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new setFlywheel(
+    // Flywheel and Hood Bindings
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(
       mFlywheel, 
       () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())));
+      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())),
+      mFlywheel::getSafeModeEnabled));
+
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
+  }
 
-    mDriver.y().onTrue(new toggleIntakeStorage(mIntake));
+  private void configureOperatorBindings()
+  {
+    // Safe mode bindings
+    mOperator.a().onTrue(new InstantCommand(() -> {
+      mTurret.enableSafeMode();
+      mFlywheel.enableSafeMode();
+    }));
 
+    mOperator.x().onTrue(new InstantCommand(() -> {
+      mTurret.disableSafeMode();
+      mFlywheel.disableSafeMode();
+    }));
+
+    // Intake pump
+    mOperator.y().onTrue(new toggleIntakeStorage(mIntake));
+
+    // Encoder resets
+    mOperator.b().onTrue(new resetHoodEncoder(mFlywheel));
+
+    mOperator.rightBumper().onTrue(new resetSliderEncoder(mIntake));
+
+    mOperator.leftBumper().onTrue(new resetTurretEncoder(mTurret));
   }
 
   public Command getAutonomousCommand() {

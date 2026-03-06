@@ -131,6 +131,9 @@ public final class Constants {
     public static final double kSafeAngle = 21;
     public static final double kSafeSpeed = 40;
 
+    public static final double kResetHoodSpeed = -0.1;
+    public static final double kResetHoodStatorThreshold = 20;
+
     public static final int kSimNumMotors = 1;
     public static final double kSimGearing = 35.294;
     public static final double kSimjKgMetersSquared = 0.011;
@@ -175,11 +178,11 @@ public final class Constants {
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
-    public static final double kBaseLateralDev = 0.3;
+    public static final double kBaseLateralDev = 0.5;
     public static final double kBaseRotDev = 0.3;
     public static final double kTagDistThreshold = 10;
-    public static final double kLatencyLagInSeconds = 0.3;
-    public static final double kTagCountThreshold = 1;
+    public static final double kLatencyLagInSeconds = 0.4;
+    public static final double kTagCountThreshold = 2;
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 360;
 
@@ -213,6 +216,9 @@ public final class Constants {
     public static final double kTurretP = 0.004;
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
+
+    public static final double kTurretResetSpeed = -0.2;
+    public static final double kTurretResetStatorThreshold = 30;
 
     public static final double kTurretF = 0.01;
 
@@ -288,6 +294,9 @@ public final class Constants {
     public static final double kSliderMaxAcceleration = 24;
 
     public static final double kSliderMaxSpeedOutput = .5;
+
+    public static final double kSliderResetSpeed = .2;
+    public static final double kSliderResetStatorThreshold = 30;
 
     public static final int kSimNumMotors = 1;
     public static final double kSimWidth = 60;

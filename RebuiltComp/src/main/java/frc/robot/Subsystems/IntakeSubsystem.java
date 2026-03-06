@@ -52,6 +52,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean kIsAtState;
     private double kSliderTarget; 
     private double PIDOutput;
+    private boolean kPIDEnabled = true;
 
     private final TalonFX kIntakeMotor;
     private final TalonFX kIntakeSlider;
@@ -150,6 +151,16 @@ public class IntakeSubsystem extends SubsystemBase {
         moveToStorageState();
     }
 
+    public void resetSliderEncoderToOutPosition()
+    {
+        kIntakeSlider.setPosition(IntakeSubsystemConstants.kOutPos);
+    }
+
+    public double getSliderStator()
+    {
+        return kIntakeSlider.getStatorCurrent().getValueAsDouble();
+    }
+
     public IntakeActionMode getActionMode(){
         return kActionMode;
     }
@@ -166,23 +177,34 @@ public class IntakeSubsystem extends SubsystemBase {
         return kIntakeMotor.get();
     }
 
-    public void moveIntake(double speed){
+    public void moveIntakeSlider(double speed){
         kIntakeSlider.set(speed);
     }
 
-    public void stopIntake(){
+    public void stopIntakeSlider(){
         kIntakeSlider.set(0);
+    }
+
+    public void disablePID(){
+        kPIDEnabled = false;
+    }
+
+    public void enablePID(){
+        kPIDEnabled = true;
     }
 
     @Override
     public void periodic(){
-        kIsAtState = kSliderPID.atSetpoint();
-        if (Robot.isReal()){
-            PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -IntakeSubsystemConstants.kSliderMaxSpeedOutput, IntakeSubsystemConstants.kSliderMaxSpeedOutput);
-        } else{
-            PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*IntakeSubsystemConstants.kSimLenBaseMult,kSliderTarget), -IntakeSubsystemConstants.kSimMaxSpeed, IntakeSubsystemConstants.kSimMaxSpeed);
+        if (kPIDEnabled)
+        {
+            kIsAtState = kSliderPID.atSetpoint();
+            if (Robot.isReal()){
+                PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -IntakeSubsystemConstants.kSliderMaxSpeedOutput, IntakeSubsystemConstants.kSliderMaxSpeedOutput);
+            } else {
+                PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*IntakeSubsystemConstants.kSimLenBaseMult,kSliderTarget), -IntakeSubsystemConstants.kSimMaxSpeed, IntakeSubsystemConstants.kSimMaxSpeed);
+            }
+            kIntakeSlider.set(PIDOutput);
         }
-        kIntakeSlider.set(PIDOutput);
         
         SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack PID Output: ", PIDOutput);
         SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Action Mode: ", kActionMode.name());
