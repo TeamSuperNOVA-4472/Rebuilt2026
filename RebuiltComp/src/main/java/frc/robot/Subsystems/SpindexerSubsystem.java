@@ -61,12 +61,12 @@ public class SpindexerSubsystem extends SubsystemBase {
     private void moveSpindexer(){
         switch (kMode){
         case OFF:
-            kSpindexerMotor.set(0);
+            kSpindexerMotor.setVoltage(0);
             kKickerMotor.setVoltage(0);
             break;
 
         case LOAD:
-            kSpindexerMotor.set(SpindexerConstants.kSpindexerVoltage);
+            kSpindexerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
             kKickerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
             break;
         }

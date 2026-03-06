@@ -37,6 +37,7 @@ import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
+import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
@@ -107,6 +108,7 @@ public class RobotContainer {
     autoChooser = new SendableChooser<Command>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
+    autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 

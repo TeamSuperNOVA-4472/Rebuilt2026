@@ -17,8 +17,6 @@ import frc.robot.Constants.VisionConstants;
 
 public class FieldMathHelpers
 {
-    // Store the position of the hub
-    private static final Pose2d hubPose = getHubPose();
 
     // TODO: add math for turret position offset from center, test equations for velocity, change flywheel from rpm to dist vs angle
 
@@ -31,7 +29,7 @@ public class FieldMathHelpers
     {
         pose = pose.transformBy(TurretConstants.kTurretOffset);
         Translation2d poseTranslation = pose.getTranslation();
-        Translation2d hubPoseTranslation = hubPose.getTranslation();
+        Translation2d hubPoseTranslation = getHubPose().getTranslation();
 
         return hubPoseTranslation.minus(poseTranslation);
     }
@@ -44,8 +42,8 @@ public class FieldMathHelpers
     */
     private static double getHeadingToHubInRadians(Pose2d pose)
     {
-        double deltaY = hubPose.getY() - pose.getY();
-        double deltaX = hubPose.getX() - pose.getX();
+        double deltaY = getHubPose().getY() - pose.getY();
+        double deltaX = getHubPose().getX() - pose.getX();
 
         return Math.atan2(deltaY, deltaX);
     }
