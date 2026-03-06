@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -32,12 +33,18 @@ import frc.robot.Commands.SwerveTeleop;
 import frc.robot.Commands.flywheelSysIDCommand;
 import frc.robot.Commands.setFlywheel;
 import frc.robot.Commands.setFlywheelTest;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
 import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
+import frc.robot.Commands.ResetCommands.resetHoodEncoder;
+import frc.robot.Commands.ResetCommands.resetSliderEncoder;
+import frc.robot.Commands.ResetCommands.resetTurretEncoder;
+import frc.robot.Commands.SafeCommands.moveTurretSafe;
+import frc.robot.Commands.SafeCommands.setFlywheelSafe;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
@@ -84,9 +91,19 @@ public class RobotContainer {
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
 
+  private final resetTurretEncoder mResetTurretEncoder = new resetTurretEncoder(mTurret);
+
+  public Command getTurretReset()
+  {
+    return mResetTurretEncoder;
+  }
+
   public RobotContainer() {
+    // Defaults for swerve and turret
     mSwerve.setDefaultCommand(mSwerveTeleop);
     mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
+    safeModeOn.whileTrue(new moveTurretSafe(mTurret));
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -113,36 +130,65 @@ public class RobotContainer {
     autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
-
-    configureBindings();
+    configureDriverBindings();
+    configureOperatorBindings();
   }
 
-  private void configureBindings() {
+  private void configureDriverBindings() {
+    // Spindexer Bindings
+    mDriver.leftBumper().whileTrue(
+      new setSpindexer(
+        mSpindexer, 
+        SpindexerMode.LOAD, 
+        () -> mFlywheel.getHoodAtTarget() && mFlywheel.getFlywheelAtTarget()));
 
-    mDriver.leftBumper().whileTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getHoodAtTarget() && mFlywheel.getFlywheelAtTarget()));
     mDriver.leftBumper().onFalse(new InstantCommand(() ->{
       mSpindexer.setMode(SpindexerMode.OFF);
     }));
 
+    // Intake Action Bindings
     mDriver.rightBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
     mDriver.rightTrigger(OperatorConstants.kTriggerThreshold).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
-
     mDriver.rightBumper().or(mDriver.rightTrigger(OperatorConstants.kTriggerThreshold)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
 
-    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new setFlywheel(
+    // Flywheel and Hood Bindings
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(
       mFlywheel, 
       () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())));
+      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())),
+      mFlywheel::getSafeModeEnabled));
+
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
+  }
 
-    mDriver.y().onTrue(new toggleIntakeStorage(mIntake));
+  private void configureOperatorBindings()
+  {
+    // Safe mode bindings
+    mOperator.a().onTrue(new InstantCommand(() -> {
+      mTurret.enableSafeMode();
+      mFlywheel.enableSafeMode();
+    }));
 
+    mOperator.x().onTrue(new InstantCommand(() -> {
+      mTurret.disableSafeMode();
+      mFlywheel.disableSafeMode();
+    }));
+
+    // Intake pump
+    mOperator.rightTrigger(Constants.OperatorConstants.kTriggerThreshold).onTrue(new toggleIntakeStorage(mIntake));
+
+    // Encoder resets
+    mOperator.povDown().onTrue(new resetHoodEncoder(mFlywheel));
+
+    mOperator.povUp().onTrue(new resetSliderEncoder(mIntake));
+
+    mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
   }
 
   public Command getAutonomousCommand() {

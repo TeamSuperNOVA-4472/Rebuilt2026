@@ -39,7 +39,7 @@ public class VisionSubsystem extends SubsystemBase
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
     private enum VisionMode {
         SEEDING(1), // Seeding means the limelights are calibrating themselves with the external gyro
-        MIXED(4); // Mixed means the limelights are mixing their own IMU measurements with the external gyro
+        MIXED(0); // Mixed means the limelights are mixing their own IMU measurements with the external gyro
 
         private final int mMode;
         
@@ -105,7 +105,7 @@ public class VisionSubsystem extends SubsystemBase
     private Matrix<N3,N1> calculateStdDevs(PoseEstimate pose)
     {
         double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
-        double rotationaldev = mGetRobotAngularVelocity.get() * Constants.VisionConstants.kBaseRotDev; // Scale the rotational deviation by the angular velocity
+        double rotationaldev = Constants.VisionConstants.kBaseRotDev ; // Scale the rotational deviation by the angular velocity
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
     }
@@ -127,8 +127,7 @@ public class VisionSubsystem extends SubsystemBase
         // Check if the update passes all thresholds
         if (pose.avgTagDist <= Constants.VisionConstants.kTagDistThreshold && 
             pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
-            underAmbiguityThreshold(pose) &&
-            mGetRobotAngularVelocity.get() < Constants.VisionConstants.kAngularVelocityThreshold)
+            underAmbiguityThreshold(pose))
         {
             return false;
         }

@@ -32,6 +32,8 @@ public class TurretSubsystem extends SubsystemBase
 
     private double kTurretTargetAngle = 0.0;
     private double kOutput;
+    private boolean kPIDEnabled = true;
+    private boolean kIsSafeModeEnabled = false;
 
     private final DCMotor kTurretSimMotor;
     private final SingleJointedArmSim kTurretSim;
@@ -70,6 +72,21 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.setPosition(0);
     }
 
+    public Boolean getSafeModeEnabled()
+    {
+        return kIsSafeModeEnabled;
+    }
+
+    public void enableSafeMode()
+    {
+        kIsSafeModeEnabled = true;
+    }
+    
+    public void disableSafeMode()
+    {
+        kIsSafeModeEnabled = false;
+    }
+
     public void rotate(double speed) 
     {
         kTurretMotor.set(speed);
@@ -80,11 +97,31 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.stopMotor();
     }
 
+    public void disablePID()
+    {
+        kPIDEnabled = false;
+    }
+
+    public void enablePID()
+    {
+        kPIDEnabled = true;
+    }
+
     public double getAngle() 
     {
         double encoderPosition = kTurretMotor.getPosition().getValueAsDouble();
 
         return (encoderPosition / TurretConstants.kGearing) * 360;
+    }
+
+    public double getStator()
+    {
+        return kTurretMotor.getStatorCurrent().getValueAsDouble();
+    }
+
+    public void resetEncoder()
+    {
+        kTurretMotor.setPosition(0);
     }
 
     public void goToAngle(double targetAngle) 
@@ -94,7 +131,6 @@ public class TurretSubsystem extends SubsystemBase
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
         kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput) + TurretConstants.kTurretF;
-        SmartDashboard.putNumber("Turret Encoder: ", kTurretMotor.getPosition().getValueAsDouble());
         double addition = kOutput >= 0 ? TurretConstants.kTurretF : -TurretConstants.kTurretF;
         kTurretMotor.set(kOutput + addition);
     }
@@ -102,7 +138,7 @@ public class TurretSubsystem extends SubsystemBase
     public boolean isValidAngle() {
         if (kTurretTargetAngle >= TurretConstants.kDeadband) {
             return false;
-        } else{
+        } else {
             return true;
         }  
     }
@@ -112,14 +148,18 @@ public class TurretSubsystem extends SubsystemBase
 
     @Override
     public void periodic() {
-        if (isValidAngle()) {
-            goToAngle(kTurretTargetAngle);
-        } else {
-            goToAngle(TurretConstants.kDeadband);
+        if (kPIDEnabled)
+        {
+            if (isValidAngle()) {
+                goToAngle(kTurretTargetAngle);
+            } else {
+                goToAngle(TurretConstants.kDeadband);
+            }
         }
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Relative Angle: ", getAngle());
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Deadband: ", TurretConstants.kDeadband);
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Goal Angle: ", kTurretTargetAngle);
+        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Stator Limit: ", getStator());
     }
 
     @Override
