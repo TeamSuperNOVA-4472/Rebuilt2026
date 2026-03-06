@@ -25,10 +25,14 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FieldMathHelpers;
 import frc.robot.Robot;
 import swervelib.SwerveDrive;
+import swervelib.SwerveDriveTest;
 import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
@@ -41,7 +45,11 @@ import static frc.robot.Constants.SwerveConstants.*;
 public class SwerveSubsystem extends SubsystemBase {
   public static final SwerveSubsystem kSwerve = new SwerveSubsystem();
   private final SwerveDrive mSwerveDrive;
+  private Command kSwerveSysID;
   private double mYawGyroOffset = 0;
+  private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
+  private static final double kV = 2.121025; //BL: 2.1179 BR: 2.0122 FL: 2.1095 FR: 2.2445
+  private static final double kA = 0.1667725; //BL: 0.14532 BR: 0.14542 FL: 0.24849 FR: 0.12786
 
   private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
@@ -49,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
     try {
       swerveDrive = new SwerveParser(swerveJsonDirectory)
         .createSwerveDrive(kMaxSpeedMS);
-      //swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+      swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -97,7 +105,16 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveSubsystem() {
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
-
+    kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
+            SwerveDriveTest.setDriveSysIdRoutine(
+                new SysIdRoutine.Config(),
+                this,
+                mSwerveDrive,
+                12,
+                true),
+                3.0,
+                5,
+                3);
     configAutoBuilder(this);
     resetHeading();
   }
@@ -165,6 +182,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getFieldRelativeSpeeds() {
     return mSwerveDrive.getFieldVelocity();
+  }
+
+  public Command getSysIDCommand() {
+    return kSwerveSysID;
   }
 
   @Override

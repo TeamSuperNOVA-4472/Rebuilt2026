@@ -15,9 +15,13 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FlywheelConstants;
@@ -58,6 +62,7 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = TurretSubsystem.kTurret;
   private final SwerveSubsystem mSwerve = SwerveSubsystem.kSwerve;
   private final FlywheelSubsystem mFlywheel = FlywheelSubsystem.kFlywheel;
+  private final SendableChooser<Command> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -90,8 +95,20 @@ public class RobotContainer {
     NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
     NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF));
     NamedCommands.registerCommand("SpindexerOn", new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    NamedCommands.registerCommand("FlywheelOn", new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
+      mSwerve.getPose(), 
+      mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
+      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
+    NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
+      mFlywheel.setMode(FlywheelMode.OFF, 0.0);
+    }));
     NamedCommands.registerCommand("IntakeOn", new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
     NamedCommands.registerCommand("IntakeOff", new setIntakeAction(mIntake, IntakeActionMode.OFF));
+    autoChooser = new SendableChooser<Command>();
+    autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
+    autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
+    autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
+    SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureBindings();
   }
@@ -135,6 +152,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return new flywheelSysIDCommand(mFlywheel);
+    return autoChooser.getSelected();
   }
 }
