@@ -23,9 +23,9 @@ public class FieldMathHelpers
     /**
      * Gets the distance in meters from a pose to the hub.
      * @param pose The bot pose.
-     * @return Returns the distance in meters to the hub from the pose entered.
+     * @return Returns the distance in meters to the hub from the pose entered adjusted for the turret offset.
      */
-    public static Translation2d getTranslationToHub(Pose2d pose)
+    private static Translation2d getTranslationToHub(Pose2d pose)
     {
         pose = pose.transformBy(TurretConstants.kTurretOffset);
         Translation2d poseTranslation = pose.getTranslation();
@@ -91,9 +91,9 @@ public class FieldMathHelpers
         return adjustedTranslation;
     }
 
-    public static double getRotationToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    private static double getRotationToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
-        return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getAngle().getDegrees();
+        return normalizeDegrees(getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getAngle().getDegrees());
     }
 
     public static double getDistanceToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
@@ -160,6 +160,12 @@ public class FieldMathHelpers
     {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         return alliance.isPresent() && alliance.get().equals(Alliance.Red) ? true : false;
+    }
+
+    // Normalize from (-180, 180] to (0, 360)
+    private static double normalizeDegrees(double degrees)
+    {
+        return (degrees % 360 + 360) % 360;
     }
 
     /**

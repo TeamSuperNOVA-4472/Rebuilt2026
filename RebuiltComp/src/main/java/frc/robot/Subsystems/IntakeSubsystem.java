@@ -114,7 +114,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private void moveToStorageState(){
         switch (kStorageMode){
         case STORED:
-            kActionMode = IntakeActionMode.OFF;
             kSliderTarget = Constants.IntakeSubsystemConstants.kStoredPos;
             break;
 
@@ -142,11 +141,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     
     public void setIntakeAction(IntakeActionMode mNewMode){
-        if (kStorageMode.equals(IntakeStorageMode.OUT))
-        {
-            kActionMode = mNewMode;
-            setActionState();
-        }
+        kActionMode = mNewMode;
+        setActionState();
     }
 
     public void setIntakeStorage(IntakeStorageMode mNewMode){
