@@ -37,6 +37,7 @@ import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
+import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
@@ -54,11 +55,11 @@ import com.pathplanner.lib.events.EventTrigger;
 
 
 public class RobotContainer {
-  private double mAngle = 30;
   private final IntakeSubsystem mIntake = IntakeSubsystem.kIntake;
   private final SpindexerSubsystem mSpindexer = SpindexerSubsystem.kSpindexer;
   private final VisionSubsystem mVisionSubsystem;
   private final CommandXboxController mDriver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController mOperator = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
   private final TurretSubsystem mTurret = TurretSubsystem.kTurret;
   private final SwerveSubsystem mSwerve = SwerveSubsystem.kSwerve;
   private final FlywheelSubsystem mFlywheel = FlywheelSubsystem.kFlywheel;
@@ -93,12 +94,14 @@ public class RobotContainer {
     });
 
     NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
-    NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF));
-    NamedCommands.registerCommand("SpindexerOn", new setSpindexer(mSpindexer, SpindexerMode.LOAD));
+    NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true));
+    NamedCommands.registerCommand("SpindexerOn",
+      new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getMode() == FlywheelMode.SPINNING));
     NamedCommands.registerCommand("FlywheelOn", new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
+      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
+      () -> true));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
     }));
@@ -107,6 +110,7 @@ public class RobotContainer {
     autoChooser = new SendableChooser<Command>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
+    autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
@@ -115,40 +119,30 @@ public class RobotContainer {
 
   private void configureBindings() {
 
-    mDriver.leftBumper().onTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD));
-    mDriver.leftBumper().onFalse(new setSpindexer(mSpindexer, SpindexerMode.OFF));
+    mDriver.leftBumper().whileTrue(new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getHoodAtTarget() && mFlywheel.getFlywheelAtTarget()));
+    mDriver.leftBumper().onFalse(new InstantCommand(() ->{
+      mSpindexer.setMode(SpindexerMode.OFF);
+    }));
 
     mDriver.rightBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
-    mDriver.rightTrigger(0.2).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
+    mDriver.rightTrigger(OperatorConstants.kTriggerThreshold).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
 
-    mDriver.rightBumper().or(mDriver.rightTrigger(0.2)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
-    mDriver.leftTrigger(0.2).whileTrue(new setFlywheel(
+    mDriver.rightBumper().or(mDriver.rightTrigger(OperatorConstants.kTriggerThreshold)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
+
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new setFlywheel(
       mFlywheel, 
       () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
-    mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
-      mFlywheel.setHoodTarget(20);
-    }));
-        
-    /*mDriver.leftTrigger(0.2).whileTrue(new setFlywheelTest(
-        mFlywheel, 
-        mDriver.povUp()::getAsBoolean, 
-        mDriver.povDown()::getAsBoolean,
-        mDriver.povLeft()::getAsBoolean,
-        mDriver.povRight()::getAsBoolean));*/
-
-    mDriver.leftTrigger(0.2).onFalse(new InstantCommand(() -> {
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
+      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())));
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
+      mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
 
-    //mDriver.y().onTrue(new InstantCommand(() -> mIntake.moveIntake(0.1)));
-    //mDriver.x().onTrue(new InstantCommand(() -> mIntake.moveIntake(-0.1)));
-    //mDriver.y().or(mDriver.x()).onFalse(new InstantCommand(() -> mIntake.stopIntake()));
     mDriver.y().onTrue(new toggleIntakeStorage(mIntake));
 
-    //TODO: add controls for flywheel + add correct bindings
   }
 
   public Command getAutonomousCommand() {

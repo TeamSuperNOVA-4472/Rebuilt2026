@@ -190,7 +190,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    SmartDashboard.putNumber("Robot Telemetry/Pose/Distance to Hub: ", FieldMathHelpers.getTranslationToHub(mSwerveDrive.getPose()).getNorm());
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
   }

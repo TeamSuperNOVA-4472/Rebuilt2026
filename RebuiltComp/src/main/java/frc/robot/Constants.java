@@ -82,8 +82,6 @@ public final class Constants {
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
     public static final double kHoodMinAngle = 20.0;
     public static final double kHoodMaxAngle = 45.0;
-    public static final double kConstantHood = 20;
-    public static final double kConstantFlywheelSpeed = 50;
     public static final double kDistanceThresholdInMeters = 1.8161;
     public static final double kDistanceMaximumInMeters = 4.8641;
 
@@ -115,6 +113,8 @@ public final class Constants {
     public static final double kIHood = 0;
     public static final double kDHood = 0;
 
+    public static final double kHoodTolerance = 2;
+
     public static final double kSFlywheel = 0.44;
     public static final double kVFlywheel = 0.12;
     public static final double kAFlywheel = 0;
@@ -122,8 +122,14 @@ public final class Constants {
     public static final double kPFlywheel = 0.015;
     public static final double kIFlywheel = 0;
     public static final double kDFlywheel = 0;
+
+    public static final double kFlywheelTolerance = 5;
     
     public static final double kStartingHoodAngle = 21;
+    public static final double kPassingAngle = 44;
+    public static final double kPassingSpeed = 80;
+    public static final double kSafeAngle = 21;
+    public static final double kSafeSpeed = 40;
 
     public static final int kSimNumMotors = 1;
     public static final double kSimGearing = 35.294;
@@ -137,6 +143,7 @@ public final class Constants {
     public static final String kSimName = "Turret";
     public static final double kSimLength = 10;
     public static final double kSimdt = 0.02;
+    public static final double kSimMultiplier = 12;
 
     public static final double kMaxSpeed = 1;
     public static final double kMaxVoltage = 11.5;
@@ -145,6 +152,8 @@ public final class Constants {
   public static class OperatorConstants {
     public static final double kDeadband = 0.1;
     public static final int kDriverControllerPort = 0;
+    public static final int kOperatorControllerPort = 1;
+    public static final double kTriggerThreshold = 0.2;
     public static final InterpolatingDoubleTreeMap kControllerProfileMap = new InterpolatingDoubleTreeMap();
     public static final double kSlewLimit = 1.0;
 
@@ -163,13 +172,13 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2 = true; 
-    public static final String[] kLimelightNames = {"limelight-two"};
+    public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.3;
     public static final double kTagDistThreshold = 10;
-    public static final double kLatencyLagInSeconds = 0.2;
+    public static final double kLatencyLagInSeconds = 0.3;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 360;
@@ -191,7 +200,7 @@ public final class Constants {
   
   public static class TurretConstants {
     public static final Transform2d kTurretOffset = new Transform2d(0.1397,-0.172, new Rotation2d());
-    public static final double kStartingAngleOffset = 120;
+    public static final double kStartingAngleOffset = 117;
 
     public static final int kTurretMotorPort = 24;
     public static final String kTurretCanbus = "CANivore";
@@ -275,8 +284,8 @@ public final class Constants {
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
-    public static final double kSliderMaxVelocity = 24;
-    public static final double kSliderMaxAcceleration = 12;
+    public static final double kSliderMaxVelocity = 36;
+    public static final double kSliderMaxAcceleration = 24;
 
     public static final double kSliderMaxSpeedOutput = .5;
 
