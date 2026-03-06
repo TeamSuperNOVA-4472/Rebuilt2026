@@ -100,7 +100,6 @@ public class TurretSubsystem extends SubsystemBase
     public void disablePID()
     {
         kPIDEnabled = false;
-        kTurretMotor.stopMotor();
     }
 
     public void enablePID()
@@ -132,7 +131,6 @@ public class TurretSubsystem extends SubsystemBase
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
         kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput) + TurretConstants.kTurretF;
-        SmartDashboard.putNumber("Turret Encoder: ", kTurretMotor.getPosition().getValueAsDouble());
         double addition = kOutput >= 0 ? TurretConstants.kTurretF : -TurretConstants.kTurretF;
         kTurretMotor.set(kOutput + addition);
     }
@@ -161,6 +159,7 @@ public class TurretSubsystem extends SubsystemBase
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Relative Angle: ", getAngle());
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Deadband: ", TurretConstants.kDeadband);
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Goal Angle: ", kTurretTargetAngle);
+        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Stator Limit: ", getStator());
     }
 
     @Override

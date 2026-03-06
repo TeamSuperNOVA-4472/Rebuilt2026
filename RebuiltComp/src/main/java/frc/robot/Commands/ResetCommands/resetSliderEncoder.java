@@ -1,15 +1,18 @@
 package frc.robot.Commands.ResetCommands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.IntakeSubsystemConstants;
 import frc.robot.Subsystems.IntakeSubsystem;
 
 public class resetSliderEncoder extends Command {
     private final IntakeSubsystem kIntakeSubsystem;
+    private final Debouncer kDebounce;
 
     public resetSliderEncoder(IntakeSubsystem mIntakeSubsystem)
     {
         kIntakeSubsystem = mIntakeSubsystem;
+        kDebounce = new Debouncer(1);
 
         addRequirements(kIntakeSubsystem);
     }
@@ -22,7 +25,7 @@ public class resetSliderEncoder extends Command {
 
     @Override
     public boolean isFinished() {
-        return kIntakeSubsystem.getSliderStator() > IntakeSubsystemConstants.kSliderResetStatorThreshold;
+        return kDebounce.calculate(kIntakeSubsystem.getSliderStator() > IntakeSubsystemConstants.kSliderResetStatorThreshold);
     }
 
     @Override

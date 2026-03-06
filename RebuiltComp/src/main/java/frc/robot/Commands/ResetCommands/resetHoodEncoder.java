@@ -1,15 +1,18 @@
 package frc.robot.Commands.ResetCommands;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Subsystems.FlywheelSubsystem;
 
 public class resetHoodEncoder extends Command {
     private final FlywheelSubsystem kFlywheelSubsystem;
+    private final Debouncer kDebounce;
 
     public resetHoodEncoder(FlywheelSubsystem mFlywheelSubsystem)
     {
         kFlywheelSubsystem = mFlywheelSubsystem;
+        kDebounce = new Debouncer(1);
 
         addRequirements(kFlywheelSubsystem);
     }
@@ -22,7 +25,7 @@ public class resetHoodEncoder extends Command {
 
     @Override
     public boolean isFinished() {
-        return kFlywheelSubsystem.getStatorHood() > FlywheelConstants.kResetHoodStatorThreshold;
+        return kDebounce.calculate(kFlywheelSubsystem.getStatorHood() > FlywheelConstants.kResetHoodStatorThreshold);
     }
 
     @Override

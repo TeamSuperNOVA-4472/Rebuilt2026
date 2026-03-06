@@ -39,7 +39,7 @@ public class VisionSubsystem extends SubsystemBase
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
     private enum VisionMode {
         SEEDING(1), // Seeding means the limelights are calibrating themselves with the external gyro
-        MIXED(4); // Mixed means the limelights are mixing their own IMU measurements with the external gyro
+        MIXED(0); // Mixed means the limelights are mixing their own IMU measurements with the external gyro
 
         private final int mMode;
         

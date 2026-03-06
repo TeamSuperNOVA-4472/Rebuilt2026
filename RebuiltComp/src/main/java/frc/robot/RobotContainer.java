@@ -29,6 +29,7 @@ import frc.robot.Commands.SwerveTeleop;
 import frc.robot.Commands.flywheelSysIDCommand;
 import frc.robot.Commands.setFlywheel;
 import frc.robot.Commands.setFlywheelTest;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
@@ -78,6 +79,13 @@ public class RobotContainer {
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
+
+  private final resetTurretEncoder mResetTurretEncoder = new resetTurretEncoder(mTurret);
+
+  public Command getTurretReset()
+  {
+    return mResetTurretEncoder;
+  }
 
   public RobotContainer() {
     // Defaults for swerve and turret
@@ -142,14 +150,14 @@ public class RobotContainer {
     }));
 
     // Intake pump
-    mOperator.y().onTrue(new toggleIntakeStorage(mIntake));
+    mOperator.rightTrigger(Constants.OperatorConstants.kTriggerThreshold).onTrue(new toggleIntakeStorage(mIntake));
 
     // Encoder resets
-    mOperator.b().onTrue(new resetHoodEncoder(mFlywheel));
+    mOperator.povDown().onTrue(new resetHoodEncoder(mFlywheel));
 
-    mOperator.rightBumper().onTrue(new resetSliderEncoder(mIntake));
+    mOperator.povUp().onTrue(new resetSliderEncoder(mIntake));
 
-    mOperator.leftBumper().onTrue(new resetTurretEncoder(mTurret));
+    mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
   }
 
   public Command getAutonomousCommand() {
