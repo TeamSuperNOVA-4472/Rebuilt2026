@@ -47,6 +47,9 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive mSwerveDrive;
   private Command kSwerveSysID;
   private double mYawGyroOffset = 0;
+  private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
+  private static final double kV = 2.121025; //BL: 2.1179 BR: 2.0122 FL: 2.1095 FR: 2.2445
+  private static final double kA = 0.1667725; //BL: 0.14532 BR: 0.14542 FL: 0.24849 FR: 0.12786
 
   private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
@@ -54,7 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
     try {
       swerveDrive = new SwerveParser(swerveJsonDirectory)
         .createSwerveDrive(kMaxSpeedMS);
-      //swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+      swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
