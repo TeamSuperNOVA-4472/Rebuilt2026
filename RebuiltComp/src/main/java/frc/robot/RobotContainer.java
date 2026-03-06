@@ -111,6 +111,9 @@ public class RobotContainer {
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
     autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
+    autoChooser.addOption("Neutral Zone Left Side", new PathPlannerAuto("Neautral zone agressive"));
+    autoChooser.addOption("Neutral Zone Right Side", new PathPlannerAuto("Neutral zone right side"));
+    autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 

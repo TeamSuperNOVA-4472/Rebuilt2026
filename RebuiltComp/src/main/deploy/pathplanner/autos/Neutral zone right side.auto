@@ -5,56 +5,50 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "ToggleIntakeStore"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOn"
+                }
+              },
               {
                 "type": "path",
                 "data": {
                   "pathName": "Neutral zone right side"
                 }
-              },
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
               {
-                "type": "sequential",
+                "type": "named",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.71
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOn"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "ToggleIntakeStore"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.44
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOff"
-                      }
-                    }
-                  ]
+                  "name": "SpindexerOn"
                 }
               },
               {
                 "type": "named",
                 "data": {
-                  "name": "SpindexerOn"
+                  "name": "FlywheelOn"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ToggleIntakeStore"
                 }
               }
             ]

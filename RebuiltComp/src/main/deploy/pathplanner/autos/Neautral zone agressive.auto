@@ -5,9 +5,9 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Neautral zone agressive"
+            "name": "ToggleIntakeStore"
           }
         },
         {
@@ -15,9 +15,9 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "path",
                 "data": {
-                  "waitTime": 1.36
+                  "pathName": "Neautral zone agressive"
                 }
               },
               {
@@ -25,32 +25,33 @@
                 "data": {
                   "name": "IntakeOn"
                 }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpindexerOn"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FlywheelOn"
+                }
               },
               {
                 "type": "named",
                 "data": {
                   "name": "ToggleIntakeStore"
                 }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 3.34
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "IntakeOff"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOn"
           }
         }
       ]
