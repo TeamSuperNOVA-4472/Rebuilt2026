@@ -65,7 +65,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.25
+                        "waitTime": 2.7
                       }
                     },
                     {
@@ -85,25 +85,19 @@
                             }
                           },
                           {
+                            "type": "named",
+                            "data": {
+                              "name": "FollowWithTurret"
+                            }
+                          },
+                          {
                             "type": "sequential",
                             "data": {
                               "commands": [
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 1.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "FollowWithTurret"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 1.0
+                                    "waitTime": 2.5
                                   }
                                 },
                                 {

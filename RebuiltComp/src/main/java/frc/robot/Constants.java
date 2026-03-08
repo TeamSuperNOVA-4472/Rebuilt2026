@@ -186,8 +186,8 @@ public final class Constants {
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 360;
 
-    public static final double kNeutralZoneThresholdBlue = 5;
-    public static final double kNeutralZoneThresholdRed = 10;
+    public static final double kNeutralZoneThresholdBlue = 6;
+    public static final double kNeutralZoneThresholdRed = 9;
 
     public static final boolean kIsAndyMark = false;
 

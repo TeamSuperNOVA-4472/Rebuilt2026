@@ -120,9 +120,8 @@ public class RobotContainer {
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
 
-    NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true));
-    NamedCommands.registerCommand("SpindexerOn",
-      new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getMode() == FlywheelMode.SPINNING));
+    NamedCommands.registerCommand("SpindexerOff", new InstantCommand(() -> mSpindexer.setMode(SpindexerMode.OFF)));
+    NamedCommands.registerCommand("SpindexerOn", new InstantCommand(() -> mSpindexer.setMode(SpindexerMode.LOAD)));
     NamedCommands.registerCommand("FlywheelOn", new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
