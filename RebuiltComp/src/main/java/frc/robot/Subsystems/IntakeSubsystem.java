@@ -128,11 +128,11 @@ public class IntakeSubsystem extends SubsystemBase {
     private void setActionState(){
         switch (kActionMode){
         case INTAKE:
-            kIntakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
+            kIntakeMotor.set(-Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
             break;
         
         case OUTTAKE:
-            kIntakeMotor.set(-Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
+            kIntakeMotor.set(Constants.IntakeSubsystemConstants.kIntakeMotorSpeed);
             break;
         
         case OFF:
@@ -153,7 +153,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void resetSliderEncoderToOutPosition()
     {
-        kIntakeSlider.setPosition(IntakeSubsystemConstants.kOutPos);
+        kIntakeSlider.setPosition(IntakeSubsystemConstants.kOutPos/Constants.IntakeSubsystemConstants.kEncoderToInchesMult);
     }
 
     public double getSliderStator()

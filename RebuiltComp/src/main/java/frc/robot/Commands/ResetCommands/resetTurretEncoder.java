@@ -31,10 +31,10 @@ public class resetTurretEncoder extends Command {
     @Override
     public void end(boolean interrupted) {
         kTurretSubsystem.stop();
-        if (!interrupted)
-        {
+        // if (!interrupted)
+        // {
             kTurretSubsystem.resetEncoder();
             kTurretSubsystem.enablePID();
-        }
+        // }
     }
 }

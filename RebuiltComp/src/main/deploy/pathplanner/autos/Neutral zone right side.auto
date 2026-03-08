@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "named",
+          "data": {
+            "name": "ResetTurretEncoder"
+          }
+        },
+        {
+          "type": "deadline",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Neutral zone right side"
-                }
-              },
               {
                 "type": "sequential",
                 "data": {
@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.71
+                        "waitTime": 1.3
                       }
                     },
                     {
@@ -45,19 +45,87 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeOff"
+                        "name": "ToggleIntakeStore"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 1.4
+                      }
+                    },
+                    {
+                      "type": "deadline",
+                      "data": {
+                        "commands": [
+                          {
+                            "type": "wait",
+                            "data": {
+                              "waitTime": 12.0
+                            }
+                          },
+                          {
+                            "type": "named",
+                            "data": {
+                              "name": "FlywheelOn"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 2.0
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeOff"
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "SpindexerOn"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        ]
                       }
                     }
                   ]
                 }
               },
               {
+                "type": "path",
+                "data": {
+                  "pathName": "Neutral zone right side"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
-                  "name": "SpindexerOn"
+                  "name": "FollowWithTurret"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FlywheelOff"
           }
         }
       ]

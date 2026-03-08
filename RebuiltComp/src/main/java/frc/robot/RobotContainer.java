@@ -111,6 +111,15 @@ public class RobotContainer {
     });
 
     NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
+    NamedCommands.registerCommand("ResetTurretEncoder", new resetTurretEncoder(mTurret));
+    NamedCommands.registerCommand("FollowWithTurret", new moveTurretAbsolute(
+      mTurret, 
+      mSwerve::getHeadingDegrees,
+      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+        mSwerve.getPose(),
+        mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
+
     NamedCommands.registerCommand("SpindexerOff", new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true));
     NamedCommands.registerCommand("SpindexerOn",
       new setSpindexer(mSpindexer, SpindexerMode.LOAD, () -> mFlywheel.getMode() == FlywheelMode.SPINNING));
@@ -128,6 +137,9 @@ public class RobotContainer {
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
     autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
+    autoChooser.addOption("Depot From Center", new PathPlannerAuto("Depo zone"));
+    autoChooser.addOption("Right Neutral Zone", new PathPlannerAuto("Neutral zone right side"));
+    autoChooser.addOption("Left Neutral Zone", new PathPlannerAuto("Neutral zone agressive"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
     configureDriverBindings();
@@ -145,11 +157,6 @@ public class RobotContainer {
     mDriver.leftBumper().onFalse(new InstantCommand(() ->{
       mSpindexer.setMode(SpindexerMode.OFF);
     }));
-
-    // Intake Action Bindings
-    mDriver.rightBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
-    mDriver.rightTrigger(OperatorConstants.kTriggerThreshold).onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
-    mDriver.rightBumper().or(mDriver.rightTrigger(OperatorConstants.kTriggerThreshold)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
 
     // Flywheel and Hood Bindings
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(
@@ -170,7 +177,7 @@ public class RobotContainer {
   private void configureOperatorBindings()
   {
     // Safe mode bindings
-    mOperator.a().onTrue(new InstantCommand(() -> {
+    /*mOperator.a().onTrue(new InstantCommand(() -> {
       mTurret.enableSafeMode();
       mFlywheel.enableSafeMode();
     }));
@@ -178,7 +185,12 @@ public class RobotContainer {
     mOperator.x().onTrue(new InstantCommand(() -> {
       mTurret.disableSafeMode();
       mFlywheel.disableSafeMode();
-    }));
+    }));*/
+
+    // Intake Action Bindings
+    mOperator.leftBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
+    mOperator.leftTrigger(OperatorConstants.kTriggerThreshold).onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
+    mOperator.leftBumper().or(mOperator.leftTrigger(OperatorConstants.kTriggerThreshold)).onFalse(new setIntakeAction(mIntake, IntakeActionMode.OFF));
 
     // Intake pump
     mOperator.rightTrigger(Constants.OperatorConstants.kTriggerThreshold).onTrue(new toggleIntakeStorage(mIntake));

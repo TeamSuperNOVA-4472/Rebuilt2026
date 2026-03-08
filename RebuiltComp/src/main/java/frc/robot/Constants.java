@@ -55,10 +55,10 @@ public final class Constants {
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
       kDistanceToFlywheelSpeed.put(1.8161, 40.0);
-      kDistanceToFlywheelSpeed.put(2.5781,50.0);
-      kDistanceToFlywheelSpeed.put(3.3401,55.0);
-      kDistanceToFlywheelSpeed.put(4.1021, 65.0);
-      kDistanceToFlywheelSpeed.put(4.8641, 80.0);
+      kDistanceToFlywheelSpeed.put(2.5781, 45.0);
+      kDistanceToFlywheelSpeed.put(3.3401, 50.0);
+      kDistanceToFlywheelSpeed.put(4.1021, 60.0);
+      kDistanceToFlywheelSpeed.put(4.8641, 72.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -74,9 +74,9 @@ public final class Constants {
     static {
       kDistanceToHoodAngle.put(1.8161, 20.0);
       kDistanceToHoodAngle.put(2.5781, 24.0);
-      kDistanceToHoodAngle.put(3.3401,28.0);
-      kDistanceToHoodAngle.put(4.1021, 30.0);
-      kDistanceToHoodAngle.put(4.8641, 30.0);
+      kDistanceToHoodAngle.put(3.3401,26.0);
+      kDistanceToHoodAngle.put(4.1021, 28.0);
+      kDistanceToHoodAngle.put(4.8641, 28.0);
     }
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
@@ -127,7 +127,7 @@ public final class Constants {
     
     public static final double kStartingHoodAngle = 21;
     public static final double kPassingAngle = 44;
-    public static final double kPassingSpeed = 80;
+    public static final double kPassingSpeed = 70;
     public static final double kSafeAngle = 21;
     public static final double kSafeSpeed = 40;
 
@@ -175,14 +175,14 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2 = true; 
-    public static final String[] kLimelightNames = {"limelight-one"};
+    public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.3;
     public static final double kTagDistThreshold = 10;
     public static final double kLatencyLagInSeconds = 0.4;
-    public static final double kTagCountThreshold = 2;
+    public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 360;
 
@@ -222,7 +222,7 @@ public final class Constants {
 
     public static final double kTurretF = 0.01;
 
-    public static final double kDeadband = 320;
+    public static final double kDeadband = 330;
     public static final double kGearing = 24.668;
 
     public static final double kMaxSpeedOutput = 1;
@@ -272,8 +272,8 @@ public final class Constants {
 
     public static final int kIntakeMotorPort = 12;
     public static final String kIntakeCanbus = "rio";
-    public static final double kIntakeSupplyLimit = 30;
-    public static final double kIntakeStatorLimit = 30;
+    public static final double kIntakeSupplyLimit = 60;
+    public static final double kIntakeStatorLimit = 60;
     public static final boolean kIntakeSupplyLimitEnabled = true;
     public static final boolean kIntakeStatorLimitEnabled = true;
     public static final NeutralModeValue kIntakeNeutralMode = NeutralModeValue.Coast;
@@ -314,7 +314,6 @@ public final class Constants {
     public static final double kSimMultiplier = 12;
     public static final double kSimdt = 0.02;
 
-    //TODO: Calculate the actual value for this.
     public static final double kEncoderToInchesMult = 3.1875 / 5 ;
   }
 }
