@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import org.littletonrobotics.junction.Logger;
 
 
 public class VisionSubsystem extends SubsystemBase
@@ -128,6 +131,11 @@ public class VisionSubsystem extends SubsystemBase
 
                             
         }
+        
+        //Vision logging
+        List<Pose2d> allTagPoseList = new LinkedList<>();
+        List<Pose2d> allRobotPoseList = new LinkedList<>();
+        List<Pose2d> allRobotPosesRejected = new LinkedList<>();
     }
 }
 
