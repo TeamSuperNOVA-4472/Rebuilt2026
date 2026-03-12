@@ -105,6 +105,9 @@ public class RobotContainer {
     Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
     safeModeOn.whileTrue(new moveTurretSafe(mTurret));
 
+    mTurret.setAngularSpeedSupplier(mSwerve::getAngularVelocity);
+    mTurret.setAngularAccelerationSupplier(mSwerve::getAngularAcceleration);
+
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
       mSwerve.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);

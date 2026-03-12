@@ -23,12 +23,14 @@ public class SpindexerSubsystem extends SubsystemBase {
     private TalonFX kSpindexerMotor;
     private TalonFX kKickerMotor;
     private SpindexerMode kMode;
-    private final PIDController kKickerPID = new PIDController(0.03, 0, 0);
+    private final PIDController kKickerPID;
 
     private SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
         kSpindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorPort,SpindexerConstants.kSpindexerCanbus);
         kKickerMotor = new TalonFX(SpindexerConstants.kKickerMotorPort, SpindexerConstants.kKickerCanbus);
+
+        kKickerPID = new PIDController(SpindexerConstants.kKickerP, SpindexerConstants.kKickerI, SpindexerConstants.kKickerD);
 
         TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kSpindexerCurrentConfig = new CurrentLimitsConfigs();

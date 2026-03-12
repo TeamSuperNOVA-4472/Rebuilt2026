@@ -22,6 +22,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,7 +47,10 @@ public class SwerveSubsystem extends SubsystemBase {
   public static final SwerveSubsystem kSwerve = new SwerveSubsystem();
   private final SwerveDrive mSwerveDrive;
   private Command kSwerveSysID;
-  private double mYawGyroOffset = 0;
+  private double kYawGyroOffset = 0;
+  private double kAngularAcceleration = 0;
+  private double kPreviousTime = 0;
+  private double kPreviousAngularVelocity = 0;
   private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
   private static final double kV = 2.121025; //BL: 2.1179 BR: 2.0122 FL: 2.1095 FR: 2.2445
   private static final double kA = 0.1667725; //BL: 0.14532 BR: 0.14542 FL: 0.24849 FR: 0.12786
@@ -153,7 +157,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pPose) {
     mSwerveDrive.resetOdometry(pPose);
-    mYawGyroOffset = ((pPose.getRotation().getDegrees() - mSwerveDrive.getYaw().getDegrees()) % 360 + 360) % 360;
+    kYawGyroOffset = ((pPose.getRotation().getDegrees() - mSwerveDrive.getYaw().getDegrees()) % 360 + 360) % 360;
   }
 
   public void resetHeading() {
@@ -169,11 +173,15 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getHeadingDegrees() {
-    return (((mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360) + 360) % 360;
+    return (((mSwerveDrive.getYaw().getDegrees() + kYawGyroOffset) % 360) + 360) % 360;
   }
 
   public double getAngularVelocity() {
     return Units.radiansToDegrees(getRobotRelativeSpeeds().omegaRadiansPerSecond);
+  }
+
+  public double getAngularAcceleration() {
+    return kAngularAcceleration;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -191,6 +199,16 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     mSwerveDrive.updateOdometry();
+
+    double currentTime = WPIUtilJNI.getSystemTime();
+    double currentAngularVelocity = getAngularVelocity();
+
+    double dt = currentTime - kPreviousTime;
+    kAngularAcceleration = (currentAngularVelocity - kPreviousAngularVelocity) / dt;
+
+    kPreviousAngularVelocity = currentAngularVelocity;
+    kPreviousTime = currentTime;
+
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
   }

@@ -1,6 +1,7 @@
 package frc.robot.Subsystems;
 
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
 
 import javax.xml.transform.TransformerConfigurationException;
 
@@ -29,7 +30,9 @@ public class TurretSubsystem extends SubsystemBase
     private final TalonFX kTurretMotor;
 
     private final PIDController kPidController;
-    private final SimpleMotorFeedforward kFeedforward = new SimpleMotorFeedforward(getStator(), getAngle());
+    private final SimpleMotorFeedforward kFeedForward;
+    private Supplier<Double> kGetAngularVelocity;
+    private Supplier<Double> kGetAngularAcceleration;
 
     private double kTurretTargetAngle = 0.0;
     private double kOutput;
@@ -41,6 +44,7 @@ public class TurretSubsystem extends SubsystemBase
     private final Mechanism2d kSimSpace;
     private final MechanismRoot2d kSimRoot;
     private final MechanismLigament2d kSimDisp;
+
     public static TurretSubsystem kTurret = new TurretSubsystem();
 
     private TurretSubsystem() 
@@ -48,6 +52,7 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor = new TalonFX(TurretConstants.kTurretMotorPort, TurretConstants.kTurretCanbus);
 
         kPidController = new PIDController(TurretConstants.kTurretP, TurretConstants.kTurretI, TurretConstants.kTurretD);
+        kFeedForward = new SimpleMotorFeedforward(0, TurretConstants.kTurretV, TurretConstants.kTurretA); // ks is manually adjusted for sign
         kTurretSimMotor = DCMotor.getKrakenX44(TurretConstants.kSimNumMotor);
         kTurretSim = new SingleJointedArmSim(kTurretSimMotor, TurretConstants.kGearing, TurretConstants.kSimjKgMetersSquared, TurretConstants.kSimArmLength, 0, TurretConstants.kDeadband * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(TurretConstants.kSimWidth, TurretConstants.kSimHeight);
@@ -71,6 +76,18 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.getConfigurator().apply(kTurretConfig);
 
         kTurretMotor.setPosition(0);
+        kGetAngularVelocity = () -> 0.0;
+        kGetAngularAcceleration = () -> 0.0;
+    }
+
+    public void setAngularSpeedSupplier(Supplier<Double> speed)
+    {
+        kGetAngularVelocity = speed;
+    }
+
+    public void setAngularAccelerationSupplier(Supplier<Double> acceleration)
+    {
+        kGetAngularAcceleration = acceleration;
     }
 
     public Boolean getSafeModeEnabled()
@@ -131,8 +148,8 @@ public class TurretSubsystem extends SubsystemBase
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput) + TurretConstants.kTurretF;
-        double addition = kOutput >= 0 ? TurretConstants.kTurretF : -TurretConstants.kTurretF;
+        kOutput = MathUtil.clamp(kFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
+        double addition = kOutput >= 0 ? TurretConstants.kTurretS : -TurretConstants.kTurretS;
         kTurretMotor.set(kOutput + addition);
     }
 

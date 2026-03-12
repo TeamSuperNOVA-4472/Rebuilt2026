@@ -217,10 +217,12 @@ public final class Constants {
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 
+    public static final double kTurretS = 0.01;
+    public static final double kTurretV = 0;
+    public static final double kTurretA = 0;
+
     public static final double kTurretResetSpeed = -0.3;
     public static final double kTurretResetStatorThreshold = 19;
-
-    public static final double kTurretF = 0.01;
 
     public static final double kDeadband = 330;
     public static final double kGearing = 24.668;
@@ -256,6 +258,10 @@ public final class Constants {
     public static final boolean kKickerSupplyLimitEnabled = true;
     public static final boolean kKickerStatorLimitEnabled = true;
     public static final NeutralModeValue kKickerNeutralMode = NeutralModeValue.Coast;
+
+    public static final double kKickerP = 0.03;
+    public static final double kKickerI = 0;
+    public static final double kKickerD = 0;
 
     public static final double kSpindexerVoltage = -9;
     public static final double kKickerSpeed = -40;
