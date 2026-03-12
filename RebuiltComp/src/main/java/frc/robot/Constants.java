@@ -87,16 +87,16 @@ public final class Constants {
 
     public static final int kFlywheel1MotorPort = 60;
     public static final String kFlywheel1Canbus = "CANivore";
-    public static final double kFlywheel1SupplyLimit = 40;
-    public static final double kFlywheel1StatorLimit = 40;
+    public static final double kFlywheel1SupplyLimit = 20;
+    public static final double kFlywheel1StatorLimit = 20;
     public static final boolean kFlywheel1SupplyLimitEnabled = true;
     public static final boolean kFlywheel1StatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheel1NeutralMode = NeutralModeValue.Coast;
 
     public static final int kFlywheel2MotorPort = 20;
     public static final String kFlywheel2Canbus = "CANivore";
-    public static final double kFlywheel2SupplyLimit = 40;
-    public static final double kFlywheel2StatorLimit = 40;
+    public static final double kFlywheel2SupplyLimit = 20;
+    public static final double kFlywheel2StatorLimit = 20;
     public static final boolean kFlywheel2SupplyLimitEnabled = true;
     public static final boolean kFlywheel2StatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheel2NeutralMode = NeutralModeValue.Coast;
@@ -177,8 +177,8 @@ public final class Constants {
     public static final boolean kUseMegatag2 = true; 
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
-    public static final double kAmbiguity = .9;
-    public static final double kBaseLateralDev = 0.3;
+    public static final double kAmbiguity = .3;
+    public static final double kBaseLateralDev = 0.5;
     public static final double kBaseRotDev = 0.3;
     public static final double kTagDistThreshold = 10;
     public static final double kLatencyLagInSeconds = 0.4;
@@ -258,13 +258,14 @@ public final class Constants {
     public static final NeutralModeValue kKickerNeutralMode = NeutralModeValue.Coast;
 
     public static final double kSpindexerVoltage = -9;
+    public static final double kKickerSpeed = -40;
   }
   
   public static class IntakeSubsystemConstants {
     //TODO: Find real values for the constants.
     public static final double kSliderOffset = 0.0;
     public static final double kStoredPos = 0.0;
-    public static final double kOutPos = 11.5;
+    public static final double kOutPos = 11;
     public static final double kIntakeAngle = 345.0;
     public static final double kIntakeMotorSpeed = 0.8;
     public static final double kSlideThreshold = 0.20;

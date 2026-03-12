@@ -23,13 +23,6 @@ public class setSpindexer extends Command {
 
     @Override
     public void execute(){
-        if (kReadyToShoot.get())
-        {
-            kSpindexer.setMode(kNewMode);
-        }
-        else
-        {
-            kSpindexer.setMode(SpindexerMode.OFF);
-        }
+        kSpindexer.setMode(kNewMode);
     }
 }

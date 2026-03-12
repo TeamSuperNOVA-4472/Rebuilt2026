@@ -29,6 +29,7 @@ public class TurretSubsystem extends SubsystemBase
     private final TalonFX kTurretMotor;
 
     private final PIDController kPidController;
+    private final SimpleMotorFeedforward kFeedforward = new SimpleMotorFeedforward(getStator(), getAngle());
 
     private double kTurretTargetAngle = 0.0;
     private double kOutput;
@@ -156,6 +157,7 @@ public class TurretSubsystem extends SubsystemBase
                 goToAngle(TurretConstants.kDeadband);
             }
         }
+
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Relative Angle: ", getAngle());
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Deadband: ", TurretConstants.kDeadband);
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Goal Angle: ", kTurretTargetAngle);
