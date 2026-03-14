@@ -120,6 +120,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1CurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheel1SupplyLimitEnabled;
         kFlywheel1CurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheel1StatorLimitEnabled;
         kFlywheel1CurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheel1StatorLimit;
+        kFlywheel1CurrentConfig.SupplyCurrentLowerLimit = FlywheelConstants.kFlywheel1SupplyLimit;
         kFlywheel1MotorConfig.NeutralMode = FlywheelConstants.kFlywheel1NeutralMode;
         kFlywheel1Config.withCurrentLimits(kFlywheel1CurrentConfig);
         kFlywheel1Config.withMotorOutput(kFlywheel1MotorConfig);
@@ -135,6 +136,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel2CurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheel2SupplyLimitEnabled;
         kFlywheel2CurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheel2StatorLimitEnabled;
         kFlywheel2CurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheel2StatorLimit;
+        kFlywheel2CurrentConfig.SupplyCurrentLowerLimit = FlywheelConstants.kFlywheel2SupplyLimit;;
         kFlywheel2MotorConfig.NeutralMode = FlywheelConstants.kFlywheel2NeutralMode;
         kFlywheel2Config.withCurrentLimits(kFlywheel2CurrentConfig);
         kFlywheel2Config.withMotorOutput(kFlywheel2MotorConfig);

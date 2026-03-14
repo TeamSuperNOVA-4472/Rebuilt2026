@@ -188,6 +188,10 @@ public class SwerveSubsystem extends SubsystemBase {
     return Units.radiansToDegrees(getRobotRelativeSpeeds().omegaRadiansPerSecond);
   }
 
+  public double getAngularAcceleration() {
+    return kAngularAcceleration;
+  }
+
   public ChassisSpeeds getRobotRelativeSpeeds() {
     return mSwerveDrive.getRobotVelocity();
   }
