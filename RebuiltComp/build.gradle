@@ -39,6 +39,13 @@ deploy {
             }
         }
     }
+    
+    //AdvantageKit
+    task(replayWatch, type: JavaExec) {
+        mainClass = "org.littletonrobotics.junction.ReplayWatch"
+        classpath = sourceSets.main.runtimeClasspath
+    }
+    
 }
 
 def deployArtifact = deploy.targets.roborio.artifacts.frcJava

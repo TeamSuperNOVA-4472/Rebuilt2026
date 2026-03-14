@@ -1,14 +1,20 @@
 package frc.robot.Subsystems;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -127,6 +133,9 @@ public class VisionSubsystem extends SubsystemBase
         // Check if the update passes all thresholds
         if (pose.avgTagDist <= Constants.VisionConstants.kTagDistThreshold && 
             pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
+            pose.pose.getX() >= AprilTagFieldLayout.loadField(null).getFieldWidth() &&
+            pose.pose.getY() >= AprilTagFieldLayout.loadField(null).getFieldLength() &&
+            pose.pose.getRotation().getDegrees() >= Constants.VisionConstants.kMaxDeg &&
             underAmbiguityThreshold(pose))
         {
             return false;
@@ -144,7 +153,6 @@ public class VisionSubsystem extends SubsystemBase
         {
             //Localization--will not return location update if a Limelight can't see an Apriltag
             pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
-            
             SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
 
             if(rejectUpdate(pose))
@@ -182,7 +190,45 @@ public class VisionSubsystem extends SubsystemBase
             }
 
             adjustThrottleAndIMU();
+
+            Logger.recordOutput("TagAmbig", underAmbiguityThreshold(null));
+            Logger.recordOutput("PoseUpdate", pose.get().pose.toString());
+            //Logger.recordOutput("Rotation", pose.pose.getHeadingDegrees());
         }
+
+        //Vision logging
+        List<Pose2d> allTagPoseList = new LinkedList<>();
+        List<Pose2d> allRobotPoseList = new LinkedList<>();
+        List<Pose2d> allRobotPosesRejected = new LinkedList<>();
+
+        /* Log camera metadata pt.2 . This is a work in progress; I'm trying to translate the temp code to ours
+        Logger.recordOutput(
+            "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
+            tagPoses.toArray(new Pose3d[0]));
+        Logger.recordOutput(
+            "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
+            LimelightHelpers.getBotPose2d .toArray(new Pose3d[0]));
+        Logger.recordOutput(
+            "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
+            robotPosesAccepted.toArray(new Pose3d[0]));
+        Logger.recordOutput(
+            "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
+            robotPosesRejected.toArray(new Pose3d[0]));
+        allTagPoses.addAll(tagPoses);
+        allRobotPoses.addAll(robotPoses);
+        allRobotPosesAccepted.addAll(robotPosesAccepted);
+        allRobotPosesRejected.addAll(robotPosesRejected);
+        
+
+        // Log summary data
+        Logger.recordOutput("Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[0]));
+        Logger.recordOutput("Vision/Summary/RobotPoses", allRobotPoses.toArray(new Pose3d[0]));
+        Logger.recordOutput(
+            "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
+        Logger.recordOutput(
+            "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));*/
+    
+    
     }
 }
 

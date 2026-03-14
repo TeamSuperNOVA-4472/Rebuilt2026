@@ -4,24 +4,22 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.NeutralMode;
+import org.littletonrobotics.junction.LogFileUtil;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -181,6 +179,7 @@ public final class Constants {
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.3;
     public static final double kTagDistThreshold = 10;
+    public static final double kMaxDeg = 720;
     public static final double kLatencyLagInSeconds = 0.4;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
@@ -198,6 +197,22 @@ public final class Constants {
     // Andymark hub poses
     public static final Pose2d kHubPoseBlueAndyMarkMeters = new Pose2d(4.6115224, 4.0213534, Rotation2d.fromDegrees(0));
     public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
+  
+    // AdvantageKit mode constants
+    public static final Mode simMode = Mode.REPLAY;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+    String logPath = LogFileUtil.findReplayLog();
+
+    public static enum Mode {
+      // Running on a real robot.
+      REAL,
+
+      //Running a physics simulator.
+      SIM,
+
+      //Replaying from a log file.
+      REPLAY
+    }
   }
 
   

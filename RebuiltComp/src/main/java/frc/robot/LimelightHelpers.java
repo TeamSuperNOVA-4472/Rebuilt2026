@@ -624,7 +624,7 @@ public class LimelightHelpers {
         public double ta = 0;
         public double distToCamera = 0;
         public double distToRobot = 0;
-        public double ambiguity = 0;
+        public static double ambiguity = 0;
 
 
         public RawFiducial(int id, double txnc, double tync, double ta, double distToCamera, double distToRobot, double ambiguity) {
