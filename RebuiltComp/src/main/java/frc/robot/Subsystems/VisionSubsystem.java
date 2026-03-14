@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -40,6 +41,7 @@ public class VisionSubsystem extends SubsystemBase
     private final Supplier<Double> mGetRobotRotation;
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
+    private boolean mUseMegaTag2 = VisionConstants.kUseMegatag2ByDefault;
 
     // Limelight lib is stupid and wants integers for modes
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
@@ -57,7 +59,10 @@ public class VisionSubsystem extends SubsystemBase
         public int get() { return mMode; }
     }
 
-    public VisionSubsystem(Supplier<Double> pGetRobotRotation, Supplier<Double> pGetRobotAngularVelocity, BiConsumer<PoseEstimate, Matrix<N3,N1>> pUpdateRobotPose)
+    public VisionSubsystem(
+        Supplier<Double> pGetRobotRotation, 
+        Supplier<Double> pGetRobotAngularVelocity, 
+        BiConsumer<PoseEstimate, Matrix<N3,N1>> pUpdateRobotPose)
     {
         mGetRobotRotation = pGetRobotRotation; // Rotation supplies the heading of the robot at any point from -180 to 180
         mUpdateRobotPose = pUpdateRobotPose; // Allows us to pass the calculated pose to the drivetrain with estimated deviations
@@ -65,6 +70,9 @@ public class VisionSubsystem extends SubsystemBase
 
         setIMUMode(VisionMode.SEEDING); // Set initial mode to seed from gyro
     }
+
+    public void disableMT2() { mUseMegaTag2 = false; }
+    public void enableMT2() { mUseMegaTag2 = true; }
 
     private void updatePose(PoseEstimate pose)
     {
@@ -110,8 +118,8 @@ public class VisionSubsystem extends SubsystemBase
 
     private Matrix<N3,N1> calculateStdDevs(PoseEstimate pose)
     {
-        double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
-        double rotationaldev = Constants.VisionConstants.kBaseRotDev ; // Scale the rotational deviation by the angular velocity
+        double lateraldev = (Math.pow(pose.avgTagDist, 2.0) / pose.tagCount) * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
+        double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : (Math.pow(pose.avgTagDist, 2.0) / pose.tagCount) * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
     }
@@ -133,9 +141,11 @@ public class VisionSubsystem extends SubsystemBase
         // Check if the update passes all thresholds
         if (pose.avgTagDist <= Constants.VisionConstants.kTagDistThreshold && 
             pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
-            pose.pose.getX() >= AprilTagFieldLayout.loadField(null).getFieldWidth() &&
-            pose.pose.getY() >= AprilTagFieldLayout.loadField(null).getFieldLength() &&
-            pose.pose.getRotation().getDegrees() >= Constants.VisionConstants.kMaxDeg &&
+            pose.pose.getX() >= 0 &&
+            pose.pose.getY() >= 0 &&
+            pose.pose.getX() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldLength() &&
+            pose.pose.getY() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldWidth() &&
+            mGetRobotAngularVelocity.get() <= Constants.VisionConstants.kAngularVelocityThreshold &&
             underAmbiguityThreshold(pose))
         {
             return false;
@@ -149,21 +159,22 @@ public class VisionSubsystem extends SubsystemBase
         boolean rejectUpdate = false;         
         LimelightHelpers.PoseEstimate pose;
 
-        if(Constants.VisionConstants.kUseMegatag2)
+        if(mUseMegaTag2)
         {
             //Localization--will not return location update if a Limelight can't see an Apriltag
             pose = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limelight);
-            SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
-
-            if(rejectUpdate(pose))
-            {
-                rejectUpdate = true;
-            }
         }
         else
         {
             pose = LimelightHelpers.getBotPoseEstimate_wpiBlue(limelight);
         }
+
+        if(rejectUpdate(pose))
+        {
+            rejectUpdate = true;
+        }
+
+        SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
 
         if(!rejectUpdate)
         {

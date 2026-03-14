@@ -17,6 +17,12 @@ import frc.robot.Constants.VisionConstants;
 
 public class FieldMathHelpers
 {
+    public enum Location{
+        BUMP,
+        TRENCH,
+        NEUTRAL_ZONE_OR_OPPONENT,
+        ALLIANCE_ZONE,
+    }
 
     // TODO: add math for turret position offset from center, test equations for velocity, change flywheel from rpm to dist vs angle
 
@@ -101,18 +107,6 @@ public class FieldMathHelpers
         return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getNorm();
     }
 
-    public static boolean isInScoringZone(Pose2d botPose)
-    {
-        if (isRedAlliance())
-        {
-            return botPose.getX() > VisionConstants.kNeutralZoneThresholdRed ? true : false;
-        }
-        else
-        {
-            return botPose.getX() < VisionConstants.kNeutralZoneThresholdBlue ? true : false;
-        }
-    }
-
     public static double getRotationToPassOrShootWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
     {
         if (isInScoringZone(botPose))
@@ -182,6 +176,66 @@ public class FieldMathHelpers
         else
         {
             return Constants.VisionConstants.kIsAndyMark ? Constants.VisionConstants.kHubPoseBlueAndyMarkMeters : Constants.VisionConstants.kHubPoseBlueWeldedMeters;
+        }
+    }
+
+    public static Location getLocation(Pose2d botPose)
+    {
+        if (isUnderTrench(botPose))
+        {
+            return Location.TRENCH;
+        }
+        else if (isOnBump(botPose))
+        {
+            return Location.BUMP;
+        }
+        else if (isInScoringZone(botPose))
+        {
+            return Location.ALLIANCE_ZONE;
+        }
+        else
+        {
+            return Location.NEUTRAL_ZONE_OR_OPPONENT;
+        }
+    }
+
+    private static Boolean isUnderTrench(Pose2d botPose)
+    {
+        double x = botPose.getX();
+        double y = botPose.getY();
+
+        if (((x < VisionConstants.kRedTrenchXHighThreshold && x > VisionConstants.kRedTrenchXLowThreshold) ||
+            (x < VisionConstants.kBlueTrenchXHighThreshold && x > VisionConstants.kBlueTrenchXLowThreshold)) &&
+            (y > VisionConstants.kTopTrenchYThreshold || y < VisionConstants.kBottomTrenchYThreshold))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private static Boolean isOnBump(Pose2d botPose)
+    {
+        double x = botPose.getX();
+        double y = botPose.getY();
+
+        if (((x > VisionConstants.kRedBumpXLowThreshold && x < VisionConstants.kRedBumpXHighThreshold) ||
+            (x > VisionConstants.kBlueBumpXLowThreshold && x < VisionConstants.kBlueBumpXHighThreshold)) &&
+            (y < VisionConstants.kTopTrenchYThreshold && y > VisionConstants.kBottomTrenchYThreshold))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isInScoringZone(Pose2d botPose)
+    {
+        if (isRedAlliance())
+        {
+            return botPose.getX() > VisionConstants.kRedBumpXLowThreshold ? true : false;
+        }
+        else
+        {
+            return botPose.getX() < VisionConstants.kBlueBumpXHighThreshold ? true : false;
         }
     }
 }

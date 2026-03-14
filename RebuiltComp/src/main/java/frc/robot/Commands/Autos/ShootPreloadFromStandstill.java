@@ -31,7 +31,7 @@ public class ShootPreloadFromStandstill extends ParallelCommandGroup {
                     swerve.getPose(), 
                     swerve.getFieldRelativeSpeeds().vxMetersPerSecond,
                     swerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-                () -> true),
+                () -> FieldMathHelpers.Location.ALLIANCE_ZONE),
             new SequentialCommandGroup(
                 new WaitCommand(5.0),
                 new setSpindexer(

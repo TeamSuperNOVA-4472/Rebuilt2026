@@ -6,8 +6,11 @@ package frc.robot;
 
 import java.lang.reflect.Field;
 
+import javax.tools.JavaFileManager.Location;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -28,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.SwerveTeleop;
 import frc.robot.Commands.flywheelSysIDCommand;
@@ -102,6 +106,7 @@ public class RobotContainer {
     // Defaults for swerve and turret
     mSwerve.setDefaultCommand(mSwerveTeleop);
     mTurret.setDefaultCommand(mMoveTurretAbsolute);
+
     Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
     safeModeOn.whileTrue(new moveTurretSafe(mTurret));
 
@@ -109,6 +114,14 @@ public class RobotContainer {
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
       mSwerve.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);
     });
+
+    // Only debounces (waits for the condition to be true or false for a bit) on the way down from the bump
+    Trigger onBump = new Trigger(() -> mSwerve.getLocation() == FieldMathHelpers.Location.BUMP).debounce(VisionConstants.kCooldownBump, DebounceType.kFalling);
+    onBump.onTrue(new InstantCommand(mVisionSubsystem::disableMT2));
+    onBump.onFalse(new InstantCommand(() -> {
+      mVisionSubsystem.enableMT2();
+      mSwerve.resetOdometry(mSwerve.getPose()); // Reset imu to whatever MT1 contributed
+    }));
 
     NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
     NamedCommands.registerCommand("ResetTurretEncoder", new resetTurretEncoder(mTurret));
@@ -126,7 +139,7 @@ public class RobotContainer {
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
       mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      () -> true));
+      () -> FieldMathHelpers.Location.ALLIANCE_ZONE));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
     }));
@@ -141,6 +154,9 @@ public class RobotContainer {
     autoChooser.addOption("Left Neutral Zone", new PathPlannerAuto("Neutral zone agressive"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
+
+
+
     configureDriverBindings();
     configureOperatorBindings();
   }
@@ -164,7 +180,7 @@ public class RobotContainer {
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())),
+      () -> mSwerve.getLocation()),
       mFlywheel::getSafeModeEnabled));
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
@@ -175,16 +191,6 @@ public class RobotContainer {
 
   private void configureOperatorBindings()
   {
-    // Safe mode bindings
-    /*mOperator.a().onTrue(new InstantCommand(() -> {
-      mTurret.enableSafeMode();
-      mFlywheel.enableSafeMode();
-    }));
-
-    mOperator.x().onTrue(new InstantCommand(() -> {
-      mTurret.disableSafeMode();
-      mFlywheel.disableSafeMode();
-    }));*/
 
     // Intake Action Bindings
     mOperator.leftBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));

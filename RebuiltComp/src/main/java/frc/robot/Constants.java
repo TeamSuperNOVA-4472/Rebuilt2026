@@ -172,21 +172,18 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final boolean kUseMegatag2 = true; 
+    public static final boolean kUseMegatag2ByDefault = true; 
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
-    public static final double kBaseLateralDev = 0.3;
-    public static final double kBaseRotDev = 0.3;
+    public static final double kBaseLateralDev = 0.02;
+    public static final double kBaseRotDev = 0.06;
     public static final double kTagDistThreshold = 10;
-    public static final double kMaxDeg = 720;
     public static final double kLatencyLagInSeconds = 0.4;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
-    public static final double kAngularVelocityThreshold = 360;
-
-    public static final double kNeutralZoneThresholdBlue = 6;
-    public static final double kNeutralZoneThresholdRed = 9;
+    public static final double kAngularVelocityThreshold = 720;
+    public static final double kCooldownBump = 0.5;
 
     public static final boolean kIsAndyMark = false;
 
@@ -213,6 +210,21 @@ public final class Constants {
       //Replaying from a log file.
       REPLAY
     }
+
+    public static final double kRedTrenchXHighThreshold = 11.938;
+    public static final double kRedTrenchXLowThreshold = 11.8618;
+
+    public static final double kBlueTrenchXHighThreshold = 4.648962;
+    public static final double kBlueTrenchXLowThreshold = 4.574032;
+
+    public static final double kTopTrenchYThreshold = 7.4350372;
+    public static final double kBottomTrenchYThreshold = 1.268476;
+
+    public static final double kRedBumpXHighThreshold = 12.498324;
+    public static final double kRedBumpXLowThreshold = 11.304524;
+
+    public static final double kBlueBumpXHighThreshold = 5.208524;
+    public static final double kBlueBumpXLowThreshold = 4.014724;
   }
 
   
@@ -287,8 +299,8 @@ public final class Constants {
 
     public static final int kIntakeMotorPort = 12;
     public static final String kIntakeCanbus = "rio";
-    public static final double kIntakeSupplyLimit = 60;
-    public static final double kIntakeStatorLimit = 60;
+    public static final double kIntakeSupplyLimit = 40;
+    public static final double kIntakeStatorLimit = 40;
     public static final boolean kIntakeSupplyLimitEnabled = true;
     public static final boolean kIntakeStatorLimitEnabled = true;
     public static final NeutralModeValue kIntakeNeutralMode = NeutralModeValue.Coast;
