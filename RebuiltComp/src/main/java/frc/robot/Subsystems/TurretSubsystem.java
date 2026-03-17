@@ -148,7 +148,7 @@ public class TurretSubsystem extends SubsystemBase
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = MathUtil.clamp(kFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
+        kOutput = MathUtil.clamp(-kFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
         double addition = kOutput >= 0 ? TurretConstants.kTurretS : -TurretConstants.kTurretS;
         kTurretMotor.set(kOutput + addition);
     }

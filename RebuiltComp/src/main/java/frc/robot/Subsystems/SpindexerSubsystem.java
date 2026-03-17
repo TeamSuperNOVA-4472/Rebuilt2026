@@ -74,7 +74,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         case LOAD:
             kSpindexerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
             //double output = MathUtil.clamp(kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed), -9, 0);
-            kKickerMotor.setVoltage(0.115*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed));
+            kKickerMotor.setVoltage(SpindexerConstants.kKickerV*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed));
             //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output);
             break;
         }

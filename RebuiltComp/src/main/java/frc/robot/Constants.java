@@ -217,9 +217,9 @@ public final class Constants {
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 
-    public static final double kTurretS = 0.01;
-    public static final double kTurretV = 0;
-    public static final double kTurretA = 0;
+    public static final double kTurretS = 0.01; // 0.01
+    public static final double kTurretV = 0.001;
+    public static final double kTurretA = 0.005;
 
     public static final double kTurretResetSpeed = -0.3;
     public static final double kTurretResetStatorThreshold = 19;
@@ -263,8 +263,10 @@ public final class Constants {
     public static final double kKickerI = 0;
     public static final double kKickerD = 0;
 
+    public static final double kKickerV = 0.1125;
+
     public static final double kSpindexerVoltage = -9;
-    public static final double kKickerSpeed = -40;
+    public static final double kKickerSpeed = -60;
   }
   
   public static class IntakeSubsystemConstants {

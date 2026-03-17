@@ -210,6 +210,7 @@ public class SwerveSubsystem extends SubsystemBase {
     kPreviousTime = currentTime;
 
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
+    SmartDashboard.putNumber("Robot Telemetry/Pose/Angular Acceleration: ", kAngularAcceleration);
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
   }
 }
