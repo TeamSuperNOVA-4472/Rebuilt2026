@@ -39,6 +39,11 @@ import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
+import frc.robot.Commands.AutoCommands.moveTurretAuto;
+import frc.robot.Commands.AutoCommands.setFlywheelAuto;
+import frc.robot.Commands.AutoCommands.setIntakeActionAuto;
+import frc.robot.Commands.AutoCommands.setIntakeStorageAuto;
+import frc.robot.Commands.AutoCommands.setSpindexerAuto;
 import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
 import frc.robot.Commands.ResetCommands.resetHoodEncoder;
 import frc.robot.Commands.ResetCommands.resetSliderEncoder;
@@ -110,28 +115,30 @@ public class RobotContainer {
       mSwerve.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);
     });
 
-    NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
+    NamedCommands.registerCommand("IntakeOut", new setIntakeStorageAuto(mIntake, IntakeStorageMode.OUT));
+    NamedCommands.registerCommand("IntakeStore", new setIntakeStorageAuto(mIntake, IntakeStorageMode.STORED));
     NamedCommands.registerCommand("ResetTurretEncoder", new resetTurretEncoder(mTurret));
-    NamedCommands.registerCommand("FollowWithTurret", new moveTurretAbsolute(
+    NamedCommands.registerCommand("AimAtHub", new moveTurretAuto(
       mTurret, 
-      mSwerve::getHeadingDegrees,
-      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      mSwerve.getHeadingDegrees(),
+      FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
 
-    NamedCommands.registerCommand("SpindexerOff", new InstantCommand(() -> mSpindexer.setMode(SpindexerMode.OFF)));
-    NamedCommands.registerCommand("SpindexerOn", new InstantCommand(() -> mSpindexer.setMode(SpindexerMode.LOAD)));
-    NamedCommands.registerCommand("FlywheelOn", new setFlywheel(mFlywheel, () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
+    NamedCommands.registerCommand("SpindexerOff", new setSpindexerAuto(mSpindexer, SpindexerMode.OFF));
+    NamedCommands.registerCommand("SpindexerOn", new setSpindexerAuto(mSpindexer, SpindexerMode.LOAD));
+    NamedCommands.registerCommand("FlywheelOn", new setFlywheelAuto(mFlywheel, FieldMathHelpers.getDistanceToHubWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
       mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      () -> true));
+      true));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
+      mFlywheel.setHoodTarget(20.0);
     }));
-    NamedCommands.registerCommand("IntakeOn", new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
-    NamedCommands.registerCommand("IntakeOff", new setIntakeAction(mIntake, IntakeActionMode.OFF));
+    NamedCommands.registerCommand("IntakeOn", new setIntakeActionAuto(mIntake, IntakeActionMode.INTAKE));
+    NamedCommands.registerCommand("IntakeOff", new setIntakeActionAuto(mIntake, IntakeActionMode.OFF));
     autoChooser = new SendableChooser<Command>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
