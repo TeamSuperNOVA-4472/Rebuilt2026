@@ -34,8 +34,6 @@ import frc.robot.Robot;
 import frc.robot.Constants.FlywheelConstants;
 
 public class FlywheelSubsystem extends SubsystemBase {
-    public static final FlywheelSubsystem kFlywheel = new FlywheelSubsystem();
-
     public enum FlywheelMode{
         OFF,
         SPINNING    
@@ -68,7 +66,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     private boolean kHoodPIDEnabled = true;
     
-    private FlywheelSubsystem(){
+    public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
         kIsSafeModeEnabled = false;
         //TODO: Values below should be constants.
@@ -81,7 +79,6 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheel2Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheelFeedback = new PIDController(FlywheelConstants.kPFlywheel,FlywheelConstants.kIFlywheel, FlywheelConstants.kDFlywheel);
-        kFlywheelFeedback.setTolerance(FlywheelConstants.kFlywheelTolerance);
 
         kTargetAngle = FlywheelConstants.kStartingHoodAngle;
 
@@ -258,6 +255,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
+        kFlywheelFeedback.setTolerance(kTargetSpeed*FlywheelConstants.kFlywheelTolerance);
         kFlywheelAtTarget = kFlywheelFeedback.atSetpoint();
 
         if (kHoodPIDEnabled)

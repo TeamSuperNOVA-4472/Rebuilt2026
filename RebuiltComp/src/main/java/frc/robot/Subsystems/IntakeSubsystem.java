@@ -31,8 +31,7 @@ import frc.robot.Constants.IntakeSubsystemConstants;
 import swervelib.simulation.ironmaple.simulation.IntakeSimulation;
 
 public class IntakeSubsystem extends SubsystemBase {
-    public static final IntakeSubsystem kIntake = new IntakeSubsystem();
-
+    
     public enum IntakeStorageMode{
         STORED,
         OUT
@@ -64,7 +63,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private final MechanismRoot2d kSimRoot;
     private final MechanismLigament2d kSimDisp;
 
-    private IntakeSubsystem(){
+    public IntakeSubsystem(){
         kStorageMode = IntakeStorageMode.STORED;
         kActionMode = IntakeActionMode.OFF;
         kIsAtState = true;

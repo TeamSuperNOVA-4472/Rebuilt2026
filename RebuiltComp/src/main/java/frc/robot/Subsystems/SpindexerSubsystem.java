@@ -14,7 +14,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.SpindexerConstants;
 
 public class SpindexerSubsystem extends SubsystemBase {
-    public static final SpindexerSubsystem kSpindexer = new SpindexerSubsystem();
 
     public enum SpindexerMode{
         OFF,
@@ -25,7 +24,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private SpindexerMode kMode;
     private final PIDController kKickerPID;
 
-    private SpindexerSubsystem(){
+    public SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
         kSpindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorPort,SpindexerConstants.kSpindexerCanbus);
         kKickerMotor = new TalonFX(SpindexerConstants.kKickerMotorPort, SpindexerConstants.kKickerCanbus);
@@ -64,6 +63,16 @@ public class SpindexerSubsystem extends SubsystemBase {
         kKickerMotor.getConfigurator().apply(kKickerConfig);
     }
 
+    private double getKickerVelocity()
+    {
+        return kKickerMotor.getVelocity().getValueAsDouble()*SpindexerConstants.kKickerGearing;
+    }
+
+    private double getSpindexerVelocity()
+    {
+        return kSpindexerMotor.getVelocity().getValueAsDouble()*SpindexerConstants.kSpindexerGearing;
+    }
+
     private void moveSpindexer(){
         switch (kMode){
         case OFF:
@@ -74,13 +83,10 @@ public class SpindexerSubsystem extends SubsystemBase {
         case LOAD:
             kSpindexerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
             //double output = MathUtil.clamp(kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed), -9, 0);
-            kKickerMotor.setVoltage(0.115*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed));
-            //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output);
+            kKickerMotor.setVoltage(SpindexerConstants.kKickerV*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed));
+            //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output)
             break;
         }
-    }
-    public double getSpinSpeed(){
-        return kSpindexerMotor.get();
     }
 
     public SpindexerMode getMode(){
@@ -94,8 +100,8 @@ public class SpindexerSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         moveSpindexer();
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpinSpeed());
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker Speed: ", kKickerMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpindexerVelocity());
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker Speed: ", getKickerVelocity());
 
         SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Supply Current: ", kSpindexerMotor.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Stator Current: ", kSpindexerMotor.getStatorCurrent().getValueAsDouble());

@@ -39,6 +39,7 @@ public class VisionSubsystem extends SubsystemBase
 {
     //Suppliers and constants, members of class
     private final Supplier<Double> mGetRobotRotation;
+    private Pose2d mLastValidPose = new Pose2d();
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
     private boolean mUseMegaTag2 = VisionConstants.kUseMegatag2ByDefault;
@@ -100,6 +101,11 @@ public class VisionSubsystem extends SubsystemBase
         }
 
         SmartDashboard.putNumber("Subsystems/VisionSubsystem/Throttle: ", throttle);
+    }
+
+    public Pose2d getLastValidPose()
+    {
+        return mLastValidPose;
     }
 
     private void adjustThrottleAndIMU()
@@ -197,13 +203,13 @@ public class VisionSubsystem extends SubsystemBase
             if(!pose.isEmpty()) // Update robot pose if all checks are passed
             {
                 updatePose(pose.get());
+                mLastValidPose = pose.get().pose;
                 SmartDashboard.putString("Subsystems/VisionSubsystem/Pose: ", pose.get().pose.toString());
             }
 
             adjustThrottleAndIMU();
 
-            Logger.recordOutput("TagAmbig", underAmbiguityThreshold(null));
-            Logger.recordOutput("PoseUpdate", pose.get().pose.toString());
+            //Logger.recordOutput("PoseUpdate", pose.get().pose.toString());
             //Logger.recordOutput("Rotation", pose.pose.getHeadingDegrees());
         }
 

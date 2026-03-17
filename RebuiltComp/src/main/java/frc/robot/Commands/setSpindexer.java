@@ -11,18 +11,14 @@ import frc.robot.Subsystems.SpindexerSubsystem.SpindexerMode;
 public class setSpindexer extends Command {
     private SpindexerSubsystem kSpindexer;
     private SpindexerMode kNewMode;
-    private Supplier<Boolean> kReadyToShoot;
     
-    public setSpindexer(SpindexerSubsystem mSpindexer, SpindexerMode mNewMode, Supplier<Boolean> mReadyToShoot){ 
+    public setSpindexer(SpindexerSubsystem mSpindexer, SpindexerMode mNewMode){ 
         kSpindexer = mSpindexer;
         kNewMode = mNewMode;
-        kReadyToShoot = mReadyToShoot;
-
-        addRequirements(kSpindexer);
     }
 
     @Override
-    public void execute(){
+    public void initialize() {
         kSpindexer.setMode(kNewMode);
     }
 }

@@ -31,38 +31,12 @@ public class FieldMathHelpers
      * @param pose The bot pose.
      * @return Returns the distance in meters to the hub from the pose entered adjusted for the turret offset.
      */
-    private static Translation2d getTranslationToHub(Pose2d pose)
+    public static Translation2d getTranslationToHub(Pose2d pose)
     {
-        pose = pose.transformBy(TurretConstants.kTurretOffset);
         Translation2d poseTranslation = pose.getTranslation();
         Translation2d hubPoseTranslation = getHubPose().getTranslation();
 
         return hubPoseTranslation.minus(poseTranslation);
-    }
-
-    /**
-     * Finds the heading of the vector from a pose to the hub using arctangent.
-     * Uses 0-2pi coordinates where 0 is in line with the positive x axis.
-     * @param pose The pose.
-     * @return The absolute heading of the vector from the pose to the hub.
-    */
-    private static double getHeadingToHubInRadians(Pose2d pose)
-    {
-        double deltaY = getHubPose().getY() - pose.getY();
-        double deltaX = getHubPose().getX() - pose.getX();
-
-        return Math.atan2(deltaY, deltaX);
-    }
-
-    /**
-     * Finds the heading of the vector from a pose to the hub.
-     * Uses 0-360 coordinates where 0 is in line with the positive x axis.
-     * @param pose The pose.
-     * @return The absolute heading of the vector from the pose to the hub.
-     */
-    public static double getHeadingToHubInDegrees(Pose2d pose)
-    {
-        return Units.radiansToDegrees(getHeadingToHubInRadians(pose));
     }
 
     /**
@@ -74,12 +48,21 @@ public class FieldMathHelpers
      * @param projectileSpeed The constant projectile speed in meters per second.
      * @return The desired field relative heading from 0-360 where 0 is in line with the positive x axis.
      */
-    private static Translation2d getTranslation2dToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    private static Translation2d getTranslation2dToHubWithSomeSpeed(
+        Pose2d botPose, 
+        double xVelocityMetersPerSecond, 
+        double yVelocityMetersPerSecond,
+        double angularSpeedDegreesPerSecond)
     {
         // Calculate translations and distances
-        Translation2d translationToHub = getTranslationToHub(botPose);
+        Pose2d turretPose = botPose.transformBy(TurretConstants.kTurretOffset);
+        Translation2d translationToHub = getTranslationToHub(turretPose);
         double distanceToHub = translationToHub.getNorm();
         double dt;
+
+        Pair<Double, Double> fieldSpeeds = getFieldRelativeSpeedOfOffsetObject(normalizeDegrees(botPose.getRotation().getDegrees()), xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond);
+        xVelocityMetersPerSecond = fieldSpeeds.getFirst();
+        yVelocityMetersPerSecond = fieldSpeeds.getSecond();
         
         if (distanceToHub >= FlywheelConstants.kDistanceThresholdInMeters && distanceToHub <= FlywheelConstants.kDistanceMaximumInMeters)
         {
@@ -97,21 +80,24 @@ public class FieldMathHelpers
         return adjustedTranslation;
     }
 
-    private static double getRotationToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    private static double getRotationToHubWithSomeSpeed(
+        Pose2d botPose, 
+        double xVelocityMetersPerSecond, 
+        double yVelocityMetersPerSecond,
+        double angularSpeedDegreesPerSecond)
     {
-        return normalizeDegrees(getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getAngle().getDegrees());
+        return normalizeDegrees(getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond).getAngle().getDegrees());
     }
 
-    public static double getDistanceToHubWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
-    {
-        return getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond).getNorm();
-    }
-
-    public static double getRotationToPassOrShootWithSomeSpeed(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond)
+    public static double getRotationToPassOrShootWithSomeSpeed(
+        Pose2d botPose, 
+        double xVelocityMetersPerSecond, 
+        double yVelocityMetersPerSecond,
+        double angularSpeedDegreesPerSecond)
     {
         if (isInScoringZone(botPose))
         {
-            return getRotationToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond);
+            return getRotationToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond);
         }
         else
         {
@@ -132,18 +118,34 @@ public class FieldMathHelpers
         double robotHeadingDegrees,
         double xVelocityMetersPerSecond, 
         double yVelocityMetersPerSecond, 
-        double angularSpeedDegreesPerSecond, 
-        Translation2d offset)
+        double angularSpeedDegreesPerSecond)
     {
         double theta = Units.degreesToRadians(robotHeadingDegrees);
         double angularSpeed = Units.degreesToRadians(angularSpeedDegreesPerSecond); // This conversion works because the denominator doesn't change.
 
         // Take the cross product of the angular velocity and the offset and add to robot velocity vector, yay!
         // Troy (or some other smart person) check my math please
-        double fieldRelativeXVelocity = xVelocityMetersPerSecond - angularSpeed * ((offset.getX() * Math.sin(theta)) + (offset.getY() * Math.cos(theta)));
-        double fieldRelativeYVelocity = yVelocityMetersPerSecond + angularSpeed * ((offset.getX() * Math.cos(theta)) - (offset.getY() * Math.sin(theta)));
+        double fieldRelativeXVelocity = xVelocityMetersPerSecond - angularSpeed * ((TurretConstants.kTurretOffset.getX() * Math.sin(theta)) + (TurretConstants.kTurretOffset.getY() * Math.cos(theta)));
+        double fieldRelativeYVelocity = yVelocityMetersPerSecond + angularSpeed * ((TurretConstants.kTurretOffset.getX() * Math.cos(theta)) - (TurretConstants.kTurretOffset.getY() * Math.sin(theta)));
 
         return new Pair<Double, Double>(fieldRelativeXVelocity, fieldRelativeYVelocity);
+    }
+
+    public static double getVelocityTowardHub(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond, double angularSpeedDegreesPerSecond)
+    {
+        Pose2d turretPose = botPose.transformBy(TurretConstants.kTurretOffset);
+        Translation2d unitVec = getTranslationToHub(turretPose);
+        double dist = unitVec.getNorm();
+
+        if (dist < 1e-6) return 0.0;
+
+        unitVec = unitVec.div(dist);
+
+        Pair<Double, Double> speeds = getFieldRelativeSpeedOfOffsetObject(normalizeDegrees(botPose.getRotation().getDegrees()), xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond);
+        double xVel = speeds.getFirst();
+        double yVel = speeds.getSecond();
+
+        return xVel * unitVec.getX() + yVel * unitVec.getY();
     }
 
     /**

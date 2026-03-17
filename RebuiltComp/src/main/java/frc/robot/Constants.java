@@ -49,6 +49,18 @@ public final class Constants {
     public static final double kDGyro = 0.0005;
   }
 
+  public static class ClimbConstants {
+    public static final int kClimbMotorPort = 59;
+    public static final String kClimbCanbus = "CANivore";
+    public static final double kClimbSupplyLimit = 40;
+    public static final double kClimbStatorLimit = 40;
+    public static final boolean kClimbSupplyLimitEnabled = true;
+    public static final boolean kClimbStatorLimitEnabled = true;
+    public static final NeutralModeValue kClimbNeutralMode = NeutralModeValue.Brake;
+
+    public static final double kGearing = 1/45;
+  }
+
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
@@ -92,7 +104,7 @@ public final class Constants {
     public static final NeutralModeValue kFlywheel1NeutralMode = NeutralModeValue.Coast;
 
     public static final int kFlywheel2MotorPort = 20;
-    public static final String kFlywheel2Canbus = "CANivore";
+    public static final String kFlywheel2Canbus = "rio";
     public static final double kFlywheel2SupplyLimit = 20;
     public static final double kFlywheel2StatorLimit = 20;
     public static final boolean kFlywheel2SupplyLimitEnabled = true;
@@ -121,7 +133,7 @@ public final class Constants {
     public static final double kIFlywheel = 0;
     public static final double kDFlywheel = 0;
 
-    public static final double kFlywheelTolerance = 5;
+    public static final double kFlywheelTolerance = 0.2;
     
     public static final double kStartingHoodAngle = 21;
     public static final double kPassingAngle = 44;
@@ -230,7 +242,7 @@ public final class Constants {
   
   public static class TurretConstants {
     public static final Transform2d kTurretOffset = new Transform2d(0.1397,-0.172, new Rotation2d());
-    public static final double kStartingAngleOffset = 117;
+    public static final double kStartingAngleOffset = 87;
 
     public static final int kTurretMotorPort = 24;
     public static final String kTurretCanbus = "CANivore";
@@ -289,6 +301,10 @@ public final class Constants {
     public static final double kKickerP = 0.03;
     public static final double kKickerI = 0;
     public static final double kKickerD = 0;
+
+    public static final double kKickerGearing = 0.25;
+    public static final double kSpindexerGearing = 0.25;
+    public static final double kKickerV = 0.115;
 
     public static final double kSpindexerVoltage = -9;
     public static final double kKickerSpeed = -40;

@@ -30,7 +30,7 @@ public class TurretSubsystem extends SubsystemBase
     private final TalonFX kTurretMotor;
 
     private final PIDController kPidController;
-    private final SimpleMotorFeedforward kFeedForward;
+    private final SimpleMotorFeedforward kSpinningFeedForward;
     private Supplier<Double> kGetAngularVelocity;
     private Supplier<Double> kGetAngularAcceleration;
 
@@ -45,14 +45,12 @@ public class TurretSubsystem extends SubsystemBase
     private final MechanismRoot2d kSimRoot;
     private final MechanismLigament2d kSimDisp;
 
-    public static TurretSubsystem kTurret = new TurretSubsystem();
-
-    private TurretSubsystem() 
+    public TurretSubsystem() 
     {
         kTurretMotor = new TalonFX(TurretConstants.kTurretMotorPort, TurretConstants.kTurretCanbus);
 
         kPidController = new PIDController(TurretConstants.kTurretP, TurretConstants.kTurretI, TurretConstants.kTurretD);
-        kFeedForward = new SimpleMotorFeedforward(0, TurretConstants.kTurretV, TurretConstants.kTurretA); // ks is manually adjusted for sign
+        kSpinningFeedForward = new SimpleMotorFeedforward(0, TurretConstants.kTurretV, TurretConstants.kTurretA); // ks is manually adjusted for sign
         kTurretSimMotor = DCMotor.getKrakenX44(TurretConstants.kSimNumMotor);
         kTurretSim = new SingleJointedArmSim(kTurretSimMotor, TurretConstants.kGearing, TurretConstants.kSimjKgMetersSquared, TurretConstants.kSimArmLength, 0, TurretConstants.kDeadband * Math.PI / 180.0, false, 0, 0, 0);
         kSimSpace = new Mechanism2d(TurretConstants.kSimWidth, TurretConstants.kSimHeight);
@@ -148,7 +146,9 @@ public class TurretSubsystem extends SubsystemBase
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = MathUtil.clamp(kFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
+        double deltaAngle = targetAngle - currentAngle;
+
+        kOutput = MathUtil.clamp(kSpinningFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
         double addition = kOutput >= 0 ? TurretConstants.kTurretS : -TurretConstants.kTurretS;
         kTurretMotor.set(kOutput + addition);
     }
