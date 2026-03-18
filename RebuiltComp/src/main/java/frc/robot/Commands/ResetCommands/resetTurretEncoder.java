@@ -1,6 +1,7 @@
 package frc.robot.Commands.ResetCommands;
 
 import edu.wpi.first.math.filter.Debouncer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Subsystems.TurretSubsystem;
@@ -12,7 +13,7 @@ public class resetTurretEncoder extends Command {
     public resetTurretEncoder (TurretSubsystem mTurretSubsystem)
     {
         kTurretSubsystem = mTurretSubsystem;
-        kDebouce = new Debouncer(1);
+        kDebouce = new Debouncer(   1, DebounceType.kBoth);
 
         addRequirements(kTurretSubsystem);
     }

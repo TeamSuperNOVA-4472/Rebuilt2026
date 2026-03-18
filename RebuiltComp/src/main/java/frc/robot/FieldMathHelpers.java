@@ -48,7 +48,7 @@ public class FieldMathHelpers
      * @param projectileSpeed The constant projectile speed in meters per second.
      * @return The desired field relative heading from 0-360 where 0 is in line with the positive x axis.
      */
-    private static Translation2d getTranslation2dToHubWithSomeSpeed(
+    public static Translation2d getTranslation2dToHubWithSomeSpeed(
         Pose2d botPose, 
         double xVelocityMetersPerSecond, 
         double yVelocityMetersPerSecond,

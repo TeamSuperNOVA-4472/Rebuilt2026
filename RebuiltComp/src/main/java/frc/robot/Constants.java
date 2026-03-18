@@ -96,7 +96,7 @@ public final class Constants {
     public static final double kDistanceMaximumInMeters = 4.8641;
 
     public static final int kFlywheel1MotorPort = 60;
-    public static final String kFlywheel1Canbus = "CANivore";
+    public static final String kFlywheel1Canbus = "rio";
     public static final double kFlywheel1SupplyLimit = 20;
     public static final double kFlywheel1StatorLimit = 20;
     public static final boolean kFlywheel1SupplyLimitEnabled = true;
@@ -112,14 +112,14 @@ public final class Constants {
     public static final NeutralModeValue kFlywheel2NeutralMode = NeutralModeValue.Coast;
 
     public static final int kFlywheelHoodMotorPort = 41;
-    public static final String kFlywheelHoodCanbus = "CANivore";
+    public static final String kFlywheelHoodCanbus = "rio";
     public static final double kFlywheelHoodSupplyLimit = 20;
     public static final double kFlywheelHoodStatorLimit = 20;
     public static final boolean kFlywheelHoodSupplyLimitEnabled = true;
     public static final boolean kFlywheelHoodStatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheelHoodNeutralMode = NeutralModeValue.Brake;
 
-    public static final double kPHood = 0.037;
+    public static final double kPHood = 0.017;
     public static final double kIHood = 0;
     public static final double kDHood = 0;
 
@@ -188,8 +188,8 @@ public final class Constants {
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .9;
-    public static final double kBaseLateralDev = 0.02;
-    public static final double kBaseRotDev = 0.06;
+    public static final double kBaseLateralDev = 0.3;
+    public static final double kBaseRotDev = 0.5;
     public static final double kTagDistThreshold = 10;
     public static final double kLatencyLagInSeconds = 0.4;
     public static final double kTagCountThreshold = 1;
@@ -241,7 +241,7 @@ public final class Constants {
 
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(0.1397,-0.172, new Rotation2d());
+    public static final Transform2d kTurretOffset = new Transform2d(0.146,-0.171, new Rotation2d());
     public static final double kStartingAngleOffset = 87;
 
     public static final int kTurretMotorPort = 24;
@@ -252,12 +252,12 @@ public final class Constants {
     public static final boolean kTurretStatorLimitEnabled = true;
     public static final NeutralModeValue kTurretNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kTurretP = 0.004;
+    public static final double kTurretP = 0.003;
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 
-    public static final double kTurretS = 0.01;
-    public static final double kTurretV = 0;
+    public static final double kTurretS = 0.0125;
+    public static final double kTurretV = 0.00055;
     public static final double kTurretA = 0;
 
     public static final double kTurretResetSpeed = -0.3;
@@ -304,10 +304,10 @@ public final class Constants {
 
     public static final double kKickerGearing = 0.25;
     public static final double kSpindexerGearing = 0.25;
-    public static final double kKickerV = 0.115;
+    public static final double kKickerV = 0.4;
 
-    public static final double kSpindexerVoltage = -9;
-    public static final double kKickerSpeed = -40;
+    public static final double kSpindexerVoltage = -3.5;
+    public static final double kKickerSpeed = -20;
   }
   
   public static class IntakeSubsystemConstants {
@@ -340,8 +340,8 @@ public final class Constants {
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
-    public static final double kSliderMaxVelocity = 36;
-    public static final double kSliderMaxAcceleration = 24;
+    public static final double kSliderMaxVelocity = 48;
+    public static final double kSliderMaxAcceleration = 36;
 
     public static final double kSliderMaxSpeedOutput = .5;
 

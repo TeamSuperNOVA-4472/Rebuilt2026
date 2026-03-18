@@ -18,7 +18,7 @@ public class setSpindexer extends Command {
     }
 
     @Override
-    public void initialize() {
+    public void execute() {
         kSpindexer.setMode(kNewMode);
     }
 }

@@ -2,6 +2,7 @@ package frc.robot.Commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldMathHelpers;
 import frc.robot.Constants.FlywheelConstants;
@@ -35,12 +36,11 @@ public class setFlywheel extends Command {
         double distance = kDistance.get();
         switch (kGetLocation.get()) {
             case TRENCH: // Hide hood under trench
-                kFlywheel.setHoodTarget(FlywheelConstants.kHoodMinAngle);
+                kFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
                 break;
             case ALLIANCE_ZONE: // Shoot to hub
                 if (distance >= FlywheelConstants.kDistanceThresholdInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
                     speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
-                    speed *= (1 - kVTowardHub.get() / speed);
                     angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
                     kFlywheel.setHoodTarget(angle);
                     kFlywheel.setMode(FlywheelMode.SPINNING, speed);    

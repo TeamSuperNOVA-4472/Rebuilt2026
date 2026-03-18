@@ -92,7 +92,7 @@ public class RobotContainer {
   private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      () -> -FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
@@ -108,7 +108,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Defaults for swerve and turret
     mSwerve.setDefaultCommand(mSwerveTeleop);
-    //mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    mTurret.setDefaultCommand(mMoveTurretAbsolute);
 
     Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
     safeModeOn.whileTrue(new moveTurretSafe(mTurret));
@@ -166,20 +166,27 @@ public class RobotContainer {
 
   private void configureDriverBindings() {
     // Spindexer Bindings
-    mDriver.leftBumper().onTrue(
+    mDriver.leftBumper().whileTrue(
       new setSpindexer(
         mSpindexer, 
-        SpindexerMode.LOAD).unless(() -> !mFlywheel.getFlywheelAtTarget()));
+        SpindexerMode.LOAD));
 
     mDriver.leftBumper().onFalse(
       new setSpindexer(mSpindexer, SpindexerMode.OFF)
     );
 
     // Flywheel and Hood Bindings
-    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(mFlywheel, () -> FieldMathHelpers.getTranslationToHub(mSwerve.getPose().transformBy(TurretConstants.kTurretOffset)).getNorm(),
+    /*mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(mFlywheel,
+    () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
+        mSwerve.getPose(),
+        mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+        mSwerve.getAngularVelocity()).getNorm(),
       () -> FieldMathHelpers.getVelocityTowardHub(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()),
       () -> mSwerve.getLocation()),
-      mFlywheel::getSafeModeEnabled));
+      mFlywheel::getSafeModeEnabled));*/
+
+    mDriver.leftTrigger().whileTrue(new setFlywheelTest(mFlywheel, mDriver.povUp()::getAsBoolean, mDriver.povDown()::getAsBoolean, mDriver.povLeft()::getAsBoolean, mDriver.povRight()::getAsBoolean));
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
