@@ -126,7 +126,6 @@ public class RobotContainer {
     onBump.onTrue(new InstantCommand(mVisionSubsystem::disableMT2));
     onBump.onFalse(new InstantCommand(() -> {
       mVisionSubsystem.enableMT2();
-      mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose()); // Reset imu to whatever MT1 contributed
     }));
 
     NamedCommands.registerCommand("ToggleIntakeStore", new toggleIntakeStorage(mIntake));
@@ -143,7 +142,6 @@ public class RobotContainer {
     NamedCommands.registerCommand("SpindexerOff", new InstantCommand(() -> mSpindexer.setMode(SpindexerMode.OFF)));
     NamedCommands.registerCommand("SpindexerOn", new InstantCommand(() -> mSpindexer.setMode(SpindexerMode.LOAD)));
     NamedCommands.registerCommand("FlywheelOn", new setFlywheel(mFlywheel, () -> FieldMathHelpers.getTranslationToHub(mSwerve.getPose().transformBy(TurretConstants.kTurretOffset)).getNorm(),
-      () -> FieldMathHelpers.getVelocityTowardHub(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()),
       () -> FieldMathHelpers.Location.ALLIANCE_ZONE));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
@@ -169,24 +167,23 @@ public class RobotContainer {
     mDriver.leftBumper().whileTrue(
       new setSpindexer(
         mSpindexer, 
-        SpindexerMode.LOAD));
+        SpindexerMode.LOAD,
+        mTurret::getTurretAtSetpoint,
+        () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm()).unless(() -> !mFlywheel.getFlywheelAtTarget()));
 
     mDriver.leftBumper().onFalse(
-      new setSpindexer(mSpindexer, SpindexerMode.OFF)
+      new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0)
     );
 
     // Flywheel and Hood Bindings
-    /*mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(mFlywheel,
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(mFlywheel,
     () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
         mSwerve.getAngularVelocity()).getNorm(),
-      () -> FieldMathHelpers.getVelocityTowardHub(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()),
       () -> mSwerve.getLocation()),
-      mFlywheel::getSafeModeEnabled));*/
-
-    mDriver.leftTrigger().whileTrue(new setFlywheelTest(mFlywheel, mDriver.povUp()::getAsBoolean, mDriver.povDown()::getAsBoolean, mDriver.povLeft()::getAsBoolean, mDriver.povRight()::getAsBoolean));
+      mFlywheel::getSafeModeEnabled));
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
@@ -212,6 +209,7 @@ public class RobotContainer {
 
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
+    // TODO: make this a constant
     mOperator.y().onTrue(new InstantCommand(() -> mClimb.setVoltage(8)));
     mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(-8)));
     mOperator.y().or(mOperator.a()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));

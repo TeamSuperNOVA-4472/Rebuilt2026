@@ -64,36 +64,42 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeed.put(1.8161, 40.0);
-      kDistanceToFlywheelSpeed.put(2.5781, 45.0);
-      kDistanceToFlywheelSpeed.put(3.3401, 50.0);
-      kDistanceToFlywheelSpeed.put(4.1021, 60.0);
-      kDistanceToFlywheelSpeed.put(4.8641, 72.0);
+      kDistanceToFlywheelSpeed.put(1.8, 40.0);
+      kDistanceToFlywheelSpeed.put(2.2, 40.0);
+      kDistanceToFlywheelSpeed.put(2.5, 44.0);
+      kDistanceToFlywheelSpeed.put(3.0, 48.0);
+      kDistanceToFlywheelSpeed.put(3.63, 54.0);
+      kDistanceToFlywheelSpeed.put(4.09, 58.0);
+      kDistanceToFlywheelSpeed.put(5.41, 80.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeedTime.put(1.8161, 1.04);
-      kDistanceToFlywheelSpeedTime.put(2.5781, 1.07);
-      kDistanceToFlywheelSpeedTime.put(3.3401,1.05);
-      kDistanceToFlywheelSpeedTime.put(4.1021, 1.08);
-      kDistanceToFlywheelSpeedTime.put(4.8641, 1.24);
+      kDistanceToFlywheelSpeedTime.put(1.8, 1.11);
+      kDistanceToFlywheelSpeedTime.put(2.2, 1.14);
+      kDistanceToFlywheelSpeedTime.put(2.5, 1.15);
+      kDistanceToFlywheelSpeedTime.put(3.0,1.17);
+      kDistanceToFlywheelSpeedTime.put(3.63, 1.18);
+      kDistanceToFlywheelSpeedTime.put(4.09, 1.24);
+      kDistanceToFlywheelSpeedTime.put(5.41, 1.30);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToHoodAngle.put(1.8161, 20.0);
-      kDistanceToHoodAngle.put(2.5781, 24.0);
-      kDistanceToHoodAngle.put(3.3401,26.0);
-      kDistanceToHoodAngle.put(4.1021, 28.0);
-      kDistanceToHoodAngle.put(4.8641, 28.0);
+      kDistanceToHoodAngle.put(1.8, 21.0);
+      kDistanceToHoodAngle.put(2.2, 23.0);
+      kDistanceToHoodAngle.put(2.5,23.0);
+      kDistanceToHoodAngle.put(3.0, 26.0);
+      kDistanceToHoodAngle.put(3.63, 28.0);
+      kDistanceToHoodAngle.put(4.09, 29.0);
+      kDistanceToHoodAngle.put(5.41, 32.0);
     }
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
     public static final double kHoodMinAngle = 20.0;
     public static final double kHoodMaxAngle = 45.0;
-    public static final double kDistanceThresholdInMeters = 1.8161;
-    public static final double kDistanceMaximumInMeters = 4.8641;
+    public static final double kDistanceMinimumInMeters = 1.8;
+    public static final double kDistanceMaximumInMeters = 5.41;
 
     public static final int kFlywheel1MotorPort = 60;
     public static final String kFlywheel1Canbus = "rio";
@@ -187,11 +193,12 @@ public final class Constants {
     public static final boolean kUseMegatag2ByDefault = true; 
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
-    public static final double kAmbiguity = .9;
+    public static final double kAmbiguity = .3;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.5;
     public static final double kTagDistThreshold = 10;
-    public static final double kLatencyLagInSeconds = 0.4;
+    public static final double kMegaTag1Multiplier = 2;
+    public static final double kLatencyLagInSeconds = 0.1;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 720;
@@ -223,12 +230,6 @@ public final class Constants {
       REPLAY
     }
 
-    public static final double kRedTrenchXHighThreshold = 11.938;
-    public static final double kRedTrenchXLowThreshold = 11.8618;
-
-    public static final double kBlueTrenchXHighThreshold = 4.648962;
-    public static final double kBlueTrenchXLowThreshold = 4.574032;
-
     public static final double kTopTrenchYThreshold = 7.4350372;
     public static final double kBottomTrenchYThreshold = 1.268476;
 
@@ -237,12 +238,18 @@ public final class Constants {
 
     public static final double kBlueBumpXHighThreshold = 5.208524;
     public static final double kBlueBumpXLowThreshold = 4.014724;
+
+    public static final double kRedTrenchXHighThreshold = kRedBumpXHighThreshold; //11.938;
+    public static final double kRedTrenchXLowThreshold = kRedBumpXLowThreshold; //11.8618;
+
+    public static final double kBlueTrenchXHighThreshold = kBlueBumpXHighThreshold; //4.648962
+    public static final double kBlueTrenchXLowThreshold = kBlueBumpXLowThreshold; //4.574032
   }
 
   
   public static class TurretConstants {
     public static final Transform2d kTurretOffset = new Transform2d(0.146,-0.171, new Rotation2d());
-    public static final double kStartingAngleOffset = 87;
+    public static final double kStartingAngleOffset = 88;
 
     public static final int kTurretMotorPort = 24;
     public static final String kTurretCanbus = "CANivore";
@@ -260,11 +267,14 @@ public final class Constants {
     public static final double kTurretV = 0.00055;
     public static final double kTurretA = 0;
 
+    // TODO: tune a lower tolerance for this
+    public static final double kTurretTolerance = 50;
+
     public static final double kTurretResetSpeed = -0.3;
     public static final double kTurretResetStatorThreshold = 19;
 
-    public static final double kDeadband = 330;
-    public static final double kGearing = 24.668;
+    public static final double kDeadband = 340;
+    public static final double kGearing = 0.0405405405405405;
 
     public static final double kMaxSpeedOutput = 1;
 
@@ -308,6 +318,12 @@ public final class Constants {
 
     public static final double kSpindexerVoltage = -3.5;
     public static final double kKickerSpeed = -20;
+
+    public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
+    static {
+      kDistanceToKickerSpeed.put(1.8,-30.0);
+      kDistanceToKickerSpeed.put(5.41, -15.0);
+    }
   }
   
   public static class IntakeSubsystemConstants {

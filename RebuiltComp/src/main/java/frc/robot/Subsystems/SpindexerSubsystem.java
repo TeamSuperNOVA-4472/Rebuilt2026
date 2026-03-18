@@ -22,6 +22,7 @@ public class SpindexerSubsystem extends SubsystemBase {
     private TalonFX kSpindexerMotor;
     private TalonFX kKickerMotor;
     private SpindexerMode kMode;
+    private double kKickerTargetSpeed = SpindexerConstants.kKickerSpeed;
     private final PIDController kKickerPID;
 
     public SpindexerSubsystem(){
@@ -73,6 +74,11 @@ public class SpindexerSubsystem extends SubsystemBase {
         return kSpindexerMotor.getVelocity().getValueAsDouble()*SpindexerConstants.kSpindexerGearing;
     }
 
+    public void setKickerVelocity(double speed)
+    {
+        kKickerTargetSpeed = speed;
+    }
+
     private void moveSpindexer(){
         switch (kMode){
         case OFF:
@@ -83,7 +89,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         case LOAD:
             kSpindexerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
             //double output = MathUtil.clamp(kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed), -9, 0);
-            kKickerMotor.setVoltage(SpindexerConstants.kKickerV*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed));
+            kKickerMotor.setVoltage(SpindexerConstants.kKickerV*kKickerTargetSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed));
             //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output)
             break;
         }

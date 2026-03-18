@@ -73,6 +73,7 @@ public class TurretSubsystem extends SubsystemBase
         kTurretConfig.withMotorOutput(kTurretMotorConfig);
         kTurretMotor.getConfigurator().apply(kTurretConfig);
 
+        kPidController.setTolerance(TurretConstants.kTurretTolerance);
         kTurretMotor.setPosition(0);
         kGetAngularVelocity = () -> 0.0;
         kGetAngularAcceleration = () -> 0.0;
@@ -113,6 +114,11 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.stopMotor();
     }
 
+    public boolean getTurretAtSetpoint()
+    {
+        return kPidController.atSetpoint() && isValidAngle();
+    }
+
     public void disablePID()
     {
         kPIDEnabled = false;
@@ -127,7 +133,7 @@ public class TurretSubsystem extends SubsystemBase
     {
         double encoderPosition = kTurretMotor.getPosition().getValueAsDouble();
 
-        return (encoderPosition / TurretConstants.kGearing) * 360;
+        return (encoderPosition * TurretConstants.kGearing) * 360;
     }
 
     public double getStator()
@@ -145,8 +151,6 @@ public class TurretSubsystem extends SubsystemBase
         double currentAngle;
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
-
-        double deltaAngle = targetAngle - currentAngle;
 
         kOutput = MathUtil.clamp(kSpinningFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
         double addition = kOutput >= 0 ? TurretConstants.kTurretS : -TurretConstants.kTurretS;

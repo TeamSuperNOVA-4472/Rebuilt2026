@@ -13,17 +13,14 @@ import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 public class setFlywheel extends Command {
     private final FlywheelSubsystem kFlywheel;
     private final Supplier<Double> kDistance;
-    private final Supplier<Double> kVTowardHub;
     private final Supplier<FieldMathHelpers.Location> kGetLocation;
 
     public setFlywheel(
         FlywheelSubsystem mFlywheelSubsystem,
         Supplier<Double> mDistance,
-        Supplier<Double> mVTowardHub,
         Supplier<FieldMathHelpers.Location> mGetLocation){
         kFlywheel = mFlywheelSubsystem;
         kDistance = mDistance;
-        kVTowardHub = mVTowardHub;
         kGetLocation = mGetLocation;
 
         addRequirements(kFlywheel);
@@ -39,7 +36,8 @@ public class setFlywheel extends Command {
                 kFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
                 break;
             case ALLIANCE_ZONE: // Shoot to hub
-                if (distance >= FlywheelConstants.kDistanceThresholdInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
+                // TODO: make this not default to not shooting if not within bounds
+                if (distance >= FlywheelConstants.kDistanceMinimumInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
                     speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
                     angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
                     kFlywheel.setHoodTarget(angle);

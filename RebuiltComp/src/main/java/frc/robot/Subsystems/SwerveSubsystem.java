@@ -221,5 +221,6 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
 
     SmartDashboard.putNumber("Robot Telemetry/Distance To Hub/Turret Adjusted: ", FieldMathHelpers.getTranslationToHub(getPose().transformBy(TurretConstants.kTurretOffset)).getNorm());
+    SmartDashboard.putString("Turret Pose: ", getPose().transformBy(TurretConstants.kTurretOffset).toString());
   }
 }

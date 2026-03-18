@@ -64,7 +64,8 @@ public class FieldMathHelpers
         xVelocityMetersPerSecond = fieldSpeeds.getFirst();
         yVelocityMetersPerSecond = fieldSpeeds.getSecond();
         
-        if (distanceToHub >= FlywheelConstants.kDistanceThresholdInMeters && distanceToHub <= FlywheelConstants.kDistanceMaximumInMeters)
+        // TODO: make this not default to 0 if outside bounds
+        if (distanceToHub >= FlywheelConstants.kDistanceMinimumInMeters && distanceToHub <= FlywheelConstants.kDistanceMaximumInMeters)
         {
             dt = FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub) + VisionConstants.kLatencyLagInSeconds;
         } else {
@@ -129,23 +130,6 @@ public class FieldMathHelpers
         double fieldRelativeYVelocity = yVelocityMetersPerSecond + angularSpeed * ((TurretConstants.kTurretOffset.getX() * Math.cos(theta)) - (TurretConstants.kTurretOffset.getY() * Math.sin(theta)));
 
         return new Pair<Double, Double>(fieldRelativeXVelocity, fieldRelativeYVelocity);
-    }
-
-    public static double getVelocityTowardHub(Pose2d botPose, double xVelocityMetersPerSecond, double yVelocityMetersPerSecond, double angularSpeedDegreesPerSecond)
-    {
-        Pose2d turretPose = botPose.transformBy(TurretConstants.kTurretOffset);
-        Translation2d unitVec = getTranslationToHub(turretPose);
-        double dist = unitVec.getNorm();
-
-        if (dist < 1e-6) return 0.0;
-
-        unitVec = unitVec.div(dist);
-
-        Pair<Double, Double> speeds = getFieldRelativeSpeedOfOffsetObject(normalizeDegrees(botPose.getRotation().getDegrees()), xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond);
-        double xVel = speeds.getFirst();
-        double yVel = speeds.getSecond();
-
-        return xVel * unitVec.getX() + yVel * unitVec.getY();
     }
 
     /**

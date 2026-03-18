@@ -124,22 +124,20 @@ public class VisionSubsystem extends SubsystemBase
 
     private Matrix<N3,N1> calculateStdDevs(PoseEstimate pose)
     {
-        double lateraldev = (Math.pow(pose.avgTagDist, 2.0) / pose.tagCount) * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
-        double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : (Math.pow(pose.avgTagDist, 2.0) / pose.tagCount) * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
+        double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
+        if (mUseMegaTag2) lateraldev *= VisionConstants.kMegaTag1Multiplier;
+        double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : pose.avgTagDist * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
     }
 
     private boolean underAmbiguityThreshold(PoseEstimate pose)
     {
-        // Check through all tags seen
-        for (RawFiducial id : pose.rawFiducials)
+        if (pose.rawFiducials[0].ambiguity > VisionConstants.kAmbiguity && pose.tagCount == 1)
         {
-            // Accept update if at least one tag has an ambiguity under the threshold
-            SmartDashboard.putNumber("Subsystems/VisionSubsystem/Tag Ambiguity: ", id.ambiguity);
-            if (id.ambiguity < Constants.VisionConstants.kAmbiguity) return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     private boolean rejectUpdate(PoseEstimate pose)
