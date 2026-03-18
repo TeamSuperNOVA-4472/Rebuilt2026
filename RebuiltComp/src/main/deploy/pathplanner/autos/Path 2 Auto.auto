@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Neautral zone agressive"
+                  "pathName": "Path 2"
                 }
               },
               {
@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.6
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -39,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.7
+                        "waitTime": 4.3
                       }
                     },
                     {
@@ -88,6 +88,12 @@
           "type": "wait",
           "data": {
             "waitTime": 10.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeOut"
           }
         },
         {
