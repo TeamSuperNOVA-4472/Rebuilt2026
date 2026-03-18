@@ -131,6 +131,7 @@ public class VisionSubsystem extends SubsystemBase
         {
             // Accept update if at least one tag has an ambiguity under the threshold
             SmartDashboard.putNumber("Subsystems/VisionSubsystem/Tag Ambiguity: ", id.ambiguity);
+            Logger.recordOutput("TargetDistanceMeters", id.distToRobot);
             if (id.ambiguity < Constants.VisionConstants.kAmbiguity) return true;
         }
         return false;
