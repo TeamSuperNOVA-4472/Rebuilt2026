@@ -3,55 +3,35 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.631,
-        "y": 5.0044283523128525
+        "x": 2.3908915662650605,
+        "y": 4.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.7986121226165257,
-        "y": 5.4236994615112994
-      },
-      "isLocked": true,
-      "linkedName": "Depo left side"
-    },
-    {
-      "anchor": {
-        "x": 0.7766357697740114,
-        "y": 5.96567934542726
-      },
-      "prevControl": {
-        "x": 1.6762864325375697,
-        "y": 5.934936655479953
-      },
-      "nextControl": {
-        "x": 0.5267816061251914,
-        "y": 5.974217313999977
+        "x": 2.4409217171717175,
+        "y": 2.580593434343434
       },
       "isLocked": true,
       "linkedName": "Center Preload To Climb"
     },
     {
       "anchor": {
-        "x": 2.631,
-        "y": 5.0044283523128525
+        "x": 1.0437752525252533,
+        "y": 2.7981818181818188
       },
       "prevControl": {
-        "x": 2.1627373157221044,
-        "y": 5.021605645303673
+        "x": 2.360757575757577,
+        "y": 2.7523737373737367
       },
       "nextControl": null,
-      "isLocked": false,
-      "linkedName": "Depo left side"
+      "isLocked": true,
+      "linkedName": "Climb Pt1 to Pt2"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.7942157769556027,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.0922139270613134,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 0.9224806201550452,
+      "rotationDegrees": 90.0
     }
   ],
   "constraintZones": [
@@ -81,13 +61,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -41.77526095119384
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -41.77526095119384
+    "rotation": 0.0
   },
   "useDefaultConstraints": false
 }
