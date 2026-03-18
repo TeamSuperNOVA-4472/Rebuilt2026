@@ -5,50 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Neautral zone agressive"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.6
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOn"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOut"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.7
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeStore"
-                      }
-                    }
-                  ]
+                  "pathName": "Preload Path"
                 }
               },
               {
@@ -87,13 +50,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 10.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOff"
+            "waitTime": 5.0
           }
         },
         {
@@ -106,6 +63,50 @@
           "type": "named",
           "data": {
             "name": "FlywheelOff"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climb Pt 1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "TheEvent"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Climb Pt 2"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TheEvent"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
