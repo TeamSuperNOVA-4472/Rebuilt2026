@@ -11,10 +11,10 @@ import frc.robot.Subsystems.TurretSubsystem;
 
 public class moveTurretAuto extends InstantCommand{
     private final TurretSubsystem kTurret;
-    private final double kGetHeadingDegrees;
-    private final double kAbsTargetAngle;
+    private final Supplier<Double> kGetHeadingDegrees;
+    private final Supplier<Double> kAbsTargetAngle;
 
-    public moveTurretAuto(TurretSubsystem mTurret, double mGetHeadingDegrees, double mAbsTargetAngle)
+    public moveTurretAuto(TurretSubsystem mTurret, Supplier<Double> mGetHeadingDegrees, Supplier<Double> mAbsTargetAngle)
     {
         kAbsTargetAngle = mAbsTargetAngle;
         kGetHeadingDegrees = mGetHeadingDegrees;
@@ -25,7 +25,7 @@ public class moveTurretAuto extends InstantCommand{
 
     @Override
     public void initialize() {
-        double kRelativeAngle = -kGetHeadingDegrees + kAbsTargetAngle + TurretConstants.kStartingAngleOffset;
+        double kRelativeAngle = -kGetHeadingDegrees.get() + kAbsTargetAngle.get() + TurretConstants.kStartingAngleOffset;
         double kConstrainedAngle = (kRelativeAngle % 360 + 360) % 360;
         kTurret.setTargetAngle(kConstrainedAngle);
     }

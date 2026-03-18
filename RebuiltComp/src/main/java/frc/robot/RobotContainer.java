@@ -131,8 +131,8 @@ public class RobotContainer {
     NamedCommands.registerCommand("ResetTurretEncoder", new resetTurretEncoder(mTurret));
     NamedCommands.registerCommand("AimAtHub", new moveTurretAuto(
       mTurret, 
-      mSwerve.getHeadingDegrees(),
-      FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      mSwerve::getHeadingDegrees,
+      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
@@ -140,12 +140,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("SpindexerOff", new setSpindexerAuto(mSpindexer, SpindexerMode.OFF));
     NamedCommands.registerCommand("SpindexerOn", new setSpindexerAuto(mSpindexer, SpindexerMode.LOAD));
-    NamedCommands.registerCommand("FlywheelOn", new setFlywheelAuto(mFlywheel, FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+    NamedCommands.registerCommand("FlywheelOn", new setFlywheelAuto(mFlywheel, () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
       mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
       mSwerve.getAngularVelocity()
-      )));
+      ).getNorm()));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
       mFlywheel.setHoodTarget(20.0);
