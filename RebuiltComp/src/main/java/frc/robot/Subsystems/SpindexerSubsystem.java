@@ -6,13 +6,14 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.SpindexerConstants;
 
 public class SpindexerSubsystem extends SubsystemBase {
-    public static final SpindexerSubsystem kSpindexer = new SpindexerSubsystem();
 
     public enum SpindexerMode{
         OFF,
@@ -21,11 +22,15 @@ public class SpindexerSubsystem extends SubsystemBase {
     private TalonFX kSpindexerMotor;
     private TalonFX kKickerMotor;
     private SpindexerMode kMode;
+    private double kKickerTargetSpeed = SpindexerConstants.kKickerSpeed;
+    private final PIDController kKickerPID;
 
-    private SpindexerSubsystem(){
+    public SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
         kSpindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorPort,SpindexerConstants.kSpindexerCanbus);
         kKickerMotor = new TalonFX(SpindexerConstants.kKickerMotorPort, SpindexerConstants.kKickerCanbus);
+
+        kKickerPID = new PIDController(SpindexerConstants.kKickerP, SpindexerConstants.kKickerI, SpindexerConstants.kKickerD);
 
         TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kSpindexerCurrentConfig = new CurrentLimitsConfigs();
@@ -37,6 +42,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         kSpindexerCurrentConfig.SupplyCurrentLimitEnable = SpindexerConstants.kSpindexerSupplyLimitEnabled;
         kSpindexerCurrentConfig.StatorCurrentLimitEnable = SpindexerConstants.kSpindexerStatorLimitEnabled;
         kSpindexerCurrentConfig.StatorCurrentLimit = SpindexerConstants.kSpindexerStatorLimit;
+        kSpindexerCurrentConfig.SupplyCurrentLowerLimit = SpindexerConstants.kSpindexerSupplyLimit;
         kSpindexerMotorConfig.NeutralMode = SpindexerConstants.kSpindexerNeutralMode;
         kSpindexerConfig.withCurrentLimits(kSpindexerCurrentConfig);
         kSpindexerConfig.withMotorOutput(kSpindexerMotorConfig);
@@ -58,6 +64,21 @@ public class SpindexerSubsystem extends SubsystemBase {
         kKickerMotor.getConfigurator().apply(kKickerConfig);
     }
 
+    private double getKickerVelocity()
+    {
+        return kKickerMotor.getVelocity().getValueAsDouble()*SpindexerConstants.kKickerGearing;
+    }
+
+    private double getSpindexerVelocity()
+    {
+        return kSpindexerMotor.getVelocity().getValueAsDouble()*SpindexerConstants.kSpindexerGearing;
+    }
+
+    public void setKickerVelocity(double speed)
+    {
+        kKickerTargetSpeed = speed;
+    }
+
     private void moveSpindexer(){
         switch (kMode){
         case OFF:
@@ -67,12 +88,11 @@ public class SpindexerSubsystem extends SubsystemBase {
 
         case LOAD:
             kSpindexerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
-            kKickerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
+            //double output = MathUtil.clamp(kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed), -9, 0);
+            kKickerMotor.setVoltage(SpindexerConstants.kKickerV*kKickerTargetSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed));
+            //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output)
             break;
         }
-    }
-    public double getSpinSpeed(){
-        return kSpindexerMotor.get();
     }
 
     public SpindexerMode getMode(){
@@ -81,11 +101,15 @@ public class SpindexerSubsystem extends SubsystemBase {
     public void setMode(SpindexerMode mNewMode){
         kMode = mNewMode;
         SmartDashboard.putString("Subsystems/SpindexerSubsystem/Spindexer Mode: ", kMode.name());
-        moveSpindexer();
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpinSpeed());
+        moveSpindexer();
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpindexerVelocity());
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker Speed: ", getKickerVelocity());
+
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Supply Current: ", kSpindexerMotor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Stator Current: ", kSpindexerMotor.getStatorCurrent().getValueAsDouble());
     }
 }

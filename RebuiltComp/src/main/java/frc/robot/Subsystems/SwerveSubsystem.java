@@ -12,6 +12,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.FlippingUtil.FieldSymmetry;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -22,6 +23,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +32,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FieldMathHelpers;
+import frc.robot.FieldMathHelpers.Location;
 import frc.robot.Robot;
+import frc.robot.Constants.TurretConstants;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.parser.SwerveParser;
@@ -43,10 +47,13 @@ import static frc.robot.Constants.SwerveConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
-  public static final SwerveSubsystem kSwerve = new SwerveSubsystem();
   private final SwerveDrive mSwerveDrive;
   private Command kSwerveSysID;
-  private double mYawGyroOffset = 0;
+  private double kYawGyroOffset = 0;
+  private double kAngularAcceleration = 0;
+  private double kPreviousTime = 0;
+  private double kPreviousAngularVelocity = 0;
+  private Location kLocation = FieldMathHelpers.Location.ALLIANCE_ZONE;
   private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
   private static final double kV = 2.121025; //BL: 2.1179 BR: 2.0122 FL: 2.1095 FR: 2.2445
   private static final double kA = 0.1667725; //BL: 0.14532 BR: 0.14542 FL: 0.24849 FR: 0.12786
@@ -102,7 +109,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /** Creates a new ExampleSubsystem. */
-  private SwerveSubsystem() {
+  public SwerveSubsystem() {
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
     kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
@@ -153,7 +160,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public void resetOdometry(Pose2d pPose) {
     mSwerveDrive.resetOdometry(pPose);
-    mYawGyroOffset = ((pPose.getRotation().getDegrees() - mSwerveDrive.getYaw().getDegrees()) % 360 + 360) % 360;
+    kYawGyroOffset = ((pPose.getRotation().getDegrees() - mSwerveDrive.getYaw().getDegrees()) % 360 + 360) % 360;
   }
 
   public void resetHeading() {
@@ -168,12 +175,20 @@ public class SwerveSubsystem extends SubsystemBase {
     return mSwerveDrive.getPose();
   }
 
+  public Location getLocation() {
+    return kLocation;
+  }
+
   public double getHeadingDegrees() {
-    return (((mSwerveDrive.getYaw().getDegrees() + mYawGyroOffset) % 360) + 360) % 360;
+    return (((mSwerveDrive.getYaw().getDegrees() + kYawGyroOffset) % 360) + 360) % 360;
   }
 
   public double getAngularVelocity() {
     return Units.radiansToDegrees(getRobotRelativeSpeeds().omegaRadiansPerSecond);
+  }
+
+  public double getAngularAcceleration() {
+    return kAngularAcceleration;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -190,8 +205,22 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    mSwerveDrive.updateOdometry();
+    double currentTime = WPIUtilJNI.getSystemTime();
+    double currentAngularVelocity = getAngularVelocity();
+
+    double dt = currentTime - kPreviousTime;
+    kAngularAcceleration = (currentAngularVelocity - kPreviousAngularVelocity) / dt;
+
+    kPreviousAngularVelocity = currentAngularVelocity;
+    kPreviousTime = currentTime;
+
+    kLocation = FieldMathHelpers.getLocation(getPose());
+
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
+    SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
+
+    SmartDashboard.putNumber("Robot Telemetry/Distance To Hub/Turret Adjusted: ", FieldMathHelpers.getTranslationToHub(getPose().transformBy(TurretConstants.kTurretOffset)).getNorm());
+    SmartDashboard.putString("Turret Pose: ", getPose().transformBy(TurretConstants.kTurretOffset).toString());
   }
 }

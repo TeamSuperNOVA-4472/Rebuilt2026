@@ -18,20 +18,16 @@ import frc.robot.Subsystems.SpindexerSubsystem.SpindexerMode;
 
 public class ShootPreloadFromStandstill extends ParallelCommandGroup {
 
-    private final FlywheelSubsystem flyWheel = FlywheelSubsystem.kFlywheel;
-    private final SwerveSubsystem swerve = SwerveSubsystem.kSwerve;
-    private final SpindexerSubsystem spindexer = SpindexerSubsystem.kSpindexer;
+    public ShootPreloadFromStandstill(FlywheelSubsystem flyWheel, SwerveSubsystem swerve, SpindexerSubsystem spindexer) {
 
-    public ShootPreloadFromStandstill() {
-
-        addCommands(
+        /*addCommands(
             new setFlywheel(
                 flyWheel, 
                 () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
                     swerve.getPose(), 
                     swerve.getFieldRelativeSpeeds().vxMetersPerSecond,
                     swerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-                () -> true),
+                () -> FieldMathHelpers.Location.ALLIANCE_ZONE),
             new SequentialCommandGroup(
                 new WaitCommand(5.0),
                 new setSpindexer(
@@ -39,6 +35,6 @@ public class ShootPreloadFromStandstill extends ParallelCommandGroup {
                     SpindexerMode.LOAD,
                     () -> flyWheel.getMode() == FlywheelMode.SPINNING)
             )
-        );
+        );*/
     }
 }

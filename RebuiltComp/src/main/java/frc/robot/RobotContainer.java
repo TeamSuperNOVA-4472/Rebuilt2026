@@ -6,8 +6,11 @@ package frc.robot;
 
 import java.lang.reflect.Field;
 
+import javax.tools.JavaFileManager.Location;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
@@ -28,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.SwerveTeleop;
 import frc.robot.Commands.flywheelSysIDCommand;
@@ -50,6 +54,7 @@ import frc.robot.Commands.ResetCommands.resetSliderEncoder;
 import frc.robot.Commands.ResetCommands.resetTurretEncoder;
 import frc.robot.Commands.SafeCommands.moveTurretSafe;
 import frc.robot.Commands.SafeCommands.setFlywheelSafe;
+import frc.robot.Subsystems.ClimbSubsystem;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
@@ -67,14 +72,15 @@ import com.pathplanner.lib.events.EventTrigger;
 
 
 public class RobotContainer {
-  private final IntakeSubsystem mIntake = IntakeSubsystem.kIntake;
-  private final SpindexerSubsystem mSpindexer = SpindexerSubsystem.kSpindexer;
+  private final IntakeSubsystem mIntake = new IntakeSubsystem();
+  private final ClimbSubsystem mClimb = new ClimbSubsystem();
+  private final SpindexerSubsystem mSpindexer = new SpindexerSubsystem();
   private final VisionSubsystem mVisionSubsystem;
   private final CommandXboxController mDriver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController mOperator = new CommandXboxController(OperatorConstants.kOperatorControllerPort);
-  private final TurretSubsystem mTurret = TurretSubsystem.kTurret;
-  private final SwerveSubsystem mSwerve = SwerveSubsystem.kSwerve;
-  private final FlywheelSubsystem mFlywheel = FlywheelSubsystem.kFlywheel;
+  private final TurretSubsystem mTurret = new TurretSubsystem();
+  private final SwerveSubsystem mSwerve = new SwerveSubsystem();
+  private final FlywheelSubsystem mFlywheel = new FlywheelSubsystem();
   private final SendableChooser<Command> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -91,10 +97,11 @@ public class RobotContainer {
   private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      () -> -FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond));
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+        mSwerve.getAngularVelocity()));
 
   private final resetTurretEncoder mResetTurretEncoder = new resetTurretEncoder(mTurret);
 
@@ -107,8 +114,12 @@ public class RobotContainer {
     // Defaults for swerve and turret
     mSwerve.setDefaultCommand(mSwerveTeleop);
     mTurret.setDefaultCommand(mMoveTurretAbsolute);
+
     Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
     safeModeOn.whileTrue(new moveTurretSafe(mTurret));
+
+    mTurret.setAngularSpeedSupplier(mSwerve::getAngularVelocity);
+    mTurret.setAngularAccelerationSupplier(mSwerve::getAngularAcceleration);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -124,15 +135,17 @@ public class RobotContainer {
       FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond)));
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+        mSwerve.getAngularVelocity())));
 
     NamedCommands.registerCommand("SpindexerOff", new setSpindexerAuto(mSpindexer, SpindexerMode.OFF));
     NamedCommands.registerCommand("SpindexerOn", new setSpindexerAuto(mSpindexer, SpindexerMode.LOAD));
-    NamedCommands.registerCommand("FlywheelOn", new setFlywheelAuto(mFlywheel, FieldMathHelpers.getDistanceToHubWithSomeSpeed(
+    NamedCommands.registerCommand("FlywheelOn", new setFlywheelAuto(mFlywheel, FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      true));
+      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+      mSwerve.getAngularVelocity()
+      )));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
       mFlywheel.setHoodTarget(20.0);
@@ -142,12 +155,13 @@ public class RobotContainer {
     autoChooser = new SendableChooser<Command>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
-    autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill());
+    autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill(mFlywheel, mSwerve, mSpindexer));
     autoChooser.addOption("Depot From Center", new PathPlannerAuto("Depo zone"));
     autoChooser.addOption("Right Neutral Zone", new PathPlannerAuto("Neutral zone right side"));
     autoChooser.addOption("Left Neutral Zone", new PathPlannerAuto("Neutral zone agressive"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
+
     configureDriverBindings();
     configureOperatorBindings();
   }
@@ -157,21 +171,22 @@ public class RobotContainer {
     mDriver.leftBumper().whileTrue(
       new setSpindexer(
         mSpindexer, 
-        SpindexerMode.LOAD, 
-        () -> mFlywheel.getHoodAtTarget() && mFlywheel.getFlywheelAtTarget()));
+        SpindexerMode.LOAD,
+        mTurret::getTurretAtSetpoint,
+        () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm()).unless(() -> !mFlywheel.getFlywheelAtTarget()));
 
-    mDriver.leftBumper().onFalse(new InstantCommand(() ->{
-      mSpindexer.setMode(SpindexerMode.OFF);
-    }));
+    mDriver.leftBumper().onFalse(
+      new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0)
+    );
 
     // Flywheel and Hood Bindings
-    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(
-      mFlywheel, 
-      () -> FieldMathHelpers.getDistanceToHubWithSomeSpeed(
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(mFlywheel,
+    () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond),
-      () -> FieldMathHelpers.isInScoringZone(mSwerve.getPose())),
+        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+        mSwerve.getAngularVelocity()).getNorm(),
+      () -> mSwerve.getLocation()),
       mFlywheel::getSafeModeEnabled));
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
@@ -182,16 +197,6 @@ public class RobotContainer {
 
   private void configureOperatorBindings()
   {
-    // Safe mode bindings
-    /*mOperator.a().onTrue(new InstantCommand(() -> {
-      mTurret.enableSafeMode();
-      mFlywheel.enableSafeMode();
-    }));
-
-    mOperator.x().onTrue(new InstantCommand(() -> {
-      mTurret.disableSafeMode();
-      mFlywheel.disableSafeMode();
-    }));*/
 
     // Intake Action Bindings
     mOperator.leftBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
@@ -207,6 +212,13 @@ public class RobotContainer {
     mOperator.povUp().onTrue(new resetSliderEncoder(mIntake));
 
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
+
+    // TODO: make this a constant
+    mOperator.y().onTrue(new InstantCommand(() -> mClimb.setVoltage(8)));
+    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(-8)));
+    mOperator.y().or(mOperator.a()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
+
+    mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }
 
   public Command getAutonomousCommand() {
