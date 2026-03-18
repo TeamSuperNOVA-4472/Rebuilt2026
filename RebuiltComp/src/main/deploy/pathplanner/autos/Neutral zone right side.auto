@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "ResetTurretEncoder"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -56,6 +62,12 @@
                 "data": {
                   "name": "ResetTurretEncoder"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FollowWithTurret"
+                }
               }
             ]
           }
@@ -104,7 +116,7 @@
         },
         {
           "type": "named",
-          "data": {
+          "data": {            
             "name": "FlywheelOff"
           }
         }
