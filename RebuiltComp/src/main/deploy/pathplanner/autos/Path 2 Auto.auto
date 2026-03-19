@@ -93,12 +93,6 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeOut"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "IntakeOff"
           }
         },
