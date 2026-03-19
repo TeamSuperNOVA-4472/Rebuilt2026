@@ -12,7 +12,7 @@
         "y": 0.33670708732027377
       },
       "isLocked": false,
-      "linkedName": "Path 2 start"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -73,7 +73,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Path 2 start"
+      "linkedName": null
     }
   ],
   "rotationTargets": [
@@ -139,5 +139,4 @@
     "rotation": 180.0
   },
   "useDefaultConstraints": true
-}
 }
