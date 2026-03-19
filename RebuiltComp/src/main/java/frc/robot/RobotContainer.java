@@ -18,6 +18,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.units.VoltageUnit;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -39,6 +40,7 @@ import frc.robot.Commands.setFlywheel;
 import frc.robot.Commands.setFlywheelTest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.setSpindexer;
@@ -81,6 +83,7 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = new TurretSubsystem();
   private final SwerveSubsystem mSwerve = new SwerveSubsystem();
   private final FlywheelSubsystem mFlywheel = new FlywheelSubsystem();
+  private final PowerDistribution mPdh = new PowerDistribution(1, ModuleType.kRev);
   private final SendableChooser<Command> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -132,7 +135,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AimAtHub", new moveTurretAuto(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      () -> -FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
@@ -160,6 +163,7 @@ public class RobotContainer {
     autoChooser.addOption("Right Neutral Zone", new PathPlannerAuto("Neutral zone right side"));
     autoChooser.addOption("Left Neutral Zone", new PathPlannerAuto("Neutral zone agressive"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
+    autoChooser.addOption("Path 2 Auto", new PathPlannerAuto("Path 2 Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureDriverBindings();
