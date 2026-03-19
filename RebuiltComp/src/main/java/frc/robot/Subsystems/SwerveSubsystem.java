@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FieldMathHelpers;
 import frc.robot.FieldMathHelpers.Location;
 import frc.robot.Robot;
+import frc.robot.Constants.TurretConstants;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.parser.SwerveParser;
@@ -46,8 +47,6 @@ import static frc.robot.Constants.SwerveConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
-  public static final SwerveSubsystem kSwerve = new SwerveSubsystem();
-
   private final SwerveDrive mSwerveDrive;
   private Command kSwerveSysID;
   private double kYawGyroOffset = 0;
@@ -110,7 +109,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   /** Creates a new ExampleSubsystem. */
-  private SwerveSubsystem() {
+  public SwerveSubsystem() {
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
     kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
@@ -220,5 +219,8 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
+
+    SmartDashboard.putNumber("Robot Telemetry/Distance To Hub/Turret Adjusted: ", FieldMathHelpers.getTranslationToHub(getPose().transformBy(TurretConstants.kTurretOffset)).getNorm());
+    SmartDashboard.putString("Turret Pose: ", getPose().transformBy(TurretConstants.kTurretOffset).toString());
   }
 }

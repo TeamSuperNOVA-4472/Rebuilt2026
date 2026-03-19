@@ -2,6 +2,7 @@ package frc.robot.Commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldMathHelpers;
 import frc.robot.Constants.FlywheelConstants;
@@ -14,7 +15,10 @@ public class setFlywheel extends Command {
     private final Supplier<Double> kDistance;
     private final Supplier<FieldMathHelpers.Location> kGetLocation;
 
-    public setFlywheel(FlywheelSubsystem mFlywheelSubsystem, Supplier<Double> mDistance, Supplier<FieldMathHelpers.Location> mGetLocation){
+    public setFlywheel(
+        FlywheelSubsystem mFlywheelSubsystem,
+        Supplier<Double> mDistance,
+        Supplier<FieldMathHelpers.Location> mGetLocation){
         kFlywheel = mFlywheelSubsystem;
         kDistance = mDistance;
         kGetLocation = mGetLocation;
@@ -29,10 +33,11 @@ public class setFlywheel extends Command {
         double distance = kDistance.get();
         switch (kGetLocation.get()) {
             case TRENCH: // Hide hood under trench
-                kFlywheel.setHoodTarget(FlywheelConstants.kHoodMinAngle);
+                kFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
                 break;
             case ALLIANCE_ZONE: // Shoot to hub
-                if (distance >= FlywheelConstants.kDistanceThresholdInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
+                // TODO: make this not default to not shooting if not within bounds
+                if (distance >= FlywheelConstants.kDistanceMinimumInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
                     speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
                     angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
                     kFlywheel.setHoodTarget(angle);

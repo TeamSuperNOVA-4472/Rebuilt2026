@@ -8,6 +8,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -30,17 +32,23 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.FieldMathHelpers;
 import frc.robot.LimelightHelpers;
+import frc.robot.Commands.ResetCommands.resetTurretEncoder;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
+
+
+
 
 
 public class VisionSubsystem extends SubsystemBase
 {
     //Suppliers and constants, members of class
     private final Supplier<Double> mGetRobotRotation;
+    private Pose2d mLastValidPose = new Pose2d();
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
+    private final Field2d mField;
     private boolean mUseMegaTag2 = VisionConstants.kUseMegatag2ByDefault;
 
     // Limelight lib is stupid and wants integers for modes
@@ -69,6 +77,9 @@ public class VisionSubsystem extends SubsystemBase
         mGetRobotAngularVelocity = pGetRobotAngularVelocity; // Supplies us the rotation velocity of the chassis
 
         setIMUMode(VisionMode.SEEDING); // Set initial mode to seed from gyro
+
+        mField = new Field2d();
+        SmartDashboard.putData("Subsystems/VisionSubsystem/Vision Pose", mField);
     }
 
     public void disableMT2() { mUseMegaTag2 = false; }
@@ -102,6 +113,11 @@ public class VisionSubsystem extends SubsystemBase
         SmartDashboard.putNumber("Subsystems/VisionSubsystem/Throttle: ", throttle);
     }
 
+    public Pose2d getLastValidPose()
+    {
+        return mLastValidPose;
+    }
+
     private void adjustThrottleAndIMU()
     {
         if (DriverStation.isEnabled())
@@ -118,23 +134,20 @@ public class VisionSubsystem extends SubsystemBase
 
     private Matrix<N3,N1> calculateStdDevs(PoseEstimate pose)
     {
-        double lateraldev = (Math.pow(pose.avgTagDist, 2.0) / pose.tagCount) * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
-        double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : (Math.pow(pose.avgTagDist, 2.0) / pose.tagCount) * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
+        double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
+        if (mUseMegaTag2) lateraldev *= VisionConstants.kMegaTag1Multiplier;
+        double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : pose.avgTagDist * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
     }
 
     private boolean underAmbiguityThreshold(PoseEstimate pose)
     {
-        // Check through all tags seen
-        for (RawFiducial id : pose.rawFiducials)
+        if (pose.rawFiducials[0].ambiguity > VisionConstants.kAmbiguity && pose.tagCount == 1)
         {
-            // Accept update if at least one tag has an ambiguity under the threshold
-            SmartDashboard.putNumber("Subsystems/VisionSubsystem/Tag Ambiguity: ", id.ambiguity);
-            Logger.recordOutput("TargetDistanceMeters", id.distToRobot);
-            if (id.ambiguity < Constants.VisionConstants.kAmbiguity) return true;
+        return false; 
         }
-        return false;
+        return true;
     }
 
     private boolean rejectUpdate(PoseEstimate pose)
@@ -154,6 +167,8 @@ public class VisionSubsystem extends SubsystemBase
         return true;
     }
 
+
+  
     //Estimate position of robot based off of limelight data
     private Optional<PoseEstimate> calculatePosition(String limelight)
     {
@@ -176,6 +191,7 @@ public class VisionSubsystem extends SubsystemBase
         }
 
         SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
+       
 
         if(!rejectUpdate)
         {
@@ -184,6 +200,10 @@ public class VisionSubsystem extends SubsystemBase
 
         return Optional.empty();
     }
+
+    @AutoLogOutput 
+    private Pose2d logPose = new Pose2d();
+    
 
     // Calculate position, update position if present
     @Override
@@ -198,50 +218,15 @@ public class VisionSubsystem extends SubsystemBase
             if(!pose.isEmpty()) // Update robot pose if all checks are passed
             {
                 updatePose(pose.get());
+                mLastValidPose = pose.get().pose;
                 SmartDashboard.putString("Subsystems/VisionSubsystem/Pose: ", pose.get().pose.toString());
             }
 
             adjustThrottleAndIMU();
-
-            Logger.recordOutput("TagAmbig", underAmbiguityThreshold(null));
-            Logger.recordOutput("PoseUpdate", pose.get().pose.toString());
-            //Logger.recordOutput("Rotation", pose.pose.getHeadingDegrees());
         }
-
-        //Vision logging
-        List<Pose2d> allTagPoseList = new LinkedList<>();
-        List<Pose2d> allRobotPoseList = new LinkedList<>();
-        List<Pose2d> allRobotPosesRejected = new LinkedList<>();
-
-        /* Log camera metadata pt.2 . This is a work in progress; I'm trying to translate the temp code to ours
-        Logger.recordOutput(
-            "Vision/Camera" + Integer.toString(cameraIndex) + "/TagPoses",
-            tagPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput(
-            "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPoses",
-            LimelightHelpers.getBotPose2d .toArray(new Pose3d[0]));
-        Logger.recordOutput(
-            "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesAccepted",
-            robotPosesAccepted.toArray(new Pose3d[0]));
-        Logger.recordOutput(
-            "Vision/Camera" + Integer.toString(cameraIndex) + "/RobotPosesRejected",
-            robotPosesRejected.toArray(new Pose3d[0]));
-        allTagPoses.addAll(tagPoses);
-        allRobotPoses.addAll(robotPoses);
-        allRobotPosesAccepted.addAll(robotPosesAccepted);
-        allRobotPosesRejected.addAll(robotPosesRejected);
-        
-
-        // Log summary data
-        Logger.recordOutput("Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput("Vision/Summary/RobotPoses", allRobotPoses.toArray(new Pose3d[0]));
-        Logger.recordOutput(
-            "Vision/Summary/RobotPosesAccepted", allRobotPosesAccepted.toArray(new Pose3d[0]));
-        Logger.recordOutput(
-            "Vision/Summary/RobotPosesRejected", allRobotPosesRejected.toArray(new Pose3d[0]));*/
-    
-    
     }
 }
+
+
 
 
