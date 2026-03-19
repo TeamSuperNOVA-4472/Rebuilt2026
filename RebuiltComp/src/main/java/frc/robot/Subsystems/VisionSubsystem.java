@@ -113,6 +113,7 @@ public class VisionSubsystem extends SubsystemBase
         SmartDashboard.putNumber("Subsystems/VisionSubsystem/Throttle: ", throttle);
     }
 
+    @AutoLogOutput
     public Pose2d getLastValidPose()
     {
         return mLastValidPose;
@@ -201,8 +202,9 @@ public class VisionSubsystem extends SubsystemBase
         return Optional.empty();
     }
 
-    @AutoLogOutput 
+    @AutoLogOutput(key = "VisionSubsystem/LogPose")
     private Pose2d logPose = new Pose2d();
+    
     
 
     // Calculate position, update position if present
