@@ -270,7 +270,7 @@ public final class Constants {
     // TODO: tune a lower tolerance for this
     public static final double kTurretTolerance = 50;
 
-    public static final double kTurretResetSpeed = -0.3;
+    public static final double kTurretResetSpeed = -0.15;
     public static final double kTurretResetStatorThreshold = 19;
 
     public static final double kDeadband = 340;
