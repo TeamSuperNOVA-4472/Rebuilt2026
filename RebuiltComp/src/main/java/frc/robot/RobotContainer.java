@@ -135,7 +135,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("AimAtHub", new moveTurretAuto(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      () -> -FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
