@@ -224,7 +224,7 @@ public final class Constants {
     public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
   
     // AdvantageKit mode constants
-    public static final Mode simMode = Mode.REPLAY;
+    public static final Mode simMode = Mode.REAL;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
     String logPath = LogFileUtil.findReplayLog();
 
