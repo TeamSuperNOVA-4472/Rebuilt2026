@@ -95,6 +95,15 @@ public final class Constants {
       kDistanceToHoodAngle.put(5.41, 32.0);
     }
 
+    public static final InterpolatingDoubleTreeMap kPassingDistanceToSpeed = new InterpolatingDoubleTreeMap();
+    static {
+      kPassingDistanceToSpeed.put(4.8514, 40.0);
+      kPassingDistanceToSpeed.put(6.985, 70.0);
+    }
+
+    public static final double kPassingMinimumInMeters = 4.8514;
+    public static final double kPassingMaximumInMeters = 6.985;
+
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
     public static final double kHoodMinAngle = 20.0;
     public static final double kHoodMaxAngle = 45.0;
@@ -143,7 +152,7 @@ public final class Constants {
     
     public static final double kStartingHoodAngle = 21;
     public static final double kPassingAngle = 44;
-    public static final double kPassingSpeed = 70;
+    public static final double kPassingMeterOffsetFromHub = 2;
     public static final double kSafeAngle = 21;
     public static final double kSafeSpeed = 40;
 
@@ -268,7 +277,7 @@ public final class Constants {
     public static final double kTurretA = 0;
 
     // TODO: tune a lower tolerance for this
-    public static final double kTurretTolerance = 50;
+    public static final double kTurretTolerance = 30;
 
     public static final double kTurretResetSpeed = -0.3;
     public static final double kTurretResetStatorThreshold = 19;
