@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Right neutral path"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Path 2"
+                }
+              },
               {
                 "type": "sequential",
                 "data": {
@@ -33,19 +33,19 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeStore"
+                        "name": "IntakeOut"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.3
+                        "waitTime": 3.8
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "ToggleIntakeStore"
+                        "name": "IntakeStore"
                       }
                     }
                   ]
@@ -91,13 +91,25 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "FlywheelOff"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right neutral path"
+                  "pathName": "Path 2"
                 }
               },
               {
@@ -107,7 +119,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -119,19 +131,19 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeStore"
+                        "name": "IntakeOut"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0
+                        "waitTime": 3.8
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "ToggleIntakeStore"
+                        "name": "IntakeStore"
                       }
                     }
                   ]
@@ -174,12 +186,6 @@
           "type": "wait",
           "data": {
             "waitTime": 6.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOut"
           }
         },
         {

@@ -91,6 +91,18 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "FlywheelOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOff"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -174,12 +186,6 @@
           "type": "wait",
           "data": {
             "waitTime": 6.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOut"
           }
         },
         {
