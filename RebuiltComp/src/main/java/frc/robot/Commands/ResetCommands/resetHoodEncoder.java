@@ -12,7 +12,7 @@ public class resetHoodEncoder extends Command {
     public resetHoodEncoder(FlywheelSubsystem mFlywheelSubsystem)
     {
         kFlywheelSubsystem = mFlywheelSubsystem;
-        kDebounce = new Debouncer(1);
+        kDebounce = new Debouncer(0.25);
 
         addRequirements(kFlywheelSubsystem);
     }
@@ -21,6 +21,7 @@ public class resetHoodEncoder extends Command {
     public void initialize() {
         kFlywheelSubsystem.disableHoodPID();
         kFlywheelSubsystem.spinHood(FlywheelConstants.kResetHoodSpeed);
+        kDebounce.calculate(false);
     }
 
     @Override

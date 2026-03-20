@@ -9,57 +9,31 @@
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "Neautral zone agressive"
+                }
+              },
+              {
                 "type": "sequential",
                 "data": {
                   "commands": [
                     {
-                      "type": "parallel",
+                      "type": "wait",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "ResetTurretEncoder"
-                            }
-                          },
-                          {
-                            "type": "sequential",
-                            "data": {
-                              "commands": [
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 0.6
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "IntakeOn"
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 2.7
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
+                        "waitTime": 0.6
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "ToggleIntakeStore"
+                        "name": "IntakeOn"
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "IntakeOut"
                       }
                     },
                     {
@@ -69,122 +43,18 @@
                       }
                     },
                     {
-                      "type": "deadline",
+                      "type": "named",
                       "data": {
-                        "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 12.0
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "FlywheelOn"
-                            }
-                          },
-                          {
-                            "type": "named",
-                            "data": {
-                              "name": "FollowWithTurret"
-                            }
-                          },
-                          {
-                            "type": "sequential",
-                            "data": {
-                              "commands": [
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 2.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "SpindexerOn"
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 1.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 1.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 1.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 1.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                },
-                                {
-                                  "type": "wait",
-                                  "data": {
-                                    "waitTime": 1.5
-                                  }
-                                },
-                                {
-                                  "type": "named",
-                                  "data": {
-                                    "name": "ToggleIntakeStore"
-                                  }
-                                }
-                              ]
-                            }
-                          }
-                        ]
+                        "name": "IntakeStore"
                       }
                     }
                   ]
                 }
               },
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Neautral zone agressive"
+                  "name": "ResetTurretEncoder"
                 }
               }
             ]
@@ -193,13 +63,43 @@
         {
           "type": "named",
           "data": {
-            "name": "SpindexerOff"
+            "name": "FlywheelOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimAtHub"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 10.0
           }
         },
         {
           "type": "named",
           "data": {
             "name": "IntakeOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOff"
           }
         },
         {

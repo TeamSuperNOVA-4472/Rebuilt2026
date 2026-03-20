@@ -12,7 +12,7 @@ public class resetSliderEncoder extends Command {
     public resetSliderEncoder(IntakeSubsystem mIntakeSubsystem)
     {
         kIntakeSubsystem = mIntakeSubsystem;
-        kDebounce = new Debouncer(1);
+        kDebounce = new Debouncer(0.25);
 
         addRequirements(kIntakeSubsystem);
     }
@@ -21,6 +21,7 @@ public class resetSliderEncoder extends Command {
     public void initialize() {
         kIntakeSubsystem.disablePID();
         kIntakeSubsystem.moveIntakeSlider(IntakeSubsystemConstants.kSliderResetSpeed);
+        kDebounce.calculate(false);
     }
 
     @Override

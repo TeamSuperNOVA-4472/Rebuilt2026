@@ -34,8 +34,6 @@ import frc.robot.Robot;
 import frc.robot.Constants.FlywheelConstants;
 
 public class FlywheelSubsystem extends SubsystemBase {
-    public static final FlywheelSubsystem kFlywheel = new FlywheelSubsystem();
-
     public enum FlywheelMode{
         OFF,
         SPINNING    
@@ -68,7 +66,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     private boolean kHoodPIDEnabled = true;
     
-    private FlywheelSubsystem(){
+    public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
         kIsSafeModeEnabled = false;
         //TODO: Values below should be constants.
@@ -81,7 +79,6 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheel2Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheelFeedback = new PIDController(FlywheelConstants.kPFlywheel,FlywheelConstants.kIFlywheel, FlywheelConstants.kDFlywheel);
-        kFlywheelFeedback.setTolerance(FlywheelConstants.kFlywheelTolerance);
 
         kTargetAngle = FlywheelConstants.kStartingHoodAngle;
 
@@ -120,6 +117,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1CurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheel1SupplyLimitEnabled;
         kFlywheel1CurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheel1StatorLimitEnabled;
         kFlywheel1CurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheel1StatorLimit;
+        kFlywheel1CurrentConfig.SupplyCurrentLowerLimit = FlywheelConstants.kFlywheel1SupplyLimit;
         kFlywheel1MotorConfig.NeutralMode = FlywheelConstants.kFlywheel1NeutralMode;
         kFlywheel1Config.withCurrentLimits(kFlywheel1CurrentConfig);
         kFlywheel1Config.withMotorOutput(kFlywheel1MotorConfig);
@@ -135,6 +133,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel2CurrentConfig.SupplyCurrentLimitEnable = FlywheelConstants.kFlywheel2SupplyLimitEnabled;
         kFlywheel2CurrentConfig.StatorCurrentLimitEnable = FlywheelConstants.kFlywheel2StatorLimitEnabled;
         kFlywheel2CurrentConfig.StatorCurrentLimit = FlywheelConstants.kFlywheel2StatorLimit;
+        kFlywheel2CurrentConfig.SupplyCurrentLowerLimit = FlywheelConstants.kFlywheel2SupplyLimit;;
         kFlywheel2MotorConfig.NeutralMode = FlywheelConstants.kFlywheel2NeutralMode;
         kFlywheel2Config.withCurrentLimits(kFlywheel2CurrentConfig);
         kFlywheel2Config.withMotorOutput(kFlywheel2MotorConfig);
@@ -256,6 +255,7 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
+        kFlywheelFeedback.setTolerance(kTargetSpeed*FlywheelConstants.kFlywheelTolerance);
         kFlywheelAtTarget = kFlywheelFeedback.atSetpoint();
 
         if (kHoodPIDEnabled)
