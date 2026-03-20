@@ -100,7 +100,7 @@ public class RobotContainer {
   private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      () -> -FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
+      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
         mSwerve.getPose(),
         mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
         mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
@@ -179,10 +179,11 @@ public class RobotContainer {
         mSpindexer, 
         SpindexerMode.LOAD,
         mTurret::getTurretAtSetpoint,
-        () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm()).unless(() -> !mFlywheel.getFlywheelAtTarget()));
+        () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm(),
+        () -> FieldMathHelpers.getLocation(mSwerve.getPose())).unless(() -> !mFlywheel.getFlywheelAtTarget()));
 
     mDriver.leftBumper().onFalse(
-      new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0)
+      new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)
     );
 
     // Flywheel and Hood Bindings

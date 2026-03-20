@@ -2,6 +2,7 @@ package frc.robot.Commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.FieldMathHelpers;
@@ -36,18 +37,16 @@ public class setFlywheel extends Command {
                 kFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
                 break;
             case ALLIANCE_ZONE: // Shoot to hub
-                // TODO: make this not default to not shooting if not within bounds
-                if (distance >= FlywheelConstants.kDistanceMinimumInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
-                    speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
-                    angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
-                    kFlywheel.setHoodTarget(angle);
-                    kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
-                }
+                distance = MathUtil.clamp(distance, FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
+                speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
+                angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
+                kFlywheel.setHoodTarget(angle);
+                kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
                 break;
             default: // Default to passing mode
-            // TODO: make dynamic speeds
                 kFlywheel.setHoodTarget(FlywheelConstants.kPassingAngle);
-                kFlywheel.setMode(FlywheelMode.SPINNING, FlywheelConstants.kPassingSpeed);
+                distance = MathUtil.clamp(distance + FlywheelConstants.kPassingMeterOffsetFromHub, FlywheelConstants.kPassingMinimumInMeters, FlywheelConstants.kPassingMaximumInMeters);
+                kFlywheel.setMode(FlywheelMode.SPINNING, FlywheelConstants.kPassingDistanceToSpeed.get(distance));
         }
     }
 }

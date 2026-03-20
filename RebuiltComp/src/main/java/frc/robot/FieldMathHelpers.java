@@ -2,8 +2,11 @@ package frc.robot;
 
 import java.util.Optional;
 
+import javax.lang.model.util.ElementScanner14;
+
 import com.thethriftybot.server.msgHandler;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -63,14 +66,10 @@ public class FieldMathHelpers
         Pair<Double, Double> fieldSpeeds = getFieldRelativeSpeedOfOffsetObject(normalizeDegrees(botPose.getRotation().getDegrees()), xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond);
         xVelocityMetersPerSecond = fieldSpeeds.getFirst();
         yVelocityMetersPerSecond = fieldSpeeds.getSecond();
-        
-        // TODO: make this not default to 0 if outside bounds
-        if (distanceToHub >= FlywheelConstants.kDistanceMinimumInMeters && distanceToHub <= FlywheelConstants.kDistanceMaximumInMeters)
-        {
-            dt = FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub) + VisionConstants.kLatencyLagInSeconds;
-        } else {
-            dt = 0;
-        }
+
+        distanceToHub = MathUtil.clamp(distanceToHub, FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
+        dt = FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub) + VisionConstants.kLatencyLagInSeconds;
+
         // Calculate offsets
         double dx = xVelocityMetersPerSecond * dt;
         double dy = yVelocityMetersPerSecond * dt;
