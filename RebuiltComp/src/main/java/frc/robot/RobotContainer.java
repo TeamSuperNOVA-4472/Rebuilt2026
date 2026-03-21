@@ -178,9 +178,9 @@ public class RobotContainer {
       new setSpindexer(
         mSpindexer, 
         SpindexerMode.LOAD,
-        mTurret::getTurretAtSetpoint,
+        ()-> mTurret.getTurretAtSetpoint() && mFlywheel.getFlywheelAtTarget(),
         () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm(),
-        () -> FieldMathHelpers.getLocation(mSwerve.getPose())).unless(() -> !mFlywheel.getFlywheelAtTarget()));
+        () -> FieldMathHelpers.getLocation(mSwerve.getPose())));
 
     mDriver.leftBumper().onFalse(
       new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)

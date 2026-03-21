@@ -69,7 +69,7 @@ public final class Constants {
       kDistanceToFlywheelSpeed.put(2.5, 44.0);
       kDistanceToFlywheelSpeed.put(3.0, 48.0);
       kDistanceToFlywheelSpeed.put(3.63, 54.0);
-      kDistanceToFlywheelSpeed.put(4.09, 58.0);
+      kDistanceToFlywheelSpeed.put(4.09, 60.0);
       kDistanceToFlywheelSpeed.put(5.41, 80.0);
     }
 
@@ -207,7 +207,7 @@ public final class Constants {
     public static final double kBaseRotDev = 0.5;
     public static final double kTagDistThreshold = 10;
     public static final double kMegaTag1Multiplier = 2;
-    public static final double kLatencyLagInSeconds = 0.1;
+    public static final double kLatencyLagInSeconds = 0.2;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
     public static final double kAngularVelocityThreshold = 720;
@@ -282,7 +282,7 @@ public final class Constants {
     public static final double kTurretResetSpeed = -0.15;
     public static final double kTurretResetStatorThreshold = 19;
 
-    public static final double kDeadband = 340;
+    public static final double kDeadband = 350;
     public static final double kGearing = 0.0405405405405405;
 
     public static final double kMaxSpeedOutput = 1;
@@ -331,7 +331,7 @@ public final class Constants {
     public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
     static {
       kDistanceToKickerSpeed.put(1.8,-30.0);
-      kDistanceToKickerSpeed.put(5.41, -15.0);
+      kDistanceToKickerSpeed.put(5.41, -20.0);
     }
   }
   
