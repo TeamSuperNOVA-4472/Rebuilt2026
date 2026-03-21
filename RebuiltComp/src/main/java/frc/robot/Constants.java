@@ -67,10 +67,10 @@ public final class Constants {
       kDistanceToFlywheelSpeed.put(1.8, 40.0);
       kDistanceToFlywheelSpeed.put(2.2, 40.0);
       kDistanceToFlywheelSpeed.put(2.5, 44.0);
-      kDistanceToFlywheelSpeed.put(3.0, 48.0);
-      kDistanceToFlywheelSpeed.put(3.63, 54.0);
-      kDistanceToFlywheelSpeed.put(4.09, 61.0);
-      kDistanceToFlywheelSpeed.put(5.41, 80.0);
+      kDistanceToFlywheelSpeed.put(3.0, 46.0);
+      kDistanceToFlywheelSpeed.put(3.63, 48.0);
+      kDistanceToFlywheelSpeed.put(4.09, 52.0);
+      kDistanceToFlywheelSpeed.put(5.41, 72.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -257,7 +257,7 @@ public final class Constants {
 
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(0.146,-0.171, new Rotation2d());
+    public static final Transform2d kTurretOffset = new Transform2d(0.143,-0.168, new Rotation2d());
     public static final double kStartingAngleOffset = 88;
 
     public static final int kTurretMotorPort = 24;
