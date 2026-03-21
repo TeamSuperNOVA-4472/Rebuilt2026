@@ -69,7 +69,7 @@ public final class Constants {
       kDistanceToFlywheelSpeed.put(2.5, 44.0);
       kDistanceToFlywheelSpeed.put(3.0, 48.0);
       kDistanceToFlywheelSpeed.put(3.63, 54.0);
-      kDistanceToFlywheelSpeed.put(4.09, 60.0);
+      kDistanceToFlywheelSpeed.put(4.09, 61.0);
       kDistanceToFlywheelSpeed.put(5.41, 80.0);
     }
 
