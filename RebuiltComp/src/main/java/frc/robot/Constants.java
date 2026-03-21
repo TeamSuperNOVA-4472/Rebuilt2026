@@ -325,7 +325,7 @@ public final class Constants {
     public static final double kSpindexerGearing = 0.25;
     public static final double kKickerV = 0.4;
 
-    public static final double kSpindexerVoltage = -3.5;
+    public static final double kSpindexerVoltage = -7;
     public static final double kKickerSpeed = -20;
 
     public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
