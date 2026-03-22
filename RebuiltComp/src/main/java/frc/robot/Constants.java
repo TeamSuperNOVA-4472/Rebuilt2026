@@ -67,10 +67,10 @@ public final class Constants {
       kDistanceToFlywheelSpeed.put(1.8, 40.0);
       kDistanceToFlywheelSpeed.put(2.2, 40.0);
       kDistanceToFlywheelSpeed.put(2.5, 44.0);
-      kDistanceToFlywheelSpeed.put(3.0, 46.0);
-      kDistanceToFlywheelSpeed.put(3.63, 48.0);
-      kDistanceToFlywheelSpeed.put(4.09, 52.0);
-      kDistanceToFlywheelSpeed.put(5.41, 72.0);
+      kDistanceToFlywheelSpeed.put(3.0, 45.0);
+      kDistanceToFlywheelSpeed.put(3.63, 46.0);
+      kDistanceToFlywheelSpeed.put(4.09, 50.0);
+      kDistanceToFlywheelSpeed.put(5.41, 67.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -330,8 +330,8 @@ public final class Constants {
 
     public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToKickerSpeed.put(1.8,-30.0);
-      kDistanceToKickerSpeed.put(5.41, -20.0);
+      kDistanceToKickerSpeed.put(1.8,-40.0);
+      kDistanceToKickerSpeed.put(5.41, -30.0);
     }
   }
   
