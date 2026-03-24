@@ -25,7 +25,7 @@ public class moveTurretAuto extends InstantCommand{
 
     @Override
     public void initialize() {
-        double kRelativeAngle = -kGetHeadingDegrees.get() + kAbsTargetAngle.get() + TurretConstants.kStartingAngleOffset;
+        double kRelativeAngle = kGetHeadingDegrees.get() - kAbsTargetAngle.get() + TurretConstants.kStartingAngleOffset;
         double kConstrainedAngle = (kRelativeAngle % 360 + 360) % 360;
         kTurret.setTargetAngle(kConstrainedAngle);
         SmartDashboard.putNumber("Absolute Angle", kAbsTargetAngle.get());
