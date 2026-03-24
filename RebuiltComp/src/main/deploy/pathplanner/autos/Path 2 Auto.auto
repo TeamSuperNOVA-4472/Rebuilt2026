@@ -56,6 +56,12 @@
                 "data": {
                   "name": "ResetTurretEncoder"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FlywheelOnSlow"
+                }
               }
             ]
           }
@@ -75,7 +81,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.5
           }
         },
         {

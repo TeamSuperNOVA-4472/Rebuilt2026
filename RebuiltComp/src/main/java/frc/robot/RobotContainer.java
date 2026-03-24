@@ -47,6 +47,7 @@ import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
 import frc.robot.Commands.AutoCommands.moveTurretAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelAuto;
+import frc.robot.Commands.AutoCommands.setFlywheelSlowAuto;
 import frc.robot.Commands.AutoCommands.setIntakeActionAuto;
 import frc.robot.Commands.AutoCommands.setIntakeStorageAuto;
 import frc.robot.Commands.AutoCommands.setSpindexerAuto;
@@ -83,7 +84,7 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = new TurretSubsystem();
   private final SwerveSubsystem mSwerve = new SwerveSubsystem();
   private final FlywheelSubsystem mFlywheel = new FlywheelSubsystem();
-  private final PowerDistribution mPdh = new PowerDistribution(1, ModuleType.kRev);
+  private final PowerDistribution mPdh = new PowerDistribution(2, ModuleType.kRev);
   private final SendableChooser<Command> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -144,6 +145,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("SpindexerOff", new setSpindexerAuto(mSpindexer, SpindexerMode.OFF));
     NamedCommands.registerCommand("SpindexerOn", new setSpindexerAuto(mSpindexer, SpindexerMode.LOAD));
     NamedCommands.registerCommand("FlywheelOn", new setFlywheelAuto(mFlywheel, () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
+      mSwerve.getPose(), 
+      mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
+      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+      mSwerve.getAngularVelocity()
+      ).getNorm()));
+    NamedCommands.registerCommand("FlywheelOnSlow", new setFlywheelSlowAuto(mFlywheel, () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
       mSwerve.getPose(), 
       mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
       mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
@@ -230,5 +237,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public void getAmperageToLog(){
+    SmartDashboard.putNumber("Total Amperage", mPdh.getTotalCurrent());
   }
 }
