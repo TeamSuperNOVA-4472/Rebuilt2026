@@ -173,6 +173,7 @@ public class RobotContainer {
     //autoChooser.addOption("Path 2 Auto", new PathPlannerAuto("Path 2 Auto"));
     autoChooser.addOption("Right side 2 Auto", new PathPlannerAuto("Right side 2 Auto"));
     autoChooser.addOption("left neutral Auto", new PathPlannerAuto("left neutral Auto"));
+    autoChooser.addOption("Left climb and depo auto", new PathPlannerAuto("Left climb and depo auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureDriverBindings();

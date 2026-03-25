@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "left climb and depo path"
+                  "pathName": "Right Neutral Climb Path"
                 }
               },
               {
@@ -39,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.4
+                        "waitTime": 2.9
                       }
                     },
                     {
@@ -99,13 +99,13 @@
         {
           "type": "named",
           "data": {
-            "name": "FlywheelOff"
+            "name": "SpindexerOff"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SpindexerOff"
+            "name": "FlywheelOff"
           }
         },
         {
@@ -115,105 +115,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "left Depo path"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 0.5
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOn"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeOut"
-                      }
-                    },
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 2.6
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "IntakeStore"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ResetTurretEncoder"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "FlywheelOnSlow"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FlywheelOn"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOn"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 6.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FlywheelOff"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "left Climb path"
+                  "pathName": "Right Climb Path"
                 }
               },
               {
