@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.Commands.TeleopCommands;
 
 import java.lang.reflect.Constructor;
 import java.util.function.Supplier;
@@ -13,14 +13,14 @@ import frc.robot.FieldMathHelpers.Location;
 import frc.robot.Subsystems.SpindexerSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem.SpindexerMode;
 
-public class setSpindexer extends Command {
+public class SpindexerTeleop extends Command {
     private final SpindexerSubsystem kSpindexer;
     private final SpindexerMode kNewMode;
     private Supplier<Double> kDistance;
     private Supplier<Boolean> kTurretAtSetpoint;
     private Supplier<Location> kLocation;
     
-    public setSpindexer(
+    public SpindexerTeleop(
         SpindexerSubsystem mSpindexer, 
         SpindexerMode mNewMode, 
         Supplier<Boolean> mTurretAtSetpoint, 
@@ -35,22 +35,26 @@ public class setSpindexer extends Command {
 
     @Override
     public void execute() {
-        if (kTurretAtSetpoint.get()) // Only shoot if turret is at the setpoint
+        SpindexerMode mode;
+        // TODO: is different kicker speed still needed with spindexer fixes? 
+        switch (kLocation.get()) // Get location
         {
-            switch (kLocation.get()) // Get location
-            {
-                case ALLIANCE_ZONE: // Adjust for hub distance
+            case ALLIANCE_ZONE: // Adjust for hub distance
+                if (kTurretAtSetpoint.get())
+                {
                     double distance = MathUtil.clamp(kDistance.get(), FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
                     double kickerSpeed = SpindexerConstants.kDistanceToKickerSpeed.get(distance);
                     kSpindexer.setKickerVelocity(kickerSpeed);
-                    break;
-                default: kSpindexer.setKickerVelocity(SpindexerConstants.kKickerSpeed);
-            }
-            kSpindexer.setMode(kNewMode);
+                    mode = kNewMode;
+                }
+                else
+                {
+                    mode = SpindexerMode.OFF;
+                }
+                break;
+            default: kSpindexer.setKickerVelocity(SpindexerConstants.kKickerSpeed); mode = kNewMode;
         }
-        else
-        {
-            kSpindexer.setMode(SpindexerMode.OFF);
-        }
+
+        kSpindexer.setMode(mode);
     }
 }

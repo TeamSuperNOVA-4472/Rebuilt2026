@@ -2,11 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.Commands;
+package frc.robot.Commands.TeleopCommands;
 
 import frc.robot.Constants;
 import frc.robot.FieldMathHelpers;
 import frc.robot.Robot;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Subsystems.SwerveSubsystem;
 
 import java.lang.reflect.Field;
@@ -27,6 +28,7 @@ public class SwerveTeleop extends Command {
   private final Supplier<Double> mSideInput;
   private final Supplier<Double> mTurnInput;
   private final Supplier<Boolean> mResetHeadingInput;
+  private final Supplier<Boolean> mSOTM;
   private final SwerveSubsystem mSwerveSubsystem;
   
   private final PIDController mGyroController = new PIDController(Constants.SwerveConstants.kPGyro, Constants.SwerveConstants.kIGyro, Constants.SwerveConstants.kDGyro);
@@ -41,12 +43,14 @@ public class SwerveTeleop extends Command {
     Supplier<Double> pSideInput,
     Supplier<Double> pTurnInput,
     Supplier<Boolean> pResetHeadingInput,
+    Supplier<Boolean> pSOTM,
     SwerveSubsystem pSwerveSubsystem) {
   
     mFwdInput = pFwdInput;
     mSideInput = pSideInput;
     mTurnInput = pTurnInput;
     mResetHeadingInput = pResetHeadingInput;
+    mSOTM = pSOTM;
     mSwerveSubsystem = pSwerveSubsystem;
 
     mTargetHeading = mSwerveSubsystem.getHeadingDegrees();
@@ -60,9 +64,12 @@ public class SwerveTeleop extends Command {
   @Override
   public void execute() {
     
-    double updatedFwdSpeedMS = mFwdInput.get() * kMaxSpeedMS;
-    double updatedSideSpeedMS = mSideInput.get() * kMaxSpeedMS;
-    double updatedTurnSpeedRadS = mTurnInput.get() * kMetersPerSecondToRadiansPerSecond * kMaxSpeedMS;
+    //TODO: make analog transition w/ trigger so it isnt as choppy
+    double speed = mSOTM.get() ? SwerveConstants.kMaxSOTMSpeedMS : SwerveConstants.kMaxSpeedMS;
+
+    double updatedFwdSpeedMS = mFwdInput.get() * speed;
+    double updatedSideSpeedMS = mSideInput.get() * speed;
+    double updatedTurnSpeedRadS = mTurnInput.get() * kMetersPerSecondToRadiansPerSecond * speed;
 
     if(updatedTurnSpeedRadS == 0.0 && (updatedFwdSpeedMS != 0 || updatedSideSpeedMS != 0)) {
       updatedTurnSpeedRadS = mGyroController.calculate(mSwerveSubsystem.getHeadingDegrees(), mTargetHeading);

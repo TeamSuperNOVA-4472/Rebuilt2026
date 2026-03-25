@@ -33,6 +33,8 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static final double kMaxSpeedMS = 4.5;
+    public static final double kMaxSOTMSpeedMS = 0.85;
+    public static final double kLatencyInSeconds = 0.02;
     public static final double kMetersPerInch = Units.inchesToMeters(1);
     public static final double kSwerveLocYInches = 7.5;
     public static final double kSwerveLocXInches = 7;
@@ -51,6 +53,7 @@ public final class Constants {
 
   public static class ClimbConstants {
     public static final int kClimbMotorPort = 59;
+    public static final double kClimbVoltage = 8;
     public static final String kClimbCanbus = "CANivore";
     public static final double kClimbSupplyLimit = 40;
     public static final double kClimbStatorLimit = 40;
@@ -268,7 +271,7 @@ public final class Constants {
     public static final boolean kTurretStatorLimitEnabled = true;
     public static final NeutralModeValue kTurretNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kTurretP = 0.003;
+    public static final double kTurretP = 0.005;
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 

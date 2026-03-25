@@ -1,4 +1,4 @@
-package frc.robot.Commands;
+package frc.robot.Commands.TeleopCommands;
 
 import java.util.function.Supplier;
 
@@ -11,12 +11,12 @@ import frc.robot.FieldMathHelpers.Location;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 
-public class setFlywheel extends Command {
+public class FlywheelTeleop extends Command {
     private final FlywheelSubsystem kFlywheel;
     private final Supplier<Double> kDistance;
     private final Supplier<FieldMathHelpers.Location> kGetLocation;
 
-    public setFlywheel(
+    public FlywheelTeleop(
         FlywheelSubsystem mFlywheelSubsystem,
         Supplier<Double> mDistance,
         Supplier<FieldMathHelpers.Location> mGetLocation){

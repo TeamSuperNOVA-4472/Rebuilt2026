@@ -32,7 +32,6 @@ public class TurretSubsystem extends SubsystemBase
     private final PIDController kPidController;
     private final SimpleMotorFeedforward kSpinningFeedForward;
     private Supplier<Double> kGetAngularVelocity;
-    private Supplier<Double> kGetAngularAcceleration;
 
     private double kTurretTargetAngle = 0.0;
     private double kOutput;
@@ -76,17 +75,11 @@ public class TurretSubsystem extends SubsystemBase
         kPidController.setTolerance(TurretConstants.kTurretTolerance);
         kTurretMotor.setPosition(0);
         kGetAngularVelocity = () -> 0.0;
-        kGetAngularAcceleration = () -> 0.0;
     }
 
     public void setAngularSpeedSupplier(Supplier<Double> speed)
     {
         kGetAngularVelocity = speed;
-    }
-
-    public void setAngularAccelerationSupplier(Supplier<Double> acceleration)
-    {
-        kGetAngularAcceleration = acceleration;
     }
 
     public Boolean getSafeModeEnabled()
@@ -146,13 +139,13 @@ public class TurretSubsystem extends SubsystemBase
         kTurretMotor.setPosition(0);
     }
 
-    public void goToAngle(double targetAngle) 
+    private void goToAngle(double targetAngle) 
     {
         double currentAngle;
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = MathUtil.clamp(kSpinningFeedForward.calculate(kGetAngularVelocity.get(), kGetAngularAcceleration.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput);
+        kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput); // kSpinningFeedForward.calculate(kGetAngularVelocity.get())
         double addition = kOutput >= 0 ? TurretConstants.kTurretS : -TurretConstants.kTurretS;
         kTurretMotor.set(kOutput + addition);
     }

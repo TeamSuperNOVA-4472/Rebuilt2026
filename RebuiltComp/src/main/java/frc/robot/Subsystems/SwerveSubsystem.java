@@ -34,7 +34,9 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.FieldMathHelpers;
 import frc.robot.FieldMathHelpers.Location;
 import frc.robot.Robot;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.VisionConstants;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
 import swervelib.parser.SwerveParser;
@@ -50,9 +52,6 @@ public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive mSwerveDrive;
   private Command kSwerveSysID;
   private double kYawGyroOffset = 0;
-  private double kAngularAcceleration = 0;
-  private double kPreviousTime = 0;
-  private double kPreviousAngularVelocity = 0;
   private Location kLocation = FieldMathHelpers.Location.ALLIANCE_ZONE;
   private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
   private static final double kV = 2.121025; //BL: 2.1179 BR: 2.0122 FL: 2.1095 FR: 2.2445
@@ -175,6 +174,17 @@ public class SwerveSubsystem extends SubsystemBase {
     return mSwerveDrive.getPose();
   }
 
+  public Pose2d getFuturePose() {
+    ChassisSpeeds speeds = getFieldRelativeSpeeds();
+    double dt = SwerveConstants.kLatencyInSeconds;
+
+    Pose2d currentPose = getPose();
+    double futureX = currentPose.getX() + dt * speeds.vxMetersPerSecond;
+    double futureY = currentPose.getY() + dt * speeds.vyMetersPerSecond;
+
+    return new Pose2d(futureX, futureY, currentPose.getRotation());
+  }
+
   public Location getLocation() {
     return kLocation;
   }
@@ -185,10 +195,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double getAngularVelocity() {
     return Units.radiansToDegrees(getRobotRelativeSpeeds().omegaRadiansPerSecond);
-  }
-
-  public double getAngularAcceleration() {
-    return kAngularAcceleration;
   }
 
   public ChassisSpeeds getRobotRelativeSpeeds() {
@@ -205,16 +211,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    double currentTime = WPIUtilJNI.getSystemTime();
-    double currentAngularVelocity = getAngularVelocity();
 
-    double dt = currentTime - kPreviousTime;
-    kAngularAcceleration = (currentAngularVelocity - kPreviousAngularVelocity) / dt;
-
-    kPreviousAngularVelocity = currentAngularVelocity;
-    kPreviousTime = currentTime;
-
-    kLocation = FieldMathHelpers.getLocation(getPose());
+    kLocation = FieldMathHelpers.getLocation(getFuturePose());
 
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());

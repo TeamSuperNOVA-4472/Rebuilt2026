@@ -80,7 +80,7 @@ public class FieldMathHelpers
         return adjustedTranslation;
     }
 
-    private static double getRotationToHubWithSomeSpeed(
+    public static double getRotationToHubWithSomeSpeed(
         Pose2d botPose, 
         double xVelocityMetersPerSecond, 
         double yVelocityMetersPerSecond,
@@ -135,7 +135,7 @@ public class FieldMathHelpers
      * Checks if the robot is on the red alliance.
      * @return True if it is, false if it isn't or the alliance isn't valid.
      */
-    private static boolean isRedAlliance()
+    public static boolean isRedAlliance()
     {
         Optional<Alliance> alliance = DriverStation.getAlliance();
         return alliance.isPresent() && alliance.get().equals(Alliance.Red) ? true : false;
