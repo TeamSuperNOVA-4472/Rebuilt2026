@@ -42,9 +42,6 @@ public class SpindexerTeleop extends Command {
             case ALLIANCE_ZONE: // Adjust for hub distance
                 if (kTurretAtSetpoint.get())
                 {
-                    double distance = MathUtil.clamp(kDistance.get(), FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
-                    double kickerSpeed = SpindexerConstants.kDistanceToKickerSpeed.get(distance);
-                    kSpindexer.setKickerVelocity(kickerSpeed);
                     mode = kNewMode;
                 }
                 else
@@ -52,7 +49,7 @@ public class SpindexerTeleop extends Command {
                     mode = SpindexerMode.OFF;
                 }
                 break;
-            default: kSpindexer.setKickerVelocity(SpindexerConstants.kKickerSpeed); mode = kNewMode;
+            default: mode = kNewMode;
         }
 
         kSpindexer.setMode(mode);

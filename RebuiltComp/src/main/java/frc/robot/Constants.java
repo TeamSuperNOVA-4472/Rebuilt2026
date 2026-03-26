@@ -33,6 +33,7 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static final double kMaxSpeedMS = 4.5;
+    public static final double kSOTMConstant = -18.25;
     public static final double kMaxSOTMSpeedMS = 0.85;
     public static final double kLatencyInSeconds = 0.02;
     public static final double kMetersPerInch = Units.inchesToMeters(1);
@@ -67,13 +68,13 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToFlywheelSpeed.put(1.8, 40.0);
-      kDistanceToFlywheelSpeed.put(2.2, 40.0);
-      kDistanceToFlywheelSpeed.put(2.5, 44.0);
-      kDistanceToFlywheelSpeed.put(3.0, 45.0);
-      kDistanceToFlywheelSpeed.put(3.63, 46.0);
-      kDistanceToFlywheelSpeed.put(4.09, 50.0);
-      kDistanceToFlywheelSpeed.put(5.41, 67.0);
+      kDistanceToFlywheelSpeed.put(1.8, 44.0);
+      kDistanceToFlywheelSpeed.put(2.2, 44.0);
+      kDistanceToFlywheelSpeed.put(2.5, 48.0);
+      kDistanceToFlywheelSpeed.put(3.0, 49.0);
+      kDistanceToFlywheelSpeed.put(3.63, 50.0);
+      kDistanceToFlywheelSpeed.put(4.09, 54.0);
+      kDistanceToFlywheelSpeed.put(5.41, 71.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -144,7 +145,7 @@ public final class Constants {
     public static final double kHoodTolerance = 2;
 
     public static final double kSFlywheel = 0.44;
-    public static final double kVFlywheel = 0.12;
+    public static final double kVFlywheel = 0.1075;
     public static final double kAFlywheel = 0;
 
     public static final double kPFlywheel = 0.015;
@@ -260,8 +261,8 @@ public final class Constants {
 
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(0.143,-0.168, new Rotation2d());
-    public static final double kStartingAngleOffset = 88;
+    public static final Transform2d kTurretOffset = new Transform2d(0.143,-0.3, new Rotation2d()); // 0.143, 0.168
+    public static final double kStartingAngleOffset = 90;
 
     public static final int kTurretMotorPort = 24;
     public static final String kTurretCanbus = "CANivore";
@@ -271,11 +272,11 @@ public final class Constants {
     public static final boolean kTurretStatorLimitEnabled = true;
     public static final NeutralModeValue kTurretNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kTurretP = 0.005;
+    public static final double kTurretP = 0.004125;
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 
-    public static final double kTurretS = 0.0125;
+    public static final double kTurretS = 0.02;
     public static final double kTurretV = 0.00055;
     public static final double kTurretA = 0;
 
@@ -324,12 +325,17 @@ public final class Constants {
     public static final double kKickerI = 0;
     public static final double kKickerD = 0;
 
+    public static final double kSpindexerP = 0.03;
+    public static final double kSpindexerI = 0;
+    public static final double kSpindexerD = 0;
+
     public static final double kKickerGearing = 0.25;
     public static final double kSpindexerGearing = 0.25;
     public static final double kKickerV = 0.4;
+    public static final double kSpindexerV = 0.47;
 
-    public static final double kSpindexerVoltage = -7;
-    public static final double kKickerSpeed = -20;
+    public static final double kKickerSpeed = -25;
+    public static final double kSpindexerSpeed = -20;
 
     public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
     static {

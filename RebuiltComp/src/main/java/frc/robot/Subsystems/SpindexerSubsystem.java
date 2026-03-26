@@ -22,8 +22,8 @@ public class SpindexerSubsystem extends SubsystemBase {
     private TalonFX kSpindexerMotor;
     private TalonFX kKickerMotor;
     private SpindexerMode kMode;
-    private double kKickerTargetSpeed = SpindexerConstants.kKickerSpeed;
     private final PIDController kKickerPID;
+    private final PIDController kSpindexerPID;
 
     public SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
@@ -31,6 +31,7 @@ public class SpindexerSubsystem extends SubsystemBase {
         kKickerMotor = new TalonFX(SpindexerConstants.kKickerMotorPort, SpindexerConstants.kKickerCanbus);
 
         kKickerPID = new PIDController(SpindexerConstants.kKickerP, SpindexerConstants.kKickerI, SpindexerConstants.kKickerD);
+        kSpindexerPID = new PIDController(SpindexerConstants.kSpindexerP, SpindexerConstants.kSpindexerI, SpindexerConstants.kSpindexerD);
 
         TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kSpindexerCurrentConfig = new CurrentLimitsConfigs();
@@ -74,11 +75,6 @@ public class SpindexerSubsystem extends SubsystemBase {
         return kSpindexerMotor.getVelocity().getValueAsDouble()*SpindexerConstants.kSpindexerGearing;
     }
 
-    public void setKickerVelocity(double speed)
-    {
-        kKickerTargetSpeed = speed;
-    }
-
     private void moveSpindexer(){
         switch (kMode){
         case OFF:
@@ -87,9 +83,8 @@ public class SpindexerSubsystem extends SubsystemBase {
             break;
 
         case LOAD:
-            kSpindexerMotor.setVoltage(SpindexerConstants.kSpindexerVoltage);
-            //double output = MathUtil.clamp(kKickerPID.calculate(kKickerMotor.getVelocity().getValueAsDouble(), SpindexerConstants.kKickerSpeed), -9, 0);
-            kKickerMotor.setVoltage(SpindexerConstants.kKickerV*kKickerTargetSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed));
+            kSpindexerMotor.setVoltage(MathUtil.clamp(SpindexerConstants.kSpindexerV*SpindexerConstants.kSpindexerSpeed + kSpindexerPID.calculate(getSpindexerVelocity(), SpindexerConstants.kSpindexerSpeed), -10, 10));
+            kKickerMotor.setVoltage(MathUtil.clamp(SpindexerConstants.kKickerV*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed), -10, 10));
             //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output)
             break;
         }

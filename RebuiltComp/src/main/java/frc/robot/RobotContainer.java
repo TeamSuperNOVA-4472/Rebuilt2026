@@ -97,7 +97,7 @@ public class RobotContainer {
     () -> mSideLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getLeftX())),
     () -> mTurnLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getRightX())),
     () -> mDriver.a().getAsBoolean(),
-    () -> mDriver.rightTrigger(OperatorConstants.kTriggerThreshold).getAsBoolean(),
+    () -> mDriver.getRightTriggerAxis(),
     mSwerve);
   
   private final TurretTeleop mMoveTurretAbsolute = new TurretTeleop(
@@ -118,7 +118,7 @@ public class RobotContainer {
   public RobotContainer() {
     // Defaults for swerve and turret
     mSwerve.setDefaultCommand(mSwerveTeleop);
-    //mTurret.setDefaultCommand(mMoveTurretAbsolute);
+    mTurret.setDefaultCommand(mMoveTurretAbsolute);
 
     mTurret.setAngularSpeedSupplier(mSwerve::getAngularVelocity);
 
@@ -198,8 +198,6 @@ public class RobotContainer {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
-
-    mDriver.x().whileTrue(new RunCommand(() -> mTurret.setTargetAngle(270)));
 
     //mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mClimb, ClimbDirection.LEFT));
   }

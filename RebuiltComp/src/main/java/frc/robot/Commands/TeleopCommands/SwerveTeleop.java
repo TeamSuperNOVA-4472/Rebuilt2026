@@ -13,6 +13,7 @@ import frc.robot.Subsystems.SwerveSubsystem;
 import java.lang.reflect.Field;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -28,7 +29,7 @@ public class SwerveTeleop extends Command {
   private final Supplier<Double> mSideInput;
   private final Supplier<Double> mTurnInput;
   private final Supplier<Boolean> mResetHeadingInput;
-  private final Supplier<Boolean> mSOTM;
+  private final Supplier<Double> mSOTM;
   private final SwerveSubsystem mSwerveSubsystem;
   
   private final PIDController mGyroController = new PIDController(Constants.SwerveConstants.kPGyro, Constants.SwerveConstants.kIGyro, Constants.SwerveConstants.kDGyro);
@@ -43,7 +44,7 @@ public class SwerveTeleop extends Command {
     Supplier<Double> pSideInput,
     Supplier<Double> pTurnInput,
     Supplier<Boolean> pResetHeadingInput,
-    Supplier<Boolean> pSOTM,
+    Supplier<Double> pSOTM,
     SwerveSubsystem pSwerveSubsystem) {
   
     mFwdInput = pFwdInput;
@@ -65,7 +66,7 @@ public class SwerveTeleop extends Command {
   public void execute() {
     
     //TODO: make analog transition w/ trigger so it isnt as choppy
-    double speed = mSOTM.get() ? SwerveConstants.kMaxSOTMSpeedMS : SwerveConstants.kMaxSpeedMS;
+    double speed = MathUtil.clamp(mSOTM.get() * SwerveConstants.kSOTMConstant + SwerveConstants.kMaxSpeedMS, SwerveConstants.kMaxSOTMSpeedMS, SwerveConstants.kMaxSpeedMS);
 
     double updatedFwdSpeedMS = mFwdInput.get() * speed;
     double updatedSideSpeedMS = mSideInput.get() * speed;

@@ -145,7 +145,7 @@ public class TurretSubsystem extends SubsystemBase
         if (Robot.isReal()) currentAngle = getAngle();
         else currentAngle = kTurretSim.getAngleRads()*180/Math.PI;
 
-        kOutput = MathUtil.clamp(kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput); // kSpinningFeedForward.calculate(kGetAngularVelocity.get())
+        kOutput = MathUtil.clamp(kSpinningFeedForward.calculate(kGetAngularVelocity.get()) + kPidController.calculate(currentAngle, targetAngle), -TurretConstants.kMaxSpeedOutput, TurretConstants.kMaxSpeedOutput); // kSpinningFeedForward.calculate(kGetAngularVelocity.get())
         double addition = kOutput >= 0 ? TurretConstants.kTurretS : -TurretConstants.kTurretS;
         kTurretMotor.set(kOutput + addition);
     }
@@ -157,7 +157,8 @@ public class TurretSubsystem extends SubsystemBase
             return true;
         }  
     }
-     public void setTargetAngle(double mNewAngle) {
+
+    public void setTargetAngle(double mNewAngle) {
         kTurretTargetAngle = mNewAngle;
     }
 
