@@ -177,21 +177,18 @@ public class RobotContainer {
         mSpindexer, 
         SpindexerMode.LOAD,
         () -> mTurret.getTurretAtSetpoint() && mFlywheel.getFlywheelAtTarget(),
-        () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm(),
         mSwerve::getLocation));
 
     mDriver.leftBumper().onFalse(
-      new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)
+      new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)
     );
 
     // Flywheel and Hood Bindings
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(
       new FlywheelTeleop(mFlywheel,
-    () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
-        mSwerve.getPose(),
-        mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
-        mSwerve.getAngularVelocity()).getNorm(),
+      mSwerve::getPose,
+      mSwerve::getFieldRelativeSpeeds,
+      mSwerve::getAngularVelocity,
       mSwerve::getLocation));
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {

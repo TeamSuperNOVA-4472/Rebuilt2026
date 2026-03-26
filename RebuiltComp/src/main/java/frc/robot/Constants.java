@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+
 import org.littletonrobotics.junction.LogFileUtil;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -156,7 +158,6 @@ public final class Constants {
     
     public static final double kStartingHoodAngle = 21;
     public static final double kPassingAngle = 44;
-    public static final double kPassingMeterOffsetFromHub = 2;
     public static final double kSafeAngle = 21;
     public static final double kSafeSpeed = 40;
 
@@ -211,6 +212,7 @@ public final class Constants {
     public static final double kBaseRotDev = 0.5;
     public static final double kTagDistThreshold = 10;
     public static final double kMegaTag1Multiplier = 2;
+    public static final double kRestrictedTagsMultiplier = 0.25;
     public static final double kLatencyLagInSeconds = 0.2;
     public static final double kTagCountThreshold = 1;
     public static final int kThrottle = 200;
@@ -218,6 +220,14 @@ public final class Constants {
     public static final double kCooldownBump = 0.5;
 
     public static final boolean kIsAndyMark = false;
+
+    public static final ArrayList<Integer> kClimbTags = new ArrayList<>();
+    static {
+      kClimbTags.add(15);
+      kClimbTags.add(16);
+      kClimbTags.add(31);
+      kClimbTags.add(32);
+    }
 
     // Welded hub poses
     public static final Pose2d kHubPoseBlueWeldedMeters = new Pose2d(4.6255177999999995, 4.0346376, Rotation2d.fromDegrees(0));
@@ -227,6 +237,14 @@ public final class Constants {
     public static final Pose2d kHubPoseBlueAndyMarkMeters = new Pose2d(4.6115224, 4.0213534, Rotation2d.fromDegrees(0));
     public static final Pose2d kHubPoseRedAndyMarkMeters = new Pose2d(11.9015002, 4.0213534, Rotation2d.fromDegrees(0));
   
+    public static final ArrayList<Pose2d> kPassingPosesRed = new ArrayList<>();
+    public static final ArrayList<Pose2d> kPassingPosesBlue = new ArrayList<>();
+    static {
+      kPassingPosesRed.add(new Pose2d(13.901424, 2.010664, new Rotation2d()));
+      kPassingPosesRed.add(new Pose2d(13.901424, 6.031992, new Rotation2d()));
+      kPassingPosesBlue.add(new Pose2d(2.611624, 2.010664, new Rotation2d()));
+      kPassingPosesBlue.add(new Pose2d(2.611624, 6.031992, new Rotation2d()));
+    }
     // AdvantageKit mode constants
     public static final Mode simMode = Mode.REAL;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;

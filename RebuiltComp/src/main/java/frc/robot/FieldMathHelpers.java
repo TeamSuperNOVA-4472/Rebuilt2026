@@ -1,11 +1,15 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Optional;
 
 import javax.lang.model.util.ElementScanner14;
 
 import com.thethriftybot.server.msgHandler;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,10 +40,20 @@ public class FieldMathHelpers
      */
     public static Translation2d getTranslationToHub(Pose2d pose)
     {
-        Translation2d poseTranslation = pose.getTranslation();
-        Translation2d hubPoseTranslation = getHubPose().getTranslation();
+        return getTranslationToPose(pose, getHubPose());
+    }
 
-        return hubPoseTranslation.minus(poseTranslation);
+    public static Translation2d getTranslationToNearestPassingPoint(Pose2d pose)
+    {
+        return getTranslationToPose(pose, getNearestPassingPoint(pose));
+    }
+
+    private static Translation2d getTranslationToPose(Pose2d pose, Pose2d destinationPose)
+    {
+        Translation2d poseTranslation = pose.getTranslation();
+        Translation2d destinationTranslation = destinationPose.getTranslation();
+
+        return destinationTranslation.minus(poseTranslation);
     }
 
     /**
@@ -89,6 +103,12 @@ public class FieldMathHelpers
         return normalizeDegrees(getTranslation2dToHubWithSomeSpeed(botPose, xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond).getAngle().getDegrees());
     }
 
+    public static double getRotationToPass(Pose2d botPose)
+    {
+        return normalizeDegrees(getTranslationToNearestPassingPoint(botPose).getAngle().getDegrees());
+    }
+
+    @Deprecated
     public static double getRotationToPassOrShootWithSomeSpeed(
         Pose2d botPose, 
         double xVelocityMetersPerSecond, 
@@ -162,6 +182,12 @@ public class FieldMathHelpers
         {
             return Constants.VisionConstants.kIsAndyMark ? Constants.VisionConstants.kHubPoseBlueAndyMarkMeters : Constants.VisionConstants.kHubPoseBlueWeldedMeters;
         }
+    }
+
+    private static Pose2d getNearestPassingPoint(Pose2d pose)
+    {
+        ArrayList<Pose2d> poses = isRedAlliance() ? VisionConstants.kPassingPosesRed : VisionConstants.kPassingPosesBlue;
+        return pose.nearest(poses);
     }
 
     public static Location getLocation(Pose2d botPose)

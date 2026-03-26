@@ -16,7 +16,6 @@ import frc.robot.Subsystems.SpindexerSubsystem.SpindexerMode;
 public class SpindexerTeleop extends Command {
     private final SpindexerSubsystem kSpindexer;
     private final SpindexerMode kNewMode;
-    private Supplier<Double> kDistance;
     private Supplier<Boolean> kTurretAtSetpoint;
     private Supplier<Location> kLocation;
     
@@ -24,11 +23,9 @@ public class SpindexerTeleop extends Command {
         SpindexerSubsystem mSpindexer, 
         SpindexerMode mNewMode, 
         Supplier<Boolean> mTurretAtSetpoint, 
-        Supplier<Double> mDistance,
         Supplier<Location> mLocation){ 
         kSpindexer = mSpindexer;
         kNewMode = mNewMode;
-        kDistance = mDistance;
         kTurretAtSetpoint = mTurretAtSetpoint;
         kLocation = mLocation;
     }

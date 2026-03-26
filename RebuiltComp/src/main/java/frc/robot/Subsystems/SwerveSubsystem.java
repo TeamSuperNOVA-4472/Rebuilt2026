@@ -212,7 +212,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    kLocation = FieldMathHelpers.getLocation(getFuturePose());
+    kLocation = FieldMathHelpers.getLocation(getPose());
 
     SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());

@@ -51,7 +51,7 @@ public class TurretTeleop extends InstantCommand{
                 kAbsTargetAngle = FieldMathHelpers.getRotationToHubWithSomeSpeed(kPose.get(), speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, kAngularVelocity.get());
                 break;
             // TODO: make passing auto aim depending on field side
-            default: kAbsTargetAngle = FieldMathHelpers.isRedAlliance() ? 0 : 180;
+            default: kAbsTargetAngle = FieldMathHelpers.getRotationToPass(kPose.get());
         }
 
         double kRelativeAngle = kGetHeadingDegrees.get() - kAbsTargetAngle + TurretConstants.kStartingAngleOffset;
