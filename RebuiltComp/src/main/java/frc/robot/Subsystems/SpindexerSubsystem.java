@@ -7,6 +7,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,17 +23,17 @@ public class SpindexerSubsystem extends SubsystemBase {
     private TalonFX kSpindexerMotor;
     private TalonFX kKickerMotor;
     private SpindexerMode kMode;
-    private final PIDController kKickerPID;
-    private final PIDController kSpindexerPID;
+    private final BangBangController kKickerBangBang;
+    private final BangBangController kSpindexerBangBang;
 
     public SpindexerSubsystem(){
         kMode = SpindexerMode.OFF;
         kSpindexerMotor = new TalonFX(SpindexerConstants.kSpindexerMotorPort,SpindexerConstants.kSpindexerCanbus);
         kKickerMotor = new TalonFX(SpindexerConstants.kKickerMotorPort, SpindexerConstants.kKickerCanbus);
 
-        kKickerPID = new PIDController(SpindexerConstants.kKickerP, SpindexerConstants.kKickerI, SpindexerConstants.kKickerD);
-        kSpindexerPID = new PIDController(SpindexerConstants.kSpindexerP, SpindexerConstants.kSpindexerI, SpindexerConstants.kSpindexerD);
-
+        kKickerBangBang = new BangBangController();
+        kSpindexerBangBang = new BangBangController();
+       
         TalonFXConfiguration kSpindexerConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kSpindexerCurrentConfig = new CurrentLimitsConfigs();
         MotorOutputConfigs kSpindexerMotorConfig = new MotorOutputConfigs();
@@ -83,8 +84,8 @@ public class SpindexerSubsystem extends SubsystemBase {
             break;
 
         case LOAD:
-            kSpindexerMotor.setVoltage(MathUtil.clamp(SpindexerConstants.kSpindexerV*SpindexerConstants.kSpindexerSpeed + kSpindexerPID.calculate(getSpindexerVelocity(), SpindexerConstants.kSpindexerSpeed), -10, 10));
-            kKickerMotor.setVoltage(MathUtil.clamp(SpindexerConstants.kKickerV*SpindexerConstants.kKickerSpeed + kKickerPID.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed), -10, 10));
+            kSpindexerMotor.setVoltage(MathUtil.clamp(SpindexerConstants.kSpindexerV*SpindexerConstants.kSpindexerSpeed + kSpindexerBangBang.calculate(getSpindexerVelocity(), SpindexerConstants.kSpindexerSpeed), -10, 10));
+            kKickerMotor.setVoltage(MathUtil.clamp(SpindexerConstants.kKickerV*SpindexerConstants.kKickerSpeed + kKickerBangBang.calculate(getKickerVelocity(), SpindexerConstants.kKickerSpeed), -10, 10));
             //SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker PID Output: ", output)
             break;
         }
