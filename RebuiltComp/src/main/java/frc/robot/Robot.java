@@ -28,14 +28,10 @@ public class Robot extends LoggedRobot {
   public Robot() {
     Logger.recordMetadata("ProjectName", "4472Rebuilt"); // Set a metadata value
 
-    if (isReal()) {
+    if (isReal()||isSimulation()) {
       Logger.addDataReceiver(new WPILOGWriter());
       Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
     } 
-    if (isSimulation()){
-      Logger.addDataReceiver(new WPILOGWriter());
-      Logger.addDataReceiver(new NT4Publisher());
-    }
     else {
       setUseTiming(true); // Run as fast as possisble
       String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
