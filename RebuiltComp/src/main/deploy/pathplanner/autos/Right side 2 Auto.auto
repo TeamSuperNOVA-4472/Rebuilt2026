@@ -56,12 +56,6 @@
                 "data": {
                   "name": "ResetTurretEncoder"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "FlywheelOnSlow"
-                }
               }
             ]
           }
@@ -81,7 +75,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 2.0
           }
         },
         {
@@ -93,7 +87,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 6.0
           }
         },
         {
@@ -158,7 +152,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "FlywheelOnSlow"
+                  "name": "ResetTurretEncoder"
                 }
               }
             ]
@@ -179,7 +173,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 2.0
           }
         },
         {
@@ -191,7 +185,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 6.0
           }
         },
         {

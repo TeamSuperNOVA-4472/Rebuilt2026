@@ -50,7 +50,7 @@ import static frc.robot.Constants.SwerveConstants.*;
 
 public class SwerveSubsystem extends SubsystemBase {
   private final SwerveDrive mSwerveDrive;
-  //private Command kSwerveSysID;
+  private Command kSwerveSysID;
   private double kYawGyroOffset = 0;
   private Location kLocation = FieldMathHelpers.Location.ALLIANCE_ZONE;
   private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
@@ -85,7 +85,7 @@ public class SwerveSubsystem extends SubsystemBase {
         (speeds, feedforwards) ->pSwerveSubsystem.driveRobotOriented(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
                 new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
+                new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
         ),
         config, // The robot configuration
         () -> {
@@ -111,7 +111,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public SwerveSubsystem() {
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
-    /*kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
+    kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
             SwerveDriveTest.setDriveSysIdRoutine(
                 new SysIdRoutine.Config(),
                 this,
@@ -120,7 +120,7 @@ public class SwerveSubsystem extends SubsystemBase {
                 true),
                 3.0,
                 5,
-                3);*/
+                3);
     configAutoBuilder(this);
     resetHeading();
   }
@@ -205,9 +205,9 @@ public class SwerveSubsystem extends SubsystemBase {
     return mSwerveDrive.getFieldVelocity();
   }
 
-  /*public Command getSysIDCommand() {
+  public Command getSysIDCommand() {
     return kSwerveSysID;
-  }*/
+  }
 
   @Override
   public void periodic() {

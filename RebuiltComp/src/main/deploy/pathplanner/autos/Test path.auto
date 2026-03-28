@@ -5,13 +5,13 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 2"
+                  "pathName": "Test path"
                 }
               },
               {
@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 2.0
                       }
                     },
                     {
@@ -33,28 +33,22 @@
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeOut"
+                        "name": "ToggleIntakeStore"
                       }
                     },
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.3
+                        "waitTime": 4.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "IntakeStore"
+                        "name": "IntakeOff"
                       }
                     }
                   ]
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "ResetTurretEncoder"
                 }
               }
             ]
@@ -63,49 +57,7 @@
         {
           "type": "named",
           "data": {
-            "name": "FlywheelOn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AimAtHub"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "SpindexerOn"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 10.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FlywheelOff"
           }
         }
       ]
