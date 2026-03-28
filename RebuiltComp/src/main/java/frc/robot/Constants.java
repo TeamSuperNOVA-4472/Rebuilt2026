@@ -138,7 +138,7 @@ public final class Constants {
 
     public static final int kFlywheelHoodMotorPort = 41;
     public static final String kFlywheelHoodCanbus = "rio";
-    public static final double kFlywheelHoodSupplyLimit = 10;
+    public static final double kFlywheelHoodSupplyLimit = 20;
     public static final double kFlywheelHoodStatorLimit = 20;
     public static final boolean kFlywheelHoodSupplyLimitEnabled = true;
     public static final boolean kFlywheelHoodStatorLimitEnabled = true;
@@ -378,7 +378,7 @@ public final class Constants {
 
     public static final int kIntakeMotorPort = 12;
     public static final String kIntakeCanbus = "rio";
-    public static final double kIntakeSupplyLimit = 20;
+    public static final double kIntakeSupplyLimit = 40;
     public static final double kIntakeStatorLimit = 40;
     public static final boolean kIntakeSupplyLimitEnabled = true;
     public static final boolean kIntakeStatorLimitEnabled = true;
@@ -386,7 +386,7 @@ public final class Constants {
 
     public static final int kSliderMotorPort = 31;
     public static final String kSliderCanbus = "rio";
-    public static final double kSliderSupplyLimit = 20;
+    public static final double kSliderSupplyLimit = 30;
     public static final double kSliderStatorLimit = 30;
     public static final boolean kSliderSupplyLimitEnabled = true;
     public static final boolean kSliderStatorLimitEnabled = true;

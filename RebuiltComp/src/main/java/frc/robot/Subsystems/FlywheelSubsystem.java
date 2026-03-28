@@ -66,7 +66,6 @@ public class FlywheelSubsystem extends SubsystemBase {
     private boolean kIsSafeModeEnabled;
 
     private boolean kHoodPIDEnabled = true;
-    private short kFlywheelPIDEnabled = 1;
     
     public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
@@ -223,16 +222,6 @@ public class FlywheelSubsystem extends SubsystemBase {
         kHoodPIDEnabled = true;
     }
 
-    public void disableFlywheelPID()
-    {
-        kFlywheelPIDEnabled = 0;
-    }
-
-    public void enableFlywheelPID()
-    {
-        kFlywheelPIDEnabled = 1;
-    }
-
     public void resetEncoderToBase()
     {
         kFlywheelHoodMotor.setPosition(0);
@@ -278,8 +267,19 @@ public class FlywheelSubsystem extends SubsystemBase {
             kFlywheelHoodMotor.set(kOutput);
         }
 
-        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed)*kFlywheelPIDEnabled, -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
-        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed)*kFlywheelPIDEnabled, -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
+        switch (kMode)
+        {
+            case SPINNING:
+                double kFlywheel1Output = MathUtil.clamp(kFlywheelBangBang.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
+                double kFlywheel2Output = MathUtil.clamp(kFlywheelBangBang.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
+                kFlywheel1Motor.setVoltage(kFlywheel1Output);
+                kFlywheel2Motor.setVoltage(kFlywheel2Output);
+                break;
+            case OFF:
+                kFlywheel1Motor.setVoltage(0);
+                kFlywheel2Motor.setVoltage(0);
+                break;
+        }
         
         SmartDashboard.putBoolean("Subsystems/FlywheelSubsystem/Flywheel At Setpoint: ", kFlywheelAtTarget);
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
