@@ -64,12 +64,26 @@ public final class Constants {
     public static final boolean kClimbStatorLimitEnabled = true;
     public static final NeutralModeValue kClimbNeutralMode = NeutralModeValue.Brake;
 
-    public static final double kGearing = 1/45;
+    public static final double kGearing = 45.0;
     public static final double kStored = 0;
     public static final double kUP = 10;
     public static final double kClimb = 1;
     public static final double kVoltadd = 4;
     public static final double kEncoderToInches = 0.001;
+
+    public static final int kSimNumMotors = 1;
+    public static final double kSimWidth = 60;
+    public static final double kSimHeight = 60;
+    public static final double kMass = 2;
+    public static final double kDrumRadius = 0.0127;
+    public static final double kMaxLen = 0.254;
+    public static final double kSimLenMult = 39.3701*3;
+    public static final double kSimLenBaseMult = 39.3701;
+    public static final String kSimRootName = "climbBase";
+    public static final double kSimX = 30;
+    public static final double kSimY = 5;
+    public static final double kSimMultiplier = 12;
+    public static final double kSimdt = 0.02;
   }
 
   public static class FlywheelConstants {

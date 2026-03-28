@@ -8,7 +8,7 @@ public class setClimb extends Command {
     private final ClimbSubsystem kClimb;
     private ClimbState kState;
 
-    public setClimb(ClimbSubsystem mClimb, ClimbState mState ){
+    public setClimb(ClimbSubsystem mClimb, ClimbState mState){
         kClimb = mClimb;
         kState = mState;
 
@@ -23,5 +23,10 @@ public class setClimb extends Command {
     @Override
     public boolean isFinished(){
         return kClimb.isAtSetpoint();
+    }
+
+    @Override
+    public void end(boolean isInterrupted){
+        if (isInterrupted) kClimb.setState(ClimbState.STORED);
     }
 }

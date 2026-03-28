@@ -236,9 +236,9 @@ public class RobotContainer {
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
     // TODO: make this a constant
-    mOperator.y().whileTrue(new setClimb(mClimb, ClimbState.UP));
-    mOperator.a().whileTrue(new setClimb(mClimb, ClimbState.CLIMB));
-    mOperator.b().whileTrue(new setClimb(mClimb, ClimbState.STORED));
+    mOperator.y().onTrue(new setClimb(mClimb, ClimbState.UP));
+    mOperator.a().onTrue(new setClimb(mClimb, ClimbState.CLIMB));
+    mOperator.b().onTrue(new setClimb(mClimb, ClimbState.STORED));
 
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }
