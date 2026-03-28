@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.310930934410311,
-        "y": 1.0947796941207628
+        "x": 0.6276046080508475,
+        "y": 5.936453753972457
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0608594853460453,
-        "y": 0.8004915364583325
+        "x": 1.255906437588277,
+        "y": 5.961179378531074
       },
       "isLocked": false,
-      "linkedName": "Outpost right side"
+      "linkedName": "Depo climb"
     },
     {
       "anchor": {
-        "x": 0.485,
-        "y": 0.656
+        "x": 1.0713110213629944,
+        "y": 4.680721056232344
       },
       "prevControl": {
-        "x": 1.9299248543432261,
-        "y": 1.0497229100459036
+        "x": 1.1267138396009886,
+        "y": 5.9378085827153955
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,13 +32,13 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.3841783216783226,
-      "maxWaypointRelativePos": 1,
+      "minWaypointRelativePos": 0.5,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 3.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 480.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.9986662071957249
+    "rotation": -90.33987272952149
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 36.050741702667686
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }
