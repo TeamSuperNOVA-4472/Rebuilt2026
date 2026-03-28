@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 2"
+                  "pathName": "left climb and depo path"
                 }
               },
               {
@@ -39,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.8
+                        "waitTime": 3.4
                       }
                     },
                     {
@@ -81,7 +81,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 2.0
           }
         },
         {
@@ -93,13 +93,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOff"
+            "waitTime": 4.0
           }
         },
         {
@@ -109,13 +103,19 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOff"
+          }
+        },
+        {
           "type": "deadline",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 2"
+                  "pathName": "left Depo path"
                 }
               },
               {
@@ -143,7 +143,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.8
+                        "waitTime": 2.6
                       }
                     },
                     {
@@ -153,6 +153,12 @@
                       }
                     }
                   ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ResetTurretEncoder"
                 }
               },
               {
@@ -179,7 +185,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 2.0
           }
         },
         {
@@ -191,13 +197,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOff"
+            "waitTime": 4.0
           }
         },
         {
@@ -210,6 +210,38 @@
           "type": "named",
           "data": {
             "name": "FlywheelOff"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left Climb path"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "TheEvent"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]
