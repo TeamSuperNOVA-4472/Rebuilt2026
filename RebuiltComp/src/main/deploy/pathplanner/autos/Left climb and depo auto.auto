@@ -177,6 +177,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "AimAtHub"
+          }
+        },
+        {
           "type": "wait",
           "data": {
             "waitTime": 2.0
@@ -191,7 +197,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 6.0
+            "waitTime": 4.0
           }
         },
         {
