@@ -38,6 +38,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.autoAlignToClimb;
 import frc.robot.Commands.flywheelSysIDCommand;
+import frc.robot.Commands.setClimb;
 import frc.robot.Commands.setFlywheelTest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -45,6 +46,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.toggleIntakeStorage;
 import frc.robot.Commands.AutoCommands.moveTurretAuto;
+import frc.robot.Commands.AutoCommands.setClimbAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelSlowAuto;
 import frc.robot.Commands.AutoCommands.setIntakeActionAuto;
@@ -66,6 +68,7 @@ import frc.robot.Subsystems.SpindexerSubsystem;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Subsystems.TurretSubsystem;
 import frc.robot.Subsystems.VisionSubsystem;
+import frc.robot.Subsystems.ClimbSubsystem.ClimbState;
 import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeActionMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeStorageMode;
@@ -160,6 +163,10 @@ public class RobotContainer {
     }));
     NamedCommands.registerCommand("IntakeOn", new setIntakeActionAuto(mIntake, IntakeActionMode.INTAKE));
     NamedCommands.registerCommand("IntakeOff", new setIntakeActionAuto(mIntake, IntakeActionMode.OFF));
+    NamedCommands.registerCommand("ClimbStored", new setClimbAuto(mClimb,ClimbState.STORED));
+    NamedCommands.registerCommand("ClimbUp", new setClimbAuto(mClimb,ClimbState.UP));
+    NamedCommands.registerCommand("ClimbClimb", new setClimbAuto(mClimb,ClimbState.CLIMB));
+
     autoChooser = new SendableChooser<Command>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
@@ -229,9 +236,9 @@ public class RobotContainer {
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
     // TODO: make this a constant
-    mOperator.y().onTrue(new InstantCommand(() -> mClimb.setVoltage(ClimbConstants.kClimbVoltage)));
-    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(-ClimbConstants.kClimbVoltage)));
-    mOperator.y().or(mOperator.a()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
+    mOperator.y().onTrue(new setClimb(mClimb, ClimbState.UP));
+    mOperator.a().onTrue(new setClimb(mClimb, ClimbState.CLIMB));
+    mOperator.b().onTrue(new setClimb(mClimb, ClimbState.STORED));
 
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }
