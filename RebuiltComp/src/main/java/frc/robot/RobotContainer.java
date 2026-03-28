@@ -84,7 +84,7 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = new TurretSubsystem();
   private final SwerveSubsystem mSwerve = new SwerveSubsystem();
   private final FlywheelSubsystem mFlywheel = new FlywheelSubsystem();
-  private final PowerDistribution mPdh = new PowerDistribution(2, ModuleType.kRev);
+  private final PowerDistribution mPdh = new PowerDistribution(1, ModuleType.kRev);
   private final SendableChooser<Command> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -174,6 +174,7 @@ public class RobotContainer {
     autoChooser.addOption("Right side 2 Auto", new PathPlannerAuto("Right side 2 Auto"));
     autoChooser.addOption("left neutral Auto", new PathPlannerAuto("left neutral Auto"));
     autoChooser.addOption("Left climb and depo auto", new PathPlannerAuto("Left climb and depo auto"));
+    autoChooser.addOption("Right Climb Auto", new PathPlannerAuto("Right Climb Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureDriverBindings();
