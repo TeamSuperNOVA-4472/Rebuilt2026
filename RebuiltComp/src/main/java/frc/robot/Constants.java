@@ -65,6 +65,11 @@ public final class Constants {
     public static final NeutralModeValue kClimbNeutralMode = NeutralModeValue.Brake;
 
     public static final double kGearing = 1/45;
+    public static final double kStored = 0;
+    public static final double kUP = 10;
+    public static final double kClimb = 1;
+    public static final double kVoltadd = 4;
+    public static final double kEncoderToInches = 0.001;
   }
 
   public static class FlywheelConstants {
