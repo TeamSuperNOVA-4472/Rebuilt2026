@@ -86,4 +86,7 @@ public class ClimbSubsystem extends SubsystemBase {
     public ClimbState getClimbState(){
         return kState;
     }
+    public boolean isAtSetpoint(){
+        return kAtSetpoint;
+    }
 }

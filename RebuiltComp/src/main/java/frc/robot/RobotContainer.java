@@ -38,6 +38,7 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Commands.autoAlignToClimb;
 import frc.robot.Commands.flywheelSysIDCommand;
+import frc.robot.Commands.setClimb;
 import frc.robot.Commands.setFlywheelTest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -235,9 +236,9 @@ public class RobotContainer {
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
     // TODO: make this a constant
-    mOperator.y().onTrue(new InstantCommand(() -> mClimb.setVoltage(ClimbConstants.kClimbVoltage)));
-    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(-ClimbConstants.kClimbVoltage)));
-    mOperator.y().or(mOperator.a()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
+    mOperator.y().whileTrue(new setClimb(mClimb, ClimbState.UP));
+    mOperator.a().whileTrue(new setClimb(mClimb, ClimbState.CLIMB));
+    mOperator.b().whileTrue(new setClimb(mClimb, ClimbState.STORED));
 
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }
