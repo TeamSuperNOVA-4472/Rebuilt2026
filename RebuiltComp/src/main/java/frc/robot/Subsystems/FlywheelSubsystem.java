@@ -13,6 +13,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -44,7 +45,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     private final PIDController kHoodPidController;
     private final SimpleMotorFeedforward kFlywheel1Feedforward;
     private final SimpleMotorFeedforward kFlywheel2Feedforward;
-    private final PIDController kFlywheelFeedback;
+    private final BangBangController kFlywheelBangBang;
     private final SingleJointedArmSim kFlywheelHoodSim;
     private final DCMotor kFlywheelHoodSimMotor;
     private final Mechanism2d kSimSpace;
@@ -79,7 +80,8 @@ public class FlywheelSubsystem extends SubsystemBase {
         kHoodPidController.setTolerance(FlywheelConstants.kHoodTolerance);
         kFlywheel1Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
         kFlywheel2Feedforward = new SimpleMotorFeedforward(FlywheelConstants.kSFlywheel, FlywheelConstants.kVFlywheel, FlywheelConstants.kAFlywheel);
-        kFlywheelFeedback = new PIDController(FlywheelConstants.kPFlywheel,FlywheelConstants.kIFlywheel, FlywheelConstants.kDFlywheel);
+
+        kFlywheelBangBang = new BangBangController();
 
         kTargetAngle = FlywheelConstants.kStartingHoodAngle;
 
@@ -161,14 +163,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheelHoodMotor.setPosition(0);
     }
     private void moveFlywheel(double speed){
-        switch (kMode) {
-        case OFF:
-            kTargetSpeed = 0;
-            break;
-        case SPINNING:
-            kTargetSpeed = speed;
-            break;
-        }
+        kTargetSpeed = speed;
     }
 
     public void setFlywheelVoltage(Voltage vIn){
@@ -266,8 +261,8 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     @Override
     public void periodic(){
-        kFlywheelFeedback.setTolerance(kTargetSpeed*FlywheelConstants.kFlywheelTolerance);
-        kFlywheelAtTarget = kFlywheelFeedback.atSetpoint();
+        kFlywheelBangBang.setTolerance(kTargetSpeed*FlywheelConstants.kFlywheelTolerance);
+        kFlywheelAtTarget = kFlywheelBangBang.atSetpoint();
 
         if (kHoodPIDEnabled)
         {
@@ -286,10 +281,9 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed)*kFlywheelPIDEnabled, -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
         kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed)*kFlywheelPIDEnabled, -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
         
+        SmartDashboard.putBoolean("Subsystems/FlywheelSubsystem/Flywheel At Setpoint: ", kFlywheelAtTarget);
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 2: ", kFlywheel2Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Voltage 1: ", kFlywheel1Motor.getMotorVoltage().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Voltage 2: ", kFlywheel2Motor.getMotorVoltage().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Flywheel Speed: ", kTargetSpeed);
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Current Hood Angle: ", getHoodAngle());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);

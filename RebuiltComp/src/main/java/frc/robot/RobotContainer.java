@@ -26,24 +26,23 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ClimbConstants;
 import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
-import frc.robot.Commands.SwerveTeleop;
+import frc.robot.Commands.autoAlignToClimb;
 import frc.robot.Commands.flywheelSysIDCommand;
-import frc.robot.Commands.setFlywheel;
 import frc.robot.Commands.setFlywheelTest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
-import frc.robot.Commands.moveTurretAbsolute;
 import frc.robot.Commands.setIntakeAction;
-import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
 import frc.robot.Commands.AutoCommands.moveTurretAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelAuto;
@@ -55,8 +54,11 @@ import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
 import frc.robot.Commands.ResetCommands.resetHoodEncoder;
 import frc.robot.Commands.ResetCommands.resetSliderEncoder;
 import frc.robot.Commands.ResetCommands.resetTurretEncoder;
-import frc.robot.Commands.SafeCommands.moveTurretSafe;
-import frc.robot.Commands.SafeCommands.setFlywheelSafe;
+import frc.robot.Commands.TeleopCommands.FlywheelTeleop;
+import frc.robot.Commands.TeleopCommands.SpindexerTeleop;
+import frc.robot.Commands.TeleopCommands.SwerveTeleop;
+import frc.robot.Commands.TeleopCommands.TurretTeleop;
+import frc.robot.Commands.autoAlignToClimb.ClimbDirection;
 import frc.robot.Subsystems.ClimbSubsystem;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
@@ -96,16 +98,16 @@ public class RobotContainer {
     () -> mSideLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getLeftX())),
     () -> mTurnLimiter.calculate(OperatorConstants.getControllerProfileValue(-mDriver.getRightX())),
     () -> mDriver.a().getAsBoolean(),
+    () -> mDriver.getRightTriggerAxis(),
     mSwerve);
   
-  private final moveTurretAbsolute mMoveTurretAbsolute = new moveTurretAbsolute(
+  private final TurretTeleop mMoveTurretAbsolute = new TurretTeleop(
       mTurret, 
       mSwerve::getHeadingDegrees,
-      () -> FieldMathHelpers.getRotationToPassOrShootWithSomeSpeed(
-        mSwerve.getPose(),
-        mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
-        mSwerve.getAngularVelocity()));
+      mSwerve::getPose,
+      mSwerve::getFieldRelativeSpeeds,
+      mSwerve::getAngularVelocity,
+      mSwerve::getLocation);
 
   private final resetTurretEncoder mResetTurretEncoder = new resetTurretEncoder(mTurret);
 
@@ -119,11 +121,7 @@ public class RobotContainer {
     mSwerve.setDefaultCommand(mSwerveTeleop);
     mTurret.setDefaultCommand(mMoveTurretAbsolute);
 
-    Trigger safeModeOn = new Trigger(mTurret::getSafeModeEnabled);
-    safeModeOn.whileTrue(new moveTurretSafe(mTurret));
-
     mTurret.setAngularSpeedSupplier(mSwerve::getAngularVelocity);
-    mTurret.setAngularAccelerationSupplier(mSwerve::getAngularAcceleration);
 
     mVisionSubsystem = new VisionSubsystem(mSwerve::getHeadingDegrees, mSwerve::getAngularVelocity,
     (PoseEstimate pose, Matrix<N3, N1> stdDevs) -> {
@@ -184,31 +182,32 @@ public class RobotContainer {
   private void configureDriverBindings() {
     // Spindexer Bindings
     mDriver.leftBumper().whileTrue(
-      new setSpindexer(
+      new SpindexerTeleop(
         mSpindexer, 
         SpindexerMode.LOAD,
-        ()-> mTurret.getTurretAtSetpoint() && mFlywheel.getFlywheelAtTarget(),
-        () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(mSwerve.getPose(), mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond, mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond, mSwerve.getAngularVelocity()).getNorm(),
-        () -> FieldMathHelpers.getLocation(mSwerve.getPose())));
+        () -> mTurret.getTurretAtSetpoint() && mFlywheel.getFlywheelAtTarget(),
+        mSwerve::getLocation));
 
     mDriver.leftBumper().onFalse(
-      new setSpindexer(mSpindexer, SpindexerMode.OFF, () -> true, () -> 0.0, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)
+      new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)
     );
 
     // Flywheel and Hood Bindings
-    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new ConditionalCommand(new setFlywheelSafe(mFlywheel), new setFlywheel(mFlywheel,
-    () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
-        mSwerve.getPose(),
-        mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-        mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
-        mSwerve.getAngularVelocity()).getNorm(),
-      () -> mSwerve.getLocation()),
-      mFlywheel::getSafeModeEnabled));
+    mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(
+      new FlywheelTeleop(mFlywheel,
+      mSwerve::getPose,
+      mSwerve::getFieldRelativeSpeeds,
+      mSwerve::getAngularVelocity,
+      mSwerve::getLocation));
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
+
+    //mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new setFlywheelTest(mFlywheel, mDriver.povUp()::getAsBoolean, mDriver.povDown()::getAsBoolean, mDriver.povRight()::getAsBoolean, mDriver.povLeft()::getAsBoolean));
+
+    //mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mClimb, ClimbDirection.LEFT));
   }
 
   private void configureOperatorBindings()
@@ -230,8 +229,8 @@ public class RobotContainer {
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
     // TODO: make this a constant
-    mOperator.y().onTrue(new InstantCommand(() -> mClimb.setVoltage(8)));
-    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(-8)));
+    mOperator.y().onTrue(new InstantCommand(() -> mClimb.setVoltage(ClimbConstants.kClimbVoltage)));
+    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(-ClimbConstants.kClimbVoltage)));
     mOperator.y().or(mOperator.a()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
 
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));

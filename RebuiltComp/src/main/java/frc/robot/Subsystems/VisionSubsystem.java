@@ -50,6 +50,7 @@ public class VisionSubsystem extends SubsystemBase
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
     private final Field2d mField;
     private boolean mUseMegaTag2 = VisionConstants.kUseMegatag2ByDefault;
+    private boolean mRestrictTags = false;
 
     // Limelight lib is stupid and wants integers for modes
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
@@ -84,6 +85,9 @@ public class VisionSubsystem extends SubsystemBase
 
     public void disableMT2() { mUseMegaTag2 = false; }
     public void enableMT2() { mUseMegaTag2 = true; }
+
+    public void unrestrictTags() { mRestrictTags = false; }
+    public void restrictTags() { mRestrictTags = true; }
 
     private void updatePose(PoseEstimate pose)
     {
@@ -136,7 +140,8 @@ public class VisionSubsystem extends SubsystemBase
     private Matrix<N3,N1> calculateStdDevs(PoseEstimate pose)
     {
         double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
-        if (mUseMegaTag2) lateraldev *= VisionConstants.kMegaTag1Multiplier;
+        if (!mUseMegaTag2) lateraldev *= VisionConstants.kMegaTag1Multiplier;
+        if (mRestrictTags) lateraldev *= VisionConstants.kRestrictedTagsMultiplier;
         double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : pose.avgTagDist * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
@@ -161,14 +166,25 @@ public class VisionSubsystem extends SubsystemBase
             pose.pose.getX() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldLength() &&
             pose.pose.getY() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldWidth() &&
             mGetRobotAngularVelocity.get() <= Constants.VisionConstants.kAngularVelocityThreshold &&
-            underAmbiguityThreshold(pose))
+            underAmbiguityThreshold(pose) &&
+            withinAcceptedTags(pose))
         {
             return false;
         }
         return true;
     }
 
+    private boolean withinAcceptedTags(PoseEstimate pose)
+    {
+        if (!mRestrictTags) return true;
 
+        for (RawFiducial id : pose.rawFiducials)
+        {
+            if (!VisionConstants.kClimbTags.contains(id.id)) return false;
+        }
+
+        return true;
+    }
   
     //Estimate position of robot based off of limelight data
     private Optional<PoseEstimate> calculatePosition(String limelight)
