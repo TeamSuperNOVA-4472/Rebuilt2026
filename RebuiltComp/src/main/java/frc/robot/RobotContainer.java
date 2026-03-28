@@ -47,6 +47,7 @@ import frc.robot.Commands.setSpindexer;
 import frc.robot.Commands.toggleIntakeStorage;
 import frc.robot.Commands.AutoCommands.moveTurretAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelAuto;
+import frc.robot.Commands.AutoCommands.setFlywheelSlowAuto;
 import frc.robot.Commands.AutoCommands.setIntakeActionAuto;
 import frc.robot.Commands.AutoCommands.setIntakeStorageAuto;
 import frc.robot.Commands.AutoCommands.setSpindexerAuto;
@@ -149,6 +150,12 @@ public class RobotContainer {
       mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
       mSwerve.getAngularVelocity()
       ).getNorm()));
+    NamedCommands.registerCommand("FlywheelOnSlow", new setFlywheelSlowAuto(mFlywheel, () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
+      mSwerve.getPose(), 
+      mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
+      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
+      mSwerve.getAngularVelocity()
+      ).getNorm()));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
       mFlywheel.setHoodTarget(20.0);
@@ -166,6 +173,8 @@ public class RobotContainer {
     //autoChooser.addOption("Path 2 Auto", new PathPlannerAuto("Path 2 Auto"));
     autoChooser.addOption("Right side 2 Auto", new PathPlannerAuto("Right side 2 Auto"));
     autoChooser.addOption("left neutral Auto", new PathPlannerAuto("left neutral Auto"));
+    autoChooser.addOption("Left climb and depo auto", new PathPlannerAuto("Left climb and depo auto"));
+    autoChooser.addOption("Right Climb Auto", new PathPlannerAuto("Right Climb Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureDriverBindings();
@@ -230,5 +239,9 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  public void getAmperageToLog(){
+    SmartDashboard.putNumber("Total Amperage", mPdh.getTotalCurrent());
   }
 }

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.310930934410311,
-        "y": 1.0947796941207628
+        "x": 3.573437775865113,
+        "y": 0.6413475459039546
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.0608594853460453,
-        "y": 0.8004915364583325
+        "x": 3.0730221023128537,
+        "y": 1.0841829978813553
       },
       "isLocked": false,
-      "linkedName": "Outpost right side"
+      "linkedName": "Right side climb"
     },
     {
       "anchor": {
-        "x": 0.485,
-        "y": 0.656
+        "x": 1.101552734375,
+        "y": 2.8096057887535313
       },
       "prevControl": {
-        "x": 1.9299248543432261,
-        "y": 1.0497229100459036
+        "x": 1.4159213894774012,
+        "y": 2.5083015536723168
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,13 +32,13 @@
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.3841783216783226,
-      "maxWaypointRelativePos": 1,
+      "minWaypointRelativePos": 0.6410696847098214,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 3.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
+        "maxAcceleration": 1.5,
+        "maxAngularVelocity": 360.0,
+        "maxAngularAcceleration": 480.0,
         "nominalVoltage": 12.0,
         "unlimited": false
       }
@@ -56,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.9986662071957249
+    "rotation": 90.47098063975608
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 36.050741702667686
+    "rotation": 0.837723518953302
   },
   "useDefaultConstraints": true
 }

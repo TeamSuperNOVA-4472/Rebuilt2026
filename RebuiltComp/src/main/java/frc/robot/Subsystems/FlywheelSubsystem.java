@@ -65,6 +65,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     private boolean kIsSafeModeEnabled;
 
     private boolean kHoodPIDEnabled = true;
+    private short kFlywheelPIDEnabled = 1;
     
     public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
@@ -227,6 +228,16 @@ public class FlywheelSubsystem extends SubsystemBase {
         kHoodPIDEnabled = true;
     }
 
+    public void disableFlywheelPID()
+    {
+        kFlywheelPIDEnabled = 0;
+    }
+
+    public void enableFlywheelPID()
+    {
+        kFlywheelPIDEnabled = 1;
+    }
+
     public void resetEncoderToBase()
     {
         kFlywheelHoodMotor.setPosition(0);
@@ -272,8 +283,8 @@ public class FlywheelSubsystem extends SubsystemBase {
             kFlywheelHoodMotor.set(kOutput);
         }
 
-        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
-        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
+        kFlywheel1Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed)*kFlywheelPIDEnabled, -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
+        kFlywheel2Motor.setVoltage(MathUtil.clamp(kFlywheelFeedback.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed)*kFlywheelPIDEnabled, -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage));
         
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 2: ", kFlywheel2Motor.getVelocity().getValueAsDouble());
