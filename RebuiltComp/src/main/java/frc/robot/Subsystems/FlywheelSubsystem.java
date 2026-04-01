@@ -66,7 +66,7 @@ public class FlywheelSubsystem extends SubsystemBase {
     private boolean kIsSafeModeEnabled;
 
     private boolean kHoodPIDEnabled = true;
-    private short kFlywheelPIDEnabled = 1;
+    private short kFlywheelBangBangEnabled = 1;
     
     public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
@@ -223,14 +223,14 @@ public class FlywheelSubsystem extends SubsystemBase {
         kHoodPIDEnabled = true;
     }
 
-    public void disableFlywheelPID()
+    public void disableFlywheelBangBang()
     {
-        kFlywheelPIDEnabled = 0;
+        kFlywheelBangBangEnabled = 0;
     }
 
-    public void enableFlywheelPID()
+    public void enableFlywheelBangBang()
     {
-        kFlywheelPIDEnabled = 1;
+        kFlywheelBangBangEnabled = 1;
     }
 
     public void resetEncoderToBase()
@@ -281,8 +281,8 @@ public class FlywheelSubsystem extends SubsystemBase {
         switch (kMode)
         {
             case SPINNING:
-                double kFlywheel1Output = MathUtil.clamp(kFlywheelBangBang.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
-                double kFlywheel2Output = MathUtil.clamp(kFlywheelBangBang.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
+                double kFlywheel1Output = MathUtil.clamp(kFlywheelBangBangEnabled*kFlywheelBangBang.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
+                double kFlywheel2Output = MathUtil.clamp(kFlywheelBangBangEnabled*kFlywheelBangBang.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
                 kFlywheel1Motor.setVoltage(kFlywheel1Output);
                 kFlywheel2Motor.setVoltage(kFlywheel2Output);
                 break;

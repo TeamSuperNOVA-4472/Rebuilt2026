@@ -21,14 +21,12 @@ public class setFlywheelSlowAuto extends Command {
 
     @Override
     public void initialize(){
-        double angle;
         double speed;
         double distance = kDistance.get();
-        kFlywheel.disableFlywheelPID();
+        kFlywheel.disableFlywheelBangBang();
         SmartDashboard.putNumber("Distance setFlywheel", distance);
             if (distance >= FlywheelConstants.kDistanceMinimumInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
                 speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
-                angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
                 kFlywheel.setHoodTarget(FlywheelConstants.kHoodMinAngle);
                 kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
             }
@@ -41,6 +39,6 @@ public class setFlywheelSlowAuto extends Command {
 
     @Override
     public void end(boolean isInterupted){
-        kFlywheel.enableFlywheelPID();
+        kFlywheel.enableFlywheelBangBang();
     }
 }

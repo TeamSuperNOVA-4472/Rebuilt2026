@@ -53,7 +53,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    //m_robotContainer.getAmperageToLog();
   }
 
   @Override
@@ -78,7 +77,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    m_robotContainer.getAmperageToLog();
+  }
 
   @Override
   public void autonomousExit() {}
@@ -91,7 +92,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.getAmperageToLog();
+  }
 
   @Override
   public void teleopExit() {}
