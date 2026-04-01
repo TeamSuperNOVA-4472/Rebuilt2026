@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 1"
+                  "pathName": "left neutral to depo"
                 }
               },
               {
@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.87
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -39,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 4.28
+                        "waitTime": 3.4
                       }
                     },
                     {
@@ -55,6 +55,12 @@
                 "type": "named",
                 "data": {
                   "name": "ResetTurretEncoder"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FlywheelOnSlow"
                 }
               }
             ]
@@ -87,13 +93,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 6.0
+            "waitTime": 4.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "IntakeOut"
+            "name": "FlywheelOff"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOff"
           }
         },
         {
@@ -103,7 +115,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Depo left"
+                  "pathName": "neutral to depo path"
                 }
               },
               {
@@ -113,7 +125,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.1
+                        "waitTime": 0.5
                       }
                     },
                     {
@@ -131,7 +143,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.4
+                        "waitTime": 2.6
                       }
                     },
                     {
@@ -142,6 +154,18 @@
                     }
                   ]
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ResetTurretEncoder"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FlywheelOnSlow"
+                }
               }
             ]
           }
@@ -149,7 +173,31 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeOff"
+            "name": "FlywheelOn"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AimAtHub"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 2.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SpindexerOn"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 4.0
           }
         },
         {
@@ -162,6 +210,44 @@
           "type": "named",
           "data": {
             "name": "FlywheelOff"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "depo to climb"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ClimbUp"
+                      }
+                    },
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "ClimbClimb"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         }
       ]

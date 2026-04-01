@@ -115,7 +115,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Climb Path"
+                  "pathName": "Right Climb from start"
                 }
               },
               {
@@ -123,15 +123,21 @@
                 "data": {
                   "commands": [
                     {
+                      "type": "named",
+                      "data": {
+                        "name": "ClimbUp"
+                      }
+                    },
+                    {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 2.0
                       }
                     },
                     {
                       "type": "named",
                       "data": {
-                        "name": "TheEvent"
+                        "name": "ClimbClimb"
                       }
                     }
                   ]
