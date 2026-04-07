@@ -441,4 +441,11 @@ public final class Constants {
 
     public static final double kEncoderToInchesMult = 3.1875 / 5 ;
   }
+
+  public static class LEDSubsystemConstants{
+    public static final int kKWMPort = 9;
+    public static final int kLEDCount = 30;
+    //TO-DO: Check both of these constants w/ actual robot
+    
+  }
 }

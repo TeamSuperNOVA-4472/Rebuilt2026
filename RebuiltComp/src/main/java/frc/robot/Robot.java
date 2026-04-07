@@ -29,13 +29,9 @@ public class Robot extends LoggedRobot {
   public Robot() {
     Logger.recordMetadata("ProjectName", "4472Rebuilt"); // Set a metadata value
 
-    // if (isReal()) {
+    // if (isReal() || isSimmulation()) {
     //   Logger.addDataReceiver(new WPILOGWriter());
     //   Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-    // } 
-    // if (isSimulation()){
-    //   Logger.addDataReceiver(new WPILOGWriter());
-    //   Logger.addDataReceiver(new NT4Publisher());
     // }
     // else {
     //   setUseTiming(true); // Run as fast as possisble
@@ -45,9 +41,10 @@ public class Robot extends LoggedRobot {
     // }
 
     //Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-    m_robotContainer = new RobotContainer();
     // Starts recording to data log
     //DataLogManager.start();
+    m_robotContainer = new RobotContainer();
+    
   }
 
   @Override
