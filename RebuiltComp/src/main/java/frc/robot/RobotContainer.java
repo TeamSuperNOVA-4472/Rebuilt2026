@@ -196,7 +196,7 @@ public class RobotContainer {
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
 
-    //mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mClimb, ClimbDirection.LEFT));
+    mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.LEFT));
   }
 
   private void configureOperatorBindings()

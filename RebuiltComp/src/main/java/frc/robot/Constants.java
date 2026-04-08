@@ -17,6 +17,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -64,6 +65,12 @@ public final class Constants {
     public static final boolean kClimbStatorLimitEnabled = true;
     public static final NeutralModeValue kClimbNeutralMode = NeutralModeValue.Brake;
 
+    public static final Pose2d kRedLeftClimbPose = new Pose2d(new Translation2d(15.52, 3.63), Rotation2d.fromDegrees(270));
+    public static final Pose2d kRedRightClimbPose = new Pose2d(new Translation2d(14.483078, 4.896612), Rotation2d.fromDegrees(90));
+
+    public static final Pose2d kBlueLeftClimbPose = new Pose2d(new Translation2d(15.52, 3.63), Rotation2d.fromDegrees(270));
+    public static final Pose2d kBlueRightClimbPose = new Pose2d(new Translation2d(14.483078, 4.896612), Rotation2d.fromDegrees(90));
+
     public static final double kGearing = 1/45;
   }
 
@@ -106,6 +113,8 @@ public final class Constants {
       kPassingDistanceToSpeed.put(4.8514, 40.0);
       kPassingDistanceToSpeed.put(6.985, 70.0);
     }
+
+    public static final int kSOTMIterations = 2;
 
     public static final double kPassingMinimumInMeters = 4.8514;
     public static final double kPassingMaximumInMeters = 6.985;
@@ -205,6 +214,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2ByDefault = true; 
+    public static final boolean kRestrictTagsByDefault = true;
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .3;
@@ -227,6 +237,27 @@ public final class Constants {
       kClimbTags.add(16);
       kClimbTags.add(31);
       kClimbTags.add(32);
+    }
+
+    public static final ArrayList<Integer> kHubTags = new ArrayList<>();
+    static {
+      kHubTags.add(8);
+      kHubTags.add(5);
+      kHubTags.add(9);
+      kHubTags.add(10);
+      kHubTags.add(11);
+      kHubTags.add(2);
+      kHubTags.add(4);
+      kHubTags.add(3);
+
+      kHubTags.add(18);
+      kHubTags.add(27);
+      kHubTags.add(19);
+      kHubTags.add(20);
+      kHubTags.add(26);
+      kHubTags.add(25);
+      kHubTags.add(24);
+      kHubTags.add(21);
     }
 
     // Welded hub poses
@@ -299,7 +330,7 @@ public final class Constants {
     public static final double kTurretA = 0;
 
     // TODO: tune a lower tolerance for this
-    public static final double kTurretTolerance = 30;
+    public static final double kTurretTolerance = 15;
 
     public static final double kTurretResetSpeed = -0.15;
     public static final double kTurretResetStatorThreshold = 19;
