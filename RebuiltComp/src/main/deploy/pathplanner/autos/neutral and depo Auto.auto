@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 2"
+                  "pathName": "right neutral and depo"
                 }
               },
               {
@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 0.87
                       }
                     },
                     {
@@ -39,7 +39,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.8
+                        "waitTime": 4.28
                       }
                     },
                     {
@@ -56,12 +56,6 @@
                 "data": {
                   "name": "ResetTurretEncoder"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "FlywheelOnSlow"
-                }
               }
             ]
           }
@@ -81,7 +75,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 2.0
           }
         },
         {
@@ -93,19 +87,13 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
+            "waitTime": 6.0
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SpindexerOff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FlywheelOff"
+            "name": "IntakeOut"
           }
         },
         {
@@ -115,7 +103,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Path 2"
+                  "pathName": "middle to depo"
                 }
               },
               {
@@ -125,7 +113,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 0.5
+                        "waitTime": 0.1
                       }
                     },
                     {
@@ -143,7 +131,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 3.8
+                        "waitTime": 2.4
                       }
                     },
                     {
@@ -154,44 +142,8 @@
                     }
                   ]
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "FlywheelOnSlow"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "FlywheelOn"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AimAtHub"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOn"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 3.0
           }
         },
         {

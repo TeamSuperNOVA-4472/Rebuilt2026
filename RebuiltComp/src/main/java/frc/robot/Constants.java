@@ -151,7 +151,7 @@ public final class Constants {
     public static final int kFlywheel1MotorPort = 60;
     public static final String kFlywheel1Canbus = "rio";
     public static final double kFlywheel1SupplyLimit = 20;
-    public static final double kFlywheel1StatorLimit = 20;
+    public static final double kFlywheel1StatorLimit = 40;
     public static final boolean kFlywheel1SupplyLimitEnabled = true;
     public static final boolean kFlywheel1StatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheel1NeutralMode = NeutralModeValue.Coast;
@@ -159,7 +159,7 @@ public final class Constants {
     public static final int kFlywheel2MotorPort = 20;
     public static final String kFlywheel2Canbus = "rio";
     public static final double kFlywheel2SupplyLimit = 20;
-    public static final double kFlywheel2StatorLimit = 20;
+    public static final double kFlywheel2StatorLimit = 40;
     public static final boolean kFlywheel2SupplyLimitEnabled = true;
     public static final boolean kFlywheel2StatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheel2NeutralMode = NeutralModeValue.Coast;

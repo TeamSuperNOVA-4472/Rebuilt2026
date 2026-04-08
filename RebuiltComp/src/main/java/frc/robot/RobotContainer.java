@@ -176,10 +176,10 @@ public class RobotContainer {
     //autoChooser.addOption("Left Neutral Zone", new PathPlannerAuto("Neutral zone agressive"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     //autoChooser.addOption("Path 2 Auto", new PathPlannerAuto("Path 2 Auto"));
-    autoChooser.addOption("Right side 2 Auto", new PathPlannerAuto("Right side 2 Auto"));
-    autoChooser.addOption("left neutral Auto", new PathPlannerAuto("left neutral Auto"));
-    autoChooser.addOption("Left climb and depo auto", new PathPlannerAuto("Left climb and depo auto"));
-    autoChooser.addOption("Right Climb Auto", new PathPlannerAuto("Right Climb Auto"));
+    autoChooser.addOption("Right neutral repeat", new PathPlannerAuto("Right neutral repeat"));
+    autoChooser.addOption("left neutral repeat Auto", new PathPlannerAuto("left neutral repeat Auto"));
+    autoChooser.addOption("depo and climb auto", new PathPlannerAuto("depo and climb auto"));
+    autoChooser.addOption("Right neutral climb Auto", new PathPlannerAuto("Right neutral climb Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureDriverBindings();
