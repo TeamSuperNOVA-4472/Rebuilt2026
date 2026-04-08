@@ -36,8 +36,8 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static final double kMaxSpeedMS = 4.5;
-    public static final double kSOTMConstant = -18.25;
-    public static final double kMaxSOTMSpeedMS = 0.85;
+    public static final double kSOTMConstant = -3.6;
+    public static final double kMaxSOTMSpeedMS = 0.9;
     public static final double kLatencyInSeconds = 0.02;
     public static final double kMetersPerInch = Units.inchesToMeters(1);
     public static final double kSwerveLocYInches = 7.5;
@@ -81,9 +81,11 @@ public final class Constants {
       kDistanceToFlywheelSpeed.put(2.2, 44.0);
       kDistanceToFlywheelSpeed.put(2.5, 48.0);
       kDistanceToFlywheelSpeed.put(3.0, 49.0);
-      kDistanceToFlywheelSpeed.put(3.63, 50.0);
-      kDistanceToFlywheelSpeed.put(4.09, 54.0);
-      kDistanceToFlywheelSpeed.put(5.41, 71.0);
+      kDistanceToFlywheelSpeed.put(3.5, 50.0);
+      kDistanceToFlywheelSpeed.put(4.0, 58.0);
+      kDistanceToFlywheelSpeed.put(4.5, 66.0);
+      kDistanceToFlywheelSpeed.put(5.0, 74.0);
+      kDistanceToFlywheelSpeed.put(5.5, 82.0);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -92,9 +94,9 @@ public final class Constants {
       kDistanceToFlywheelSpeedTime.put(2.2, 1.14);
       kDistanceToFlywheelSpeedTime.put(2.5, 1.15);
       kDistanceToFlywheelSpeedTime.put(3.0,1.17);
-      kDistanceToFlywheelSpeedTime.put(3.63, 1.18);
-      kDistanceToFlywheelSpeedTime.put(4.09, 1.24);
-      kDistanceToFlywheelSpeedTime.put(5.41, 1.30);
+      kDistanceToFlywheelSpeedTime.put(3.5, 1.18);
+      kDistanceToFlywheelSpeedTime.put(4.0, 1.24);
+      kDistanceToFlywheelSpeedTime.put(5.5, 1.30);
     }
 
     public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
@@ -103,9 +105,11 @@ public final class Constants {
       kDistanceToHoodAngle.put(2.2, 23.0);
       kDistanceToHoodAngle.put(2.5,23.0);
       kDistanceToHoodAngle.put(3.0, 26.0);
-      kDistanceToHoodAngle.put(3.63, 28.0);
-      kDistanceToHoodAngle.put(4.09, 29.0);
-      kDistanceToHoodAngle.put(5.41, 32.0);
+      kDistanceToHoodAngle.put(3.5, 28.0);
+      kDistanceToHoodAngle.put(4.0, 28.0);
+      kDistanceToHoodAngle.put(4.5, 29.0);
+      kDistanceToHoodAngle.put(5.0, 30.0);
+      kDistanceToHoodAngle.put(5.5, 32.0);
     }
 
     public static final InterpolatingDoubleTreeMap kPassingDistanceToSpeed = new InterpolatingDoubleTreeMap();
@@ -360,7 +364,7 @@ public final class Constants {
     public static final double kSpindexerStatorLimit = 40;
     public static final boolean kSpindexerSupplyLimitEnabled = true;
     public static final boolean kSpindexerStatorLimitEnabled = true;
-    public static final NeutralModeValue kSpindexerNeutralMode = NeutralModeValue.Brake;
+    public static final NeutralModeValue kSpindexerNeutralMode = NeutralModeValue.Coast;
 
     public static final int kKickerMotorPort = 51;
     public static final String kKickerCanbus = "CANivore";
