@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -48,6 +49,7 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
     // Starts recording to data log
     //DataLogManager.start();
+    FollowPathCommand.warmupCommand();
   }
 
   @Override
