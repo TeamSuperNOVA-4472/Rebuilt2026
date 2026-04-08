@@ -212,9 +212,7 @@ public class RobotContainer {
       mFlywheel.setMode(FlywheelMode.OFF, 0);
     }));
 
-    //mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).whileTrue(new setFlywheelTest(mFlywheel, mDriver.povUp()::getAsBoolean, mDriver.povDown()::getAsBoolean, mDriver.povRight()::getAsBoolean, mDriver.povLeft()::getAsBoolean));
-
-    //mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mClimb, ClimbDirection.LEFT));
+    mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.LEFT));
   }
 
   private void configureOperatorBindings()

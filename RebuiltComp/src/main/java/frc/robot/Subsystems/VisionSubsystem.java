@@ -49,8 +49,9 @@ public class VisionSubsystem extends SubsystemBase
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
     private final Field2d mField;
+    private ArrayList<Integer> mRestrictedTags = VisionConstants.kHubTags;
     private boolean mUseMegaTag2 = VisionConstants.kUseMegatag2ByDefault;
-    private boolean mRestrictTags = false;
+    private boolean mRestrictTags = VisionConstants.kRestrictTagsByDefault;
 
     // Limelight lib is stupid and wants integers for modes
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
@@ -180,11 +181,14 @@ public class VisionSubsystem extends SubsystemBase
 
         for (RawFiducial id : pose.rawFiducials)
         {
-            if (!VisionConstants.kClimbTags.contains(id.id)) return false;
+            if (!mRestrictedTags.contains(id.id)) return false;
         }
 
         return true;
     }
+
+    public void restrictToClimbTags() { mRestrictedTags = VisionConstants.kClimbTags; }
+    public void restrictToHubTags() { mRestrictedTags = VisionConstants.kHubTags; }
   
     //Estimate position of robot based off of limelight data
     private Optional<PoseEstimate> calculatePosition(String limelight)
