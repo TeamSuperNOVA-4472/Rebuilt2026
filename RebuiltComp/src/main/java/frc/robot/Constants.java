@@ -85,8 +85,8 @@ public final class Constants {
     public static final double kSimY = 5;
     public static final double kSimMultiplier = 12;
     public static final double kSimdt = 0.02;
-    public static final Pose2d kRedLeftClimbPose = new Pose2d(new Translation2d(15.52, 3.63), Rotation2d.fromDegrees(270));
-    public static final Pose2d kRedRightClimbPose = new Pose2d(new Translation2d(14.483078, 4.896612), Rotation2d.fromDegrees(90));
+    public static final Pose2d kRedLeftClimbPose = new Pose2d(new Translation2d(15.64, 3.32), Rotation2d.fromDegrees(90));
+    public static final Pose2d kRedRightClimbPose = new Pose2d(new Translation2d(15.36, 5.40), Rotation2d.fromDegrees(270));
 
     public static final Pose2d kBlueLeftClimbPose = new Pose2d(new Translation2d(15.52, 3.63), Rotation2d.fromDegrees(270));
     public static final Pose2d kBlueRightClimbPose = new Pose2d(new Translation2d(14.483078, 4.896612), Rotation2d.fromDegrees(90));
@@ -212,6 +212,8 @@ public final class Constants {
 
     public static final double kMaxSpeed = 1;
     public static final double kMaxVoltage = 11.5;
+
+    public static final double kAntijamVoltage = -5;
   }
 
   public static class OperatorConstants {
@@ -348,7 +350,7 @@ public final class Constants {
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 
-    public static final double kTurretS = 0.02;
+    public static final double kTurretS = 0.015;
     public static final double kTurretV = 0.00055;
     public static final double kTurretA = 0;
 
@@ -406,8 +408,10 @@ public final class Constants {
     public static final double kKickerV = 0.4;
     public static final double kSpindexerV = 0.47;
 
-    public static final double kKickerSpeed = -25;
-    public static final double kSpindexerSpeed = -20;
+    public static final double kKickerSpeed = -20;
+    public static final double kSpindexerSpeed = -25;
+
+    public static final double kAntijamVoltage = 6;
 
     public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
     static {
@@ -422,7 +426,7 @@ public final class Constants {
     public static final double kStoredPos = 0.0;
     public static final double kOutPos = 11;
     public static final double kIntakeAngle = 345.0;
-    public static final double kIntakeMotorSpeed = 0.8;
+    public static final double kIntakeMotorSpeed = 0.9;
     public static final double kSlideThreshold = 0.20;
     public static final double kSlideSpeedThreshold = 0.20;
 
@@ -446,8 +450,8 @@ public final class Constants {
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
-    public static final double kSliderMaxVelocity = 48;
-    public static final double kSliderMaxAcceleration = 36;
+    public static final double kSliderMaxVelocity = 64;
+    public static final double kSliderMaxAcceleration = 56;
 
     public static final double kSliderMaxSpeedOutput = .5;
 

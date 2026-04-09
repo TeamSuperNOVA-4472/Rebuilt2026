@@ -14,7 +14,7 @@ import frc.robot.FieldMathHelpers.Location;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Subsystems.TurretSubsystem;
 
-public class TurretTeleop extends InstantCommand{
+public class TurretTeleop extends Command{
     private final TurretSubsystem kTurret;
     private final Supplier<Double> kGetHeadingDegrees;
     private final Supplier<Pose2d> kPose;

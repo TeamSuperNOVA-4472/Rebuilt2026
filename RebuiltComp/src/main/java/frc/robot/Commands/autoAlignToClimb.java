@@ -39,7 +39,7 @@ public class autoAlignToClimb extends SequentialCommandGroup {
     }
 
     private final ProfiledPIDController kGyroController = new ProfiledPIDController(
-        0.1,
+        0.5,
         0,
         0.001,
         new Constraints(
@@ -90,6 +90,7 @@ public class autoAlignToClimb extends SequentialCommandGroup {
 
         addCommands(
             new InstantCommand(() -> kVision.restrictToClimbTags()),
+            //goToPlace(new Pose2d(mSwerve.getPose().getX(), kTargetPose.getY(), kTargetPose.getRotation())).until(() -> isDrivetrainReady()),
             goToPlace(kTargetPose).until(() -> isDrivetrainReady()),
             new InstantCommand(() -> kVision.restrictToHubTags())
         );

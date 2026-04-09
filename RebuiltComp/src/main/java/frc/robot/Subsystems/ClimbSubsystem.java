@@ -82,7 +82,7 @@ public class ClimbSubsystem extends SubsystemBase {
     }
     @Override
     public void periodic(){
-        kAtSetpoint = kClimbController.atSetpoint();
+        /*kAtSetpoint = kClimbController.atSetpoint();
         if (kState == ClimbState.CLIMB && !kAtSetpoint && kClimbMotor.getPosition().getValueAsDouble() * ClimbConstants.kEncoderToInches > ClimbConstants.kClimb){
             if (Robot.isReal()){
                 PIDOutput = MathUtil.clamp(kClimbController.calculate(kClimbMotor.getPosition().getValueAsDouble() * ClimbConstants.kEncoderToInches) - ClimbConstants.kClimbVoltage,-10, 10);
@@ -100,7 +100,8 @@ public class ClimbSubsystem extends SubsystemBase {
         else{
             PIDOutput = 0;
         }
-        setVoltage(PIDOutput);
+        setVoltage(PIDOutput);*/
+        SmartDashboard.putNumber("Subsystems/ClimbSubsystem/Encoder Position: ", kClimbMotor.getPosition().getValueAsDouble());
     }
     private void moveWithState(){
         switch (kState) {

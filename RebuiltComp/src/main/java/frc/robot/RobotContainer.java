@@ -25,8 +25,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -53,6 +55,7 @@ import frc.robot.Commands.AutoCommands.setIntakeActionAuto;
 import frc.robot.Commands.AutoCommands.setIntakeStorageAuto;
 import frc.robot.Commands.AutoCommands.setSpindexerAuto;
 import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
+import frc.robot.Commands.ResetCommands.antijam;
 import frc.robot.Commands.ResetCommands.resetHoodEncoder;
 import frc.robot.Commands.ResetCommands.resetSliderEncoder;
 import frc.robot.Commands.ResetCommands.resetTurretEncoder;
@@ -167,17 +170,16 @@ public class RobotContainer {
     NamedCommands.registerCommand("ClimbUp", new setClimbAuto(mClimb,ClimbState.UP));
     NamedCommands.registerCommand("ClimbClimb", new setClimbAuto(mClimb,ClimbState.CLIMB));
 
+    NamedCommands.registerCommand("SOTM", new ParallelCommandGroup(getTurretCommand(), getFlywheelCommand()));
+    NamedCommands.registerCommand("SpindexerSOTM", getSpindexerCommand());
+
     autoChooser = new SendableChooser<Command>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
-    //autoChooser.addOption("Shoot Preload From Standstill", new ShootPreloadFromStandstill(mFlywheel, mSwerve, mSpindexer));
-    //autoChooser.addOption("Depot From Center", new PathPlannerAuto("Depo zone"));
-    //autoChooser.addOption("Right Neutral Zone", new PathPlannerAuto("Neutral zone right side"));
-    //autoChooser.addOption("Left Neutral Zone", new PathPlannerAuto("Neutral zone agressive"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
-    //autoChooser.addOption("Path 2 Auto", new PathPlannerAuto("Path 2 Auto"));
-    autoChooser.addOption("Right neutral repeat", new PathPlannerAuto("Right neutral repeat"));
-    autoChooser.addOption("left neutral repeat Auto", new PathPlannerAuto("left neutral repeat Auto"));
+    autoChooser.addOption("Left Neutral Repeat", new PathPlannerAuto("Right Neutral Repeat",true));
+    autoChooser.addOption("Right Neutral Repeat", new PathPlannerAuto("Right Neutral Repeat"));
+    autoChooser.addOption("Depo zone", new PathPlannerAuto("Depo zone"));
     autoChooser.addOption("depo and climb auto", new PathPlannerAuto("depo and climb auto"));
     autoChooser.addOption("Right neutral climb Auto", new PathPlannerAuto("Right neutral climb Auto"));
     SmartDashboard.putData("Auto Selector", autoChooser);
@@ -209,10 +211,10 @@ public class RobotContainer {
 
     mDriver.leftTrigger(OperatorConstants.kTriggerThreshold).onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
-      mFlywheel.setMode(FlywheelMode.OFF, 0);
+      mFlywheel.setMode(FlywheelMode.OFF);
     }));
 
-    mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.LEFT));
+    mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.RIGHT));
   }
 
   private void configureOperatorBindings()
@@ -233,10 +235,24 @@ public class RobotContainer {
 
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
+    mOperator.y().onTrue(new InstantCommand(() -> mVisionSubsystem.restrictToClimbTags()));
+    mOperator.y().onFalse(new InstantCommand(() -> mVisionSubsystem.restrictToHubTags()));
+
+    mOperator.rightBumper().whileTrue(new antijam(mSpindexer, mFlywheel));
+    mOperator.rightBumper().onFalse(new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE).alongWith(new InstantCommand(() -> {
+      mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
+      mFlywheel.setMode(FlywheelMode.OFF);
+    })));
+
     // TODO: make this a constant
-    mOperator.y().onTrue(new setClimb(mClimb, ClimbState.UP));
-    mOperator.a().onTrue(new setClimb(mClimb, ClimbState.CLIMB));
-    mOperator.b().onTrue(new setClimb(mClimb, ClimbState.STORED));
+    // mOperator.y().onTrue(new setClimb(mClimb, ClimbState.UP));
+    // mOperator.a().onTrue(new setClimb(mClimb, ClimbState.CLIMB));
+    // mOperator.b().onTrue(new setClimb(mClimb, ClimbState.STORED));
+
+    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(5)));
+    mOperator.b().onTrue(new InstantCommand(() -> mClimb.setVoltage(-5)));
+
+    mOperator.a().or(mOperator.b()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
 
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }
@@ -247,5 +263,31 @@ public class RobotContainer {
 
   public void getAmperageToLog(){
     SmartDashboard.putNumber("Total Amperage", mPdh.getTotalCurrent());
+  }
+
+  public Command getTurretCommand(){
+    return new TurretTeleop(
+      mTurret, 
+      mSwerve::getHeadingDegrees,
+      mSwerve::getPose,
+      mSwerve::getFieldRelativeSpeeds,
+      mSwerve::getAngularVelocity,
+      mSwerve::getLocation);
+  }
+
+  public Command getFlywheelCommand(){
+    return new FlywheelTeleop(mFlywheel,
+      mSwerve::getPose,
+      mSwerve::getFieldRelativeSpeeds,
+      mSwerve::getAngularVelocity,
+      mSwerve::getLocation);
+  }
+
+  public Command getSpindexerCommand(){
+    return new SpindexerTeleop(
+        mSpindexer, 
+        SpindexerMode.LOAD,
+        () -> mTurret.getTurretAtSetpoint() && mFlywheel.getFlywheelAtTarget(),
+        mSwerve::getLocation); 
   }
 }

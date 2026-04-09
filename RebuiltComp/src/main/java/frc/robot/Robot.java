@@ -49,7 +49,11 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
     // Starts recording to data log
     //DataLogManager.start();
-    FollowPathCommand.warmupCommand();
+  }
+
+  @Override
+  public void robotInit() {
+    FollowPathCommand.warmupCommand().schedule();
   }
 
   @Override
@@ -80,7 +84,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    m_robotContainer.getAmperageToLog();
+
   }
 
   @Override
@@ -95,7 +99,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.getAmperageToLog();
+
   }
 
   @Override

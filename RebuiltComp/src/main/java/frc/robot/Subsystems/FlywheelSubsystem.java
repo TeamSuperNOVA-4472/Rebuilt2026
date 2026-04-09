@@ -37,7 +37,8 @@ import frc.robot.Constants.FlywheelConstants;
 public class FlywheelSubsystem extends SubsystemBase {
     public enum FlywheelMode{
         OFF,
-        SPINNING    
+        SPINNING,
+        ANTIJAM
     }
     private final TalonFX kFlywheel1Motor;
     private final TalonFX kFlywheel2Motor;
@@ -204,6 +205,10 @@ public class FlywheelSubsystem extends SubsystemBase {
         moveFlywheel(speed);
     }
 
+    public void setMode(FlywheelMode mNewMode){
+        setMode(mNewMode, 0);
+    }
+
     public void setHoodTarget(double mNewTarget){
         if (mNewTarget >= Constants.FlywheelConstants.kHoodMinAngle && mNewTarget <= Constants.FlywheelConstants.kHoodMaxAngle) kTargetAngle = mNewTarget;
     }
@@ -289,6 +294,10 @@ public class FlywheelSubsystem extends SubsystemBase {
             case OFF:
                 kFlywheel1Motor.setVoltage(0);
                 kFlywheel2Motor.setVoltage(0);
+                break;
+            case ANTIJAM:
+                kFlywheel1Motor.setVoltage(FlywheelConstants.kAntijamVoltage);
+                kFlywheel2Motor.setVoltage(FlywheelConstants.kAntijamVoltage);
                 break;
         }
         
