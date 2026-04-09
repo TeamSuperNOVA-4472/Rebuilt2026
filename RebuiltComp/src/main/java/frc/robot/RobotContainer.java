@@ -154,21 +154,13 @@ public class RobotContainer {
       mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
       mSwerve.getAngularVelocity()
       ).getNorm()));
-    NamedCommands.registerCommand("FlywheelOnSlow", new setFlywheelSlowAuto(mFlywheel, () -> FieldMathHelpers.getTranslation2dToHubWithSomeSpeed(
-      mSwerve.getPose(), 
-      mSwerve.getFieldRelativeSpeeds().vxMetersPerSecond,
-      mSwerve.getFieldRelativeSpeeds().vyMetersPerSecond,
-      mSwerve.getAngularVelocity()
-      ).getNorm()));
+    NamedCommands.registerCommand("FlywheelOnSlow", new setFlywheelSlowAuto(mFlywheel));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
       mFlywheel.setHoodTarget(20.0);
     }));
     NamedCommands.registerCommand("IntakeOn", new setIntakeActionAuto(mIntake, IntakeActionMode.INTAKE));
     NamedCommands.registerCommand("IntakeOff", new setIntakeActionAuto(mIntake, IntakeActionMode.OFF));
-    NamedCommands.registerCommand("ClimbStored", new setClimbAuto(mClimb,ClimbState.STORED));
-    NamedCommands.registerCommand("ClimbUp", new setClimbAuto(mClimb,ClimbState.UP));
-    NamedCommands.registerCommand("ClimbClimb", new setClimbAuto(mClimb,ClimbState.CLIMB));
 
     NamedCommands.registerCommand("SOTM", new ParallelCommandGroup(getTurretCommand(), getFlywheelCommand()));
     NamedCommands.registerCommand("SpindexerSOTM", getSpindexerCommand());
@@ -179,6 +171,8 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
     autoChooser.addOption("Left Neutral Repeat", new PathPlannerAuto("Right Neutral Repeat",true));
     autoChooser.addOption("Right Neutral Repeat", new PathPlannerAuto("Right Neutral Repeat"));
+    autoChooser.addOption("Experimental Left Neutral", new PathPlannerAuto("Experimental Double Cycle"));
+    autoChooser.addOption("Experimental Right Neutral", new PathPlannerAuto("Experimental Double Cycle", true));
     autoChooser.addOption("Depo zone", new PathPlannerAuto("Depo zone"));
     autoChooser.addOption("depo and climb auto", new PathPlannerAuto("depo and climb auto"));
     autoChooser.addOption("Right neutral climb Auto", new PathPlannerAuto("Right neutral climb Auto"));

@@ -138,6 +138,7 @@ public final class Constants {
     }
 
     public static final int kSOTMIterations = 2;
+    public static final int kSlowSpeed = 30;
 
     public static final double kPassingMinimumInMeters = 4.8514;
     public static final double kPassingMaximumInMeters = 6.985;
