@@ -28,8 +28,8 @@ public class setFlywheelAuto extends InstantCommand {
         double distance = kDistance.get();
         SmartDashboard.putNumber("Distance setFlywheel", distance);
             if (distance >= FlywheelConstants.kDistanceMinimumInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
-                speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
-                angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
+                speed = kFlywheel.getDistanceToSpeedTable().get(distance);
+                angle = kFlywheel.getDistanceToHoodTable().get(distance);
                 kFlywheel.setHoodTarget(angle);
                 kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
             }

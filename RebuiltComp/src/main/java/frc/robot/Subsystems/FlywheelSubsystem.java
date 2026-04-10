@@ -12,15 +12,19 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Map.Entry;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -71,6 +75,17 @@ public class FlywheelSubsystem extends SubsystemBase {
     
     public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
+
+        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
+        {
+            Preferences.initDouble(FlywheelConstants.kDistances[i] + " Speed:",FlywheelConstants.kDistanceToFlywheelSpeedDefault.get(FlywheelConstants.kDistances[i]));
+        }
+
+        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
+        {
+            Preferences.initDouble(FlywheelConstants.kDistances[i] + " Hood:",FlywheelConstants.kDistanceToHoodAngleDefault.get(FlywheelConstants.kDistances[i]));
+        }
+       
         kIsSafeModeEnabled = false;
         //TODO: Values below should be constants.
         kFlywheel1Motor = new TalonFX(FlywheelConstants.kFlywheel1MotorPort, FlywheelConstants.kFlywheel1Canbus);
@@ -262,6 +277,26 @@ public class FlywheelSubsystem extends SubsystemBase {
 
     public void stopHood(){
         kFlywheelHoodMotor.stopMotor();
+    }
+
+    public InterpolatingDoubleTreeMap getDistanceToSpeedTable()
+    {
+        InterpolatingDoubleTreeMap distToSpeed = new InterpolatingDoubleTreeMap();
+        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
+        {
+            distToSpeed.put(FlywheelConstants.kDistances[i], Preferences.getDouble(FlywheelConstants.kDistances[i] + " Speed:", FlywheelConstants.kDistanceToFlywheelSpeedDefault.get(FlywheelConstants.kDistances[i])));
+        }
+        return distToSpeed;
+    }
+
+    public InterpolatingDoubleTreeMap getDistanceToHoodTable()
+    {
+        InterpolatingDoubleTreeMap distToAngle = new InterpolatingDoubleTreeMap();
+        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
+        {
+            distToAngle.put(FlywheelConstants.kDistances[i], Preferences.getDouble(FlywheelConstants.kDistances[i] + " Hood:", FlywheelConstants.kDistanceToHoodAngleDefault.get(FlywheelConstants.kDistances[i])));
+        }
+        return distToAngle;
     }
 
     @Override
