@@ -205,10 +205,11 @@ public class IntakeSubsystem extends SubsystemBase {
             kIntakeSlider.set(PIDOutput);
         }
         
+        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Encoder Speed: ", kIntakeSlider.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack PID Output: ", PIDOutput);
         SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Action Mode: ", kActionMode.name());
         SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Storage Mode: ", kStorageMode.name());
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Encoder Position: ", kIntakeSlider.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Encoder Position: ", kIntakeSlider.getPosition().getValueAsDouble()*IntakeSubsystemConstants.kEncoderToInchesMult);
         SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Stator Current: ", kIntakeSlider.getStatorCurrent().getValueAsDouble());
     } 
 

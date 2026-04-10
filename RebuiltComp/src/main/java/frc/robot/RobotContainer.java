@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 
 import javax.tools.JavaFileManager.Location;
 
@@ -93,7 +94,7 @@ public class RobotContainer {
   private final SwerveSubsystem mSwerve = new SwerveSubsystem();
   private final FlywheelSubsystem mFlywheel = new FlywheelSubsystem();
   private final PowerDistribution mPdh = new PowerDistribution(1, ModuleType.kRev);
-  private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<PathPlannerAuto> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
   private final SlewRateLimiter mSideLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -165,7 +166,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("SOTM", new ParallelCommandGroup(getTurretCommand(), getFlywheelCommand()));
     NamedCommands.registerCommand("SpindexerSOTM", getSpindexerCommand());
 
-    autoChooser = new SendableChooser<Command>();
+    autoChooser = new SendableChooser<PathPlannerAuto>();
     autoChooser.addOption("Preload Right Auto", new PathPlannerAuto("Preload Right Auto"));
     autoChooser.addOption("Preload Left Auto", new PathPlannerAuto("Preload Left Auto"));
     autoChooser.setDefaultOption("Preload Center Auto", new PathPlannerAuto("Preload Auto"));
@@ -251,7 +252,8 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    return autoChooser.getSelected();
+      //mSwerve.resetOdometry(autoChooser.getSelected().getStartingPose());
+      return autoChooser.getSelected();
   }
 
   public void getAmperageToLog(){

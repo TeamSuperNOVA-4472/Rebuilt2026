@@ -53,7 +53,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    FollowPathCommand.warmupCommand().schedule();
+
   }
 
   @Override
@@ -65,7 +65,9 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+    FollowPathCommand.warmupCommand().schedule();
+  }
 
   @Override
   public void disabledExit() {}

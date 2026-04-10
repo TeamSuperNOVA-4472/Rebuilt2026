@@ -106,11 +106,9 @@ public final class Constants {
       kDistanceToFlywheelSpeedDefault.put(kDistances[3], 49.0);
       kDistanceToFlywheelSpeedDefault.put(kDistances[4], 50.0);
       kDistanceToFlywheelSpeedDefault.put(kDistances[5], 58.0);
-      kDistanceToFlywheelSpeedDefault.put(kDistances[6], 66.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[6], 68.0);
       kDistanceToFlywheelSpeedDefault.put(kDistances[7], 72.0);
-      kDistanceToFlywheelSpeedDefault.put(kDistances[8], 80.0);
-
-
+      kDistanceToFlywheelSpeedDefault.put(kDistances[8], 76.0);
     }
       
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -431,7 +429,7 @@ public final class Constants {
     //TODO: Find real values for the constants.
     public static final double kSliderOffset = 0.0;
     public static final double kStoredPos = 0.0;
-    public static final double kOutPos = 11;
+    public static final double kOutPos = 9.5;
     public static final double kIntakeAngle = 345.0;
     public static final double kIntakeMotorSpeed = 0.9;
     public static final double kSlideThreshold = 0.20;
@@ -453,17 +451,17 @@ public final class Constants {
     public static final boolean kSliderStatorLimitEnabled = true;
     public static final NeutralModeValue kSliderNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kSliderP = 0.07;
+    public static final double kSliderP = 0.36;
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
-    public static final double kSliderMaxVelocity = 64;
-    public static final double kSliderMaxAcceleration = 56;
+    public static final double kSliderMaxVelocity = 36; // 128
+    public static final double kSliderMaxAcceleration = 24; // 96
 
     public static final double kSliderMaxSpeedOutput = .5;
 
-    public static final double kSliderResetSpeed = .2;
-    public static final double kSliderResetStatorThreshold = 28;
+    public static final double kSliderResetSpeed = .15;
+    public static final double kSliderResetStatorThreshold = 20;
 
     public static final int kSimNumMotors = 1;
     public static final double kSimWidth = 60;
