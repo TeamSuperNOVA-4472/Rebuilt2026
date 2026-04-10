@@ -241,13 +241,13 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2ByDefault = true; 
-    public static final boolean kRestrictTagsByDefault = true;
+    public static final boolean kRestrictTagsByDefault = false;
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .3;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.5;
-    public static final double kTagDistThreshold = 10;
+    public static final double kTagDistThreshold = 7;
     public static final double kMegaTag1Multiplier = 2;
     public static final double kRestrictedTagsMultiplier = 0.25;
     public static final double kLatencyLagInSeconds = 0.2;

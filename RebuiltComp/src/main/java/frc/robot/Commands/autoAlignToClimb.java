@@ -89,10 +89,10 @@ public class autoAlignToClimb extends SequentialCommandGroup {
         }
 
         addCommands(
-            new InstantCommand(() -> kVision.restrictToClimbTags()),
+            //new InstantCommand(() -> kVision.restrictToClimbTags()),
             //goToPlace(new Pose2d(mSwerve.getPose().getX(), kTargetPose.getY(), kTargetPose.getRotation())).until(() -> isDrivetrainReady()),
-            goToPlace(kTargetPose).until(() -> isDrivetrainReady()),
-            new InstantCommand(() -> kVision.restrictToHubTags())
+            goToPlace(kTargetPose).until(() -> isDrivetrainReady())
+            //new InstantCommand(() -> kVision.restrictToHubTags())
         );
 
         addRequirements(mSwerve, mClimb);

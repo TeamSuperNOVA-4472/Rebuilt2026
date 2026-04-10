@@ -38,9 +38,6 @@ import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
 
 
-
-
-
 public class VisionSubsystem extends SubsystemBase
 {
     //Suppliers and constants, members of class
@@ -86,9 +83,6 @@ public class VisionSubsystem extends SubsystemBase
 
     public void disableMT2() { mUseMegaTag2 = false; }
     public void enableMT2() { mUseMegaTag2 = true; }
-
-    public void unrestrictTags() { mRestrictTags = false; }
-    public void restrictTags() { mRestrictTags = true; }
 
     private void updatePose(PoseEstimate pose)
     {
@@ -187,8 +181,8 @@ public class VisionSubsystem extends SubsystemBase
         return true;
     }
 
-    public void restrictToClimbTags() { mRestrictedTags = VisionConstants.kClimbTags; }
-    public void restrictToHubTags() { mRestrictedTags = VisionConstants.kHubTags; }
+    // public void restrictToClimbTags() { mRestrictedTags = VisionConstants.kClimbTags; }
+    // public void restrictToHubTags() { mRestrictedTags = VisionConstants.kHubTags; }
   
     //Estimate position of robot based off of limelight data
     private Optional<PoseEstimate> calculatePosition(String limelight)

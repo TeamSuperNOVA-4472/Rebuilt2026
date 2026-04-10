@@ -173,7 +173,7 @@ public class RobotContainer {
     autoChooser.addOption("Right Neutral Repeat", new PathPlannerAuto("Right Neutral Repeat"));
     autoChooser.addOption("Experimental Left Neutral", new PathPlannerAuto("Experimental Double Cycle"));
     autoChooser.addOption("Experimental Right Neutral", new PathPlannerAuto("Experimental Double Cycle", true));
-    autoChooser.addOption("Depot SOqaTM Zone", new PathPlannerAuto("Depo zone"));
+    autoChooser.addOption("Depot SOTM Zone", new PathPlannerAuto("Depo zone"));
     autoChooser.addOption("Depot Safe Zone", new PathPlannerAuto("Depot Safe"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
@@ -228,8 +228,8 @@ public class RobotContainer {
 
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
-    mOperator.y().onTrue(new InstantCommand(() -> mVisionSubsystem.restrictToClimbTags()));
-    mOperator.y().onFalse(new InstantCommand(() -> mVisionSubsystem.restrictToHubTags()));
+    //mOperator.y().onTrue(new InstantCommand(() -> mVisionSubsystem.restrictToClimbTags()));
+    //mOperator.y().onFalse(new InstantCommand(() -> mVisionSubsystem.restrictToHubTags()));
 
     mOperator.rightBumper().whileTrue(new antijam(mSpindexer, mFlywheel));
     mOperator.rightBumper().onFalse(new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE).alongWith(new InstantCommand(() -> {
