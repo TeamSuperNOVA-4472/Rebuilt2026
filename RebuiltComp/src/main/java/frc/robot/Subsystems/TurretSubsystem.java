@@ -169,9 +169,8 @@ public class TurretSubsystem extends SubsystemBase
         }
 
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Relative Angle: ", getAngle());
-        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Deadband: ", TurretConstants.kDeadband);
         SmartDashboard.putNumber("Subsystems/TurretSubsystem/Goal Angle: ", kTurretTargetAngle);
-        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Stator Limit: ", getStator());
+    
     }
 
     @Override
@@ -181,7 +180,5 @@ public class TurretSubsystem extends SubsystemBase
       kTurretSim.update(TurretConstants.kSimdt);
 
       kSimDisp.setAngle(kTurretSim.getAngleRads()*180 / Math.PI);
-      SmartDashboard.putNumber("Turret Angle", kTurretSim.getAngleRads()*180 / Math.PI);
-      SmartDashboard.putNumber("Turret Target", kTurretTargetAngle);
     }
 }

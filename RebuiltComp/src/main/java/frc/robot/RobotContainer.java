@@ -242,10 +242,10 @@ public class RobotContainer {
     // mOperator.a().onTrue(new setClimb(mClimb, ClimbState.CLIMB));
     // mOperator.b().onTrue(new setClimb(mClimb, ClimbState.STORED));
 
-    // mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(5)));
-    // mOperator.b().onsTrue(new InstantCommand(() -> mClimb.setVoltage(-5)));
+    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(ClimbConstants.kClimbVoltage)));
+    mOperator.b().onTrue(new InstantCommand(() -> mClimb.setVoltage(-ClimbConstants.kClimbVoltage)));
 
-    // mOperator.a().or(mOperator.b()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
+    mOperator.a().or(mOperator.b()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
 
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }

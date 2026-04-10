@@ -75,16 +75,6 @@ public class FlywheelSubsystem extends SubsystemBase {
     
     public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
-
-        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
-        {
-            Preferences.initDouble(FlywheelConstants.kDistances[i] + " Speed:",FlywheelConstants.kDistanceToFlywheelSpeedDefault.get(FlywheelConstants.kDistances[i]));
-        }
-
-        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
-        {
-            Preferences.initDouble(FlywheelConstants.kDistances[i] + " Hood:",FlywheelConstants.kDistanceToHoodAngleDefault.get(FlywheelConstants.kDistances[i]));
-        }
        
         kIsSafeModeEnabled = false;
         //TODO: Values below should be constants.
@@ -279,26 +269,6 @@ public class FlywheelSubsystem extends SubsystemBase {
         kFlywheelHoodMotor.stopMotor();
     }
 
-    public InterpolatingDoubleTreeMap getDistanceToSpeedTable()
-    {
-        InterpolatingDoubleTreeMap distToSpeed = new InterpolatingDoubleTreeMap();
-        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
-        {
-            distToSpeed.put(FlywheelConstants.kDistances[i], Preferences.getDouble(FlywheelConstants.kDistances[i] + " Speed:", FlywheelConstants.kDistanceToFlywheelSpeedDefault.get(FlywheelConstants.kDistances[i])));
-        }
-        return distToSpeed;
-    }
-
-    public InterpolatingDoubleTreeMap getDistanceToHoodTable()
-    {
-        InterpolatingDoubleTreeMap distToAngle = new InterpolatingDoubleTreeMap();
-        for (int i = 0; i < FlywheelConstants.kDistances.length; i++)
-        {
-            distToAngle.put(FlywheelConstants.kDistances[i], Preferences.getDouble(FlywheelConstants.kDistances[i] + " Hood:", FlywheelConstants.kDistanceToHoodAngleDefault.get(FlywheelConstants.kDistances[i])));
-        }
-        return distToAngle;
-    }
-
     @Override
     public void periodic(){
         kFlywheelBangBang.setTolerance(kTargetSpeed*FlywheelConstants.kFlywheelTolerance);
@@ -342,7 +312,6 @@ public class FlywheelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Flywheel Speed: ", kTargetSpeed);
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Current Hood Angle: ", getHoodAngle());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Hood PID Output: ", kOutput);
     }
     @Override
     public void simulationPeriodic() {

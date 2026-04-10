@@ -109,8 +109,5 @@ public class SpindexerSubsystem extends SubsystemBase {
         moveSpindexer();
         SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpindexerVelocity());
         SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker Speed: ", getKickerVelocity());
-
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Supply Current: ", kSpindexerMotor.getSupplyCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Stator Current: ", kSpindexerMotor.getStatorCurrent().getValueAsDouble());
     }
 }

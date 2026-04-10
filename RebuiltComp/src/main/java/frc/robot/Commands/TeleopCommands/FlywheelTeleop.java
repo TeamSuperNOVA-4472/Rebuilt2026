@@ -52,8 +52,8 @@ public class FlywheelTeleop extends Command {
                     speeds.vyMetersPerSecond,
                     kAngularVelocity.get()).getNorm();
                 distance = MathUtil.clamp(distance, FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
-                speed = kFlywheel.getDistanceToSpeedTable().get(distance);
-                angle = kFlywheel.getDistanceToHoodTable().get(distance);
+                speed = FlywheelConstants.kDistanceToFlywheelSpeedDefault.get(distance);
+                angle = FlywheelConstants.kDistanceToHoodAngleDefault.get(distance);
                 kFlywheel.setHoodTarget(angle);
                 kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
                 break;

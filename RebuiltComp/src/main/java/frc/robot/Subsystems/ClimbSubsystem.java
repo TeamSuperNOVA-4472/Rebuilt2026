@@ -101,7 +101,6 @@ public class ClimbSubsystem extends SubsystemBase {
             PIDOutput = 0;
         }
         setVoltage(PIDOutput);*/
-        SmartDashboard.putNumber("Subsystems/ClimbSubsystem/Encoder Position: ", kClimbMotor.getPosition().getValueAsDouble());
     }
     private void moveWithState(){
         switch (kState) {

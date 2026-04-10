@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.littletonrobotics.junction.LogFileUtil;
+import org.opencv.video.KalmanFilter;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -58,7 +59,7 @@ public final class Constants {
 
   public static class ClimbConstants {
     public static final int kClimbMotorPort = 59;
-    public static final double kClimbVoltage = 8;
+    public static final double kClimbVoltage = 4;
     public static final String kClimbCanbus = "CANivore";
     public static final double kClimbSupplyLimit = 40;
     public static final double kClimbStatorLimit = 40;
@@ -97,17 +98,20 @@ public final class Constants {
   public static class FlywheelConstants {
     public static final Double[] kDistances = {1.8, 2.2, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5};
 
-    public static final Map<Double, Double> kDistanceToFlywheelSpeedDefault = Map.of(
-      kDistances[0], 44.0,
-      kDistances[1], 44.0,
-      kDistances[2], 48.0,
-      kDistances[3], 49.0,
-      kDistances[4], 50.0,
-      kDistances[5], 58.0,
-      kDistances[6], 66.0,
-      kDistances[7], 74.0,
-      kDistances[8], 82.0
-    );
+    public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedDefault = new InterpolatingDoubleTreeMap();
+    static{
+      kDistanceToFlywheelSpeedDefault.put(kDistances[0], 44.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[1], 44.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[2], 48.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[3], 49.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[4], 50.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[5], 58.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[6], 66.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[7], 72.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[8], 80.0);
+
+
+    }
       
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
     static {
@@ -120,17 +124,18 @@ public final class Constants {
       kDistanceToFlywheelSpeedTime.put(5.5, 1.30);
     }
 
-    public static final Map<Double, Double> kDistanceToHoodAngleDefault = Map.of(
-      kDistances[0], 21.0,
-      kDistances[1], 23.0,
-      kDistances[2], 23.0,
-      kDistances[3], 26.0,
-      kDistances[4], 28.0,
-      kDistances[5], 28.0,
-      kDistances[6], 29.0,
-      kDistances[7], 30.0,
-      kDistances[8], 32.0
-    );
+    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngleDefault = new InterpolatingDoubleTreeMap();
+    static {
+      kDistanceToHoodAngleDefault.put(kDistances[0], 21.0);
+      kDistanceToHoodAngleDefault.put(kDistances[1], 23.0);
+      kDistanceToHoodAngleDefault.put(kDistances[2], 23.0);
+      kDistanceToHoodAngleDefault.put(kDistances[3], 26.0);
+      kDistanceToHoodAngleDefault.put(kDistances[4], 28.0);
+      kDistanceToHoodAngleDefault.put(kDistances[5], 28.0);
+      kDistanceToHoodAngleDefault.put(kDistances[6], 29.0);
+      kDistanceToHoodAngleDefault.put(kDistances[7], 30.0);
+      kDistanceToHoodAngleDefault.put(kDistances[8], 32.0);
+    }
 
     public static final InterpolatingDoubleTreeMap kPassingDistanceToSpeed = new InterpolatingDoubleTreeMap();
     static {
@@ -241,7 +246,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2ByDefault = true; 
-    public static final boolean kRestrictTagsByDefault = false;
+    public static final boolean kRestrictTagsByDefault = true;
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .3;

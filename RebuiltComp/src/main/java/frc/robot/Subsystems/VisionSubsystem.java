@@ -97,8 +97,6 @@ public class VisionSubsystem extends SubsystemBase
         {
             LimelightHelpers.SetIMUMode(limelight, mode.get());
         }
-
-        SmartDashboard.putString("Subsystems/VisionSubsystem/IMU Mode: ", mode.name());
     }
 
     private void setIMUThrottle(int throttle)
@@ -108,8 +106,6 @@ public class VisionSubsystem extends SubsystemBase
         {
             LimelightHelpers.SetThrottle(limelight, throttle);
         }
-
-        SmartDashboard.putNumber("Subsystems/VisionSubsystem/Throttle: ", throttle);
     }
 
     @AutoLogOutput
@@ -136,7 +132,7 @@ public class VisionSubsystem extends SubsystemBase
     {
         double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
         if (!mUseMegaTag2) lateraldev *= VisionConstants.kMegaTag1Multiplier;
-        if (mRestrictTags) lateraldev *= VisionConstants.kRestrictedTagsMultiplier;
+        // if (mRestrictTags) lateraldev *= VisionConstants.kRestrictedTagsMultiplier;
         double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : pose.avgTagDist * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
@@ -203,10 +199,7 @@ public class VisionSubsystem extends SubsystemBase
         if(rejectUpdate(pose))
         {
             rejectUpdate = true;
-        }
-
-        SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
-       
+        }       
 
         if(!rejectUpdate)
         {
@@ -235,7 +228,6 @@ public class VisionSubsystem extends SubsystemBase
             {
                 updatePose(pose.get());
                 mLastValidPose = pose.get().pose;
-                SmartDashboard.putString("Subsystems/VisionSubsystem/Pose: ", pose.get().pose.toString());
             }
 
             adjustThrottleAndIMU();
