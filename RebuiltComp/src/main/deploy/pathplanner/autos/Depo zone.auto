@@ -138,21 +138,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "FlywheelOff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpindexerOff"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "IntakeOff"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "FlywheelOff"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpindexerOff"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOff"
+                }
+              }
+            ]
           }
         }
       ]

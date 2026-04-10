@@ -173,9 +173,8 @@ public class RobotContainer {
     autoChooser.addOption("Right Neutral Repeat", new PathPlannerAuto("Right Neutral Repeat"));
     autoChooser.addOption("Experimental Left Neutral", new PathPlannerAuto("Experimental Double Cycle"));
     autoChooser.addOption("Experimental Right Neutral", new PathPlannerAuto("Experimental Double Cycle", true));
-    autoChooser.addOption("Depo zone", new PathPlannerAuto("Depo zone"));
-    autoChooser.addOption("depo and climb auto", new PathPlannerAuto("depo and climb auto"));
-    autoChooser.addOption("Right neutral climb Auto", new PathPlannerAuto("Right neutral climb Auto"));
+    autoChooser.addOption("Depot SOqaTM Zone", new PathPlannerAuto("Depo zone"));
+    autoChooser.addOption("Depot Safe Zone", new PathPlannerAuto("Depot Safe"));
     SmartDashboard.putData("Auto Selector", autoChooser);
 
     configureDriverBindings();
@@ -208,7 +207,7 @@ public class RobotContainer {
       mFlywheel.setMode(FlywheelMode.OFF);
     }));
 
-    mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.RIGHT));
+    //mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.RIGHT));
   }
 
   private void configureOperatorBindings()

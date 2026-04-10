@@ -11,7 +11,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 20.0
+                  "waitTime": 19.999
                 }
               },
               {
@@ -201,6 +201,31 @@
                       }
                     }
                   ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "SpindexerOff"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "FlywheelOff"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeOff"
                 }
               }
             ]
