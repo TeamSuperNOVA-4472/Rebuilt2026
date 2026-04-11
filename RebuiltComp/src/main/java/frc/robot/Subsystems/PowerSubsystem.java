@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class PowerSubsystem extends SubsystemBase {
       private final PowerDistribution mPdh = new PowerDistribution(1, ModuleType.kRev);
 
-      @Override
+      /*@Override
       public void periodic() {
-        SmartDashboard.putData("PDH", mPdh);
-      }
+        //SmartDashboard.putData("PDH", mPdh);
+      }*/
 }

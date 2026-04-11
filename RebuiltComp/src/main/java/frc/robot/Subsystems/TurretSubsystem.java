@@ -167,9 +167,6 @@ public class TurretSubsystem extends SubsystemBase
                 goToAngle(TurretConstants.kDeadband);
             }
         }
-
-        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Relative Angle: ", getAngle());
-        SmartDashboard.putNumber("Subsystems/TurretSubsystem/Goal Angle: ", kTurretTargetAngle);
     
     }
 

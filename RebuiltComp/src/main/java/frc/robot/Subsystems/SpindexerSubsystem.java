@@ -101,13 +101,10 @@ public class SpindexerSubsystem extends SubsystemBase {
     }
     public void setMode(SpindexerMode mNewMode){
         kMode = mNewMode;
-        SmartDashboard.putString("Subsystems/SpindexerSubsystem/Spindexer Mode: ", kMode.name());
     }
 
     @Override
     public void periodic() {
         moveSpindexer();
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Spindexer Speed: ", getSpindexerVelocity());
-        SmartDashboard.putNumber("Subsystems/SpindexerSubsystem/Kicker Speed: ", getKickerVelocity());
     }
 }

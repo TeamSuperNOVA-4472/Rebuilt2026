@@ -108,7 +108,6 @@ public class VisionSubsystem extends SubsystemBase
         }
     }
 
-    @AutoLogOutput
     public Pose2d getLastValidPose()
     {
         return mLastValidPose;
@@ -208,11 +207,6 @@ public class VisionSubsystem extends SubsystemBase
 
         return Optional.empty();
     }
-
-    @AutoLogOutput(key = "VisionSubsystem/LogPose")
-    private Pose2d logPose = new Pose2d();
-    
-    
 
     // Calculate position, update position if present
     @Override

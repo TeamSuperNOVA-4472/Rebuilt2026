@@ -109,6 +109,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
   /** Creates a new ExampleSubsystem. */
   public SwerveSubsystem() {
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.NONE;
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
     /*kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
@@ -213,11 +214,11 @@ public class SwerveSubsystem extends SubsystemBase {
   public void periodic() {
     kLocation = FieldMathHelpers.getLocation(getPose());
 
-    SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
+    /*SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
 
     SmartDashboard.putNumber("Robot Telemetry/Distance To Hub/Turret Adjusted: ", FieldMathHelpers.getTranslationToHub(getPose().transformBy(TurretConstants.kTurretOffset)).getNorm());
-    SmartDashboard.putString("Turret Pose: ", getPose().transformBy(TurretConstants.kTurretOffset).toString());
+    SmartDashboard.putString("Turret Pose: ", getPose().transformBy(TurretConstants.kTurretOffset).toString());*/
   }
 }

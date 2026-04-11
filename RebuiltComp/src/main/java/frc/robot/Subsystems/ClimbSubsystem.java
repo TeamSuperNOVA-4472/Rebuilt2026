@@ -68,7 +68,7 @@ public class ClimbSubsystem extends SubsystemBase {
         kSimSpace = new Mechanism2d(ClimbConstants.kSimWidth, ClimbConstants.kSimHeight);
         kSimRoot = kSimSpace.getRoot(ClimbConstants.kSimRootName, ClimbConstants.kSimX, ClimbConstants.kSimY);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Climb", kClimbSim.getPositionMeters()*Constants.ClimbConstants.kSimLenMult,90));
-        SmartDashboard.putData("Climbsim", kSimSpace);
+        // SmartDashboard.putData("Climbsim", kSimSpace);
     }
 
     public void setVoltage(double volts)
@@ -131,7 +131,7 @@ public class ClimbSubsystem extends SubsystemBase {
         kClimbSim.update(ClimbConstants.kSimdt);
 
         kSimDisp.setLength(kClimbSim.getPositionMeters()*Constants.ClimbConstants.kSimLenMult);
-        SmartDashboard.putNumber("Climb Height", kClimbSim.getPositionMeters() * ClimbConstants.kSimLenBaseMult);
-        SmartDashboard.putNumber("Climb Target", kTarget);
+        // SmartDashboard.putNumber("Climb Height", kClimbSim.getPositionMeters() * ClimbConstants.kSimLenBaseMult);
+        // SmartDashboard.putNumber("Climb Target", kTarget);
     }
 }

@@ -429,7 +429,8 @@ public final class Constants {
     //TODO: Find real values for the constants.
     public static final double kSliderOffset = 0.0;
     public static final double kStoredPos = 0.0;
-    public static final double kOutPos = 9.5;
+    public static final double kOutPos = 17;
+    public static final double kBuffer = 0;
     public static final double kIntakeAngle = 345.0;
     public static final double kIntakeMotorSpeed = 0.9;
     public static final double kSlideThreshold = 0.20;
@@ -446,22 +447,24 @@ public final class Constants {
     public static final int kSliderMotorPort = 31;
     public static final String kSliderCanbus = "rio";
     public static final double kSliderSupplyLimit = 20;
-    public static final double kSliderStatorLimit = 30;
+    public static final double kSliderStatorLimit = 20;
     public static final boolean kSliderSupplyLimitEnabled = true;
     public static final boolean kSliderStatorLimitEnabled = true;
     public static final NeutralModeValue kSliderNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kSliderP = 0.36;
+    public static final double kSliderP = 0.14;
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
-    public static final double kSliderMaxVelocity = 36; // 128
-    public static final double kSliderMaxAcceleration = 24; // 96
+    public static final double kSlipConstant = 0.225;
+
+    public static final double kSliderMaxVelocity = 128; // 128
+    public static final double kSliderMaxAcceleration = 96; // 96
 
     public static final double kSliderMaxSpeedOutput = .5;
 
     public static final double kSliderResetSpeed = .15;
-    public static final double kSliderResetStatorThreshold = 20;
+    public static final double kSliderResetStatorThreshold = 10;
 
     public static final int kSimNumMotors = 1;
     public static final double kSimWidth = 60;

@@ -25,6 +25,7 @@ public class toggleIntakeStorage extends InstantCommand {
             storage = IntakeStorageMode.OUT;
         }
 
+        kIntake.addBuffer();
         kIntake.setIntakeStorage(storage);
     }
 

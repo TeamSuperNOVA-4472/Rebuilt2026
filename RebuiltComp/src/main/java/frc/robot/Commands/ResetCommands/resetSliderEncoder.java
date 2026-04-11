@@ -34,6 +34,7 @@ public class resetSliderEncoder extends Command {
         kIntakeSubsystem.stopIntakeSlider();
         if (!interrupted)
         {
+            kIntakeSubsystem.resetOutAndStored();
             kIntakeSubsystem.resetSliderEncoderToOutPosition();
             kIntakeSubsystem.enablePID();
         }

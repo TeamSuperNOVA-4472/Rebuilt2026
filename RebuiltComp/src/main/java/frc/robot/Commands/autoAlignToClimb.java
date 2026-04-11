@@ -110,7 +110,7 @@ public class autoAlignToClimb extends SequentialCommandGroup {
         double yVelocity = -kYController.calculate(currentPose.getY(), pose.getY());
         double rotVelocity = kGyroController.calculate(kSwerve.getHeadingDegrees(), pose.getRotation().getDegrees());
 
-        SmartDashboard.putString("Errors: ", kXController.getPositionError() + " " + kYController.getPositionError() + " " + kGyroController.getPositionError());
+        //SmartDashboard.putString("Errors: ", kXController.getPositionError() + " " + kYController.getPositionError() + " " + kGyroController.getPositionError());
         ChassisSpeeds speeds = new ChassisSpeeds(xVelocity, yVelocity, Units.degreesToRadians(rotVelocity));
         
         kSwerve.driveFieldOriented(speeds);

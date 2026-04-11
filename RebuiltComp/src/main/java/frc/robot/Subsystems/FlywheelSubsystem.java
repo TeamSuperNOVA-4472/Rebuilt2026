@@ -115,7 +115,7 @@ public class FlywheelSubsystem extends SubsystemBase {
                         m_velocity.mut_replace(kFlywheel2Motor.getVelocity().getValueAsDouble(), RotationsPerSecond));
               }, this));
 
-        SmartDashboard.putData("FlyWheelHoodSim", kSimSpace);
+        //SmartDashboard.putData("FlyWheelHoodSim", kSimSpace);
         TalonFXConfiguration kFlywheel1Config = new TalonFXConfiguration();
         CurrentLimitsConfigs kFlywheel1CurrentConfig = new CurrentLimitsConfigs();
         MotorOutputConfigs kFlywheel1MotorConfig = new MotorOutputConfigs();
@@ -306,12 +306,12 @@ public class FlywheelSubsystem extends SubsystemBase {
                 break;
         }
         
-        SmartDashboard.putBoolean("Subsystems/FlywheelSubsystem/Flywheel At Setpoint: ", kFlywheelAtTarget);
+        /*SmartDashboard.putBoolean("Subsystems/FlywheelSubsystem/Flywheel At Setpoint: ", kFlywheelAtTarget);
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 2: ", kFlywheel2Motor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Flywheel Speed: ", kTargetSpeed);
         SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Current Hood Angle: ", getHoodAngle());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);
+        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);*/
     }
     @Override
     public void simulationPeriodic() {
@@ -320,7 +320,7 @@ public class FlywheelSubsystem extends SubsystemBase {
       kFlywheelHoodSim.update(FlywheelConstants.kSimdt);
 
       kSimDisp.setAngle(kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
-      SmartDashboard.putNumber("FlywheelHood", kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
+      //SmartDashboard.putNumber("FlywheelHood", kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
     }
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return kRoutine.dynamic(direction);
