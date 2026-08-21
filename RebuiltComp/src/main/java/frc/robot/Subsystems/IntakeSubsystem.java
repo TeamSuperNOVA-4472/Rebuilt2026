@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.IntakeSubsystemConstants;
-import swervelib.simulation.ironmaple.simulation.IntakeSimulation;
 
 public class IntakeSubsystem extends SubsystemBase {
     
