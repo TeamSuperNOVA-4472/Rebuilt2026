@@ -233,10 +233,10 @@ public class RobotContainer {
     //mOperator.y().onFalse(new InstantCommand(() -> mVisionSubsystem.restrictToHubTags()));
 
     mOperator.rightBumper().whileTrue(new antijam(mSpindexer, mFlywheel));
-    mOperator.rightBumper().onFalse(new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE).alongWith(new InstantCommand(() -> {
+    mOperator.rightBumper().onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF);
-    })));
+    }).alongWith(new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)));
 
     // TODO: make this a constant
     // mOperator.y().onTrue(new setClimb(mClimb, ClimbState.UP));

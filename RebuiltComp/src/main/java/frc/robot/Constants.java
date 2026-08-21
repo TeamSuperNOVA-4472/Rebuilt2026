@@ -13,6 +13,7 @@ import org.opencv.video.KalmanFilter;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
@@ -38,8 +39,8 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static final double kMaxSpeedMS = 4.5;
-    public static final double kSOTMConstant = -3.6;
-    public static final double kMaxSOTMSpeedMS = 0.9;
+    public static final double kSOTMConstant = -3.5;
+    public static final double kMaxSOTMSpeedMS = 1;
     public static final double kLatencyInSeconds = 0.02;
     public static final double kMetersPerInch = Units.inchesToMeters(1);
     public static final double kSwerveLocYInches = 7.5;
@@ -106,9 +107,9 @@ public final class Constants {
       kDistanceToFlywheelSpeedDefault.put(kDistances[3], 49.0);
       kDistanceToFlywheelSpeedDefault.put(kDistances[4], 50.0);
       kDistanceToFlywheelSpeedDefault.put(kDistances[5], 58.0);
-      kDistanceToFlywheelSpeedDefault.put(kDistances[6], 68.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[6], 64.0);
       kDistanceToFlywheelSpeedDefault.put(kDistances[7], 72.0);
-      kDistanceToFlywheelSpeedDefault.put(kDistances[8], 76.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[8], 80.0);
     }
       
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
@@ -139,13 +140,14 @@ public final class Constants {
     static {
       kPassingDistanceToSpeed.put(4.8, 40.0);
       kPassingDistanceToSpeed.put(7.0, 70.0);
+      kPassingDistanceToSpeed.put(9.2, 95.0);
     }
 
     public static final int kSOTMIterations = 2;
     public static final int kSlowSpeed = 30;
 
     public static final double kPassingMinimumInMeters = 4.8;
-    public static final double kPassingMaximumInMeters = 7.0;
+    public static final double kPassingMaximumInMeters = 9.2;
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
     public static final double kHoodMinAngle = 20.0;
@@ -289,6 +291,9 @@ public final class Constants {
       kHubTags.add(24);
       kHubTags.add(21);
     }
+
+    public static final double kMaxFieldLength = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldLength();
+    public static final double kMaxFieldWidth = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldWidth();
 
     // Welded hub poses
     public static final Pose2d kHubPoseBlueWeldedMeters = new Pose2d(4.6255177999999995, 4.0346376, Rotation2d.fromDegrees(0));

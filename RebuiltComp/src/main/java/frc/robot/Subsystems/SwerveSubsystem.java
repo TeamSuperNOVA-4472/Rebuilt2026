@@ -26,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,6 +50,7 @@ import static frc.robot.Constants.SwerveConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
+  private final Field2d mField = new Field2d();
   private final SwerveDrive mSwerveDrive;
   //private Command kSwerveSysID;
   private double kYawGyroOffset = 0;
@@ -213,8 +215,10 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     kLocation = FieldMathHelpers.getLocation(getPose());
-
-    /*SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
+    mField.setRobotPose(getPose());
+    /*
+    SmartDashboard.putData("Robot Pose", mField);
+    SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
     SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());
     SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
 

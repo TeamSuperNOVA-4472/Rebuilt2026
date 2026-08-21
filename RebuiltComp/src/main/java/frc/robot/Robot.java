@@ -46,7 +46,11 @@ public class Robot extends LoggedRobot {
     // }
 
     //Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+    
     m_robotContainer = new RobotContainer();
+
+    FollowPathCommand.warmupCommand().schedule();
+
     // Starts recording to data log
     //DataLogManager.start();
   }
@@ -62,7 +66,6 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    FollowPathCommand.warmupCommand().schedule();
   }
 
   @Override

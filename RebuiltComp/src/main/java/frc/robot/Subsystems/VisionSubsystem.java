@@ -153,8 +153,8 @@ public class VisionSubsystem extends SubsystemBase
             pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
             pose.pose.getX() >= 0 &&
             pose.pose.getY() >= 0 &&
-            pose.pose.getX() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldLength() &&
-            pose.pose.getY() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldWidth() &&
+            pose.pose.getX() <= VisionConstants.kMaxFieldLength &&
+            pose.pose.getY() <= VisionConstants.kMaxFieldWidth &&
             mGetRobotAngularVelocity.get() <= Constants.VisionConstants.kAngularVelocityThreshold &&
             underAmbiguityThreshold(pose) &&
             withinAcceptedTags(pose))

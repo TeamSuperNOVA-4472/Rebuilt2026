@@ -48,7 +48,7 @@
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 1.3
+                                    "waitTime": 1.1
                                   }
                                 },
                                 {
@@ -66,7 +66,7 @@
                                 {
                                   "type": "wait",
                                   "data": {
-                                    "waitTime": 4.3
+                                    "waitTime": 3.4
                                   }
                                 },
                                 {
@@ -120,6 +120,61 @@
                             "type": "named",
                             "data": {
                               "name": "SpindexerSOTM"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeOut"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeStore"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeOut"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeStore"
+                                  }
+                                }
+                              ]
                             }
                           }
                         ]
@@ -176,15 +231,9 @@
                       }
                     },
                     {
-                      "type": "deadline",
+                      "type": "parallel",
                       "data": {
                         "commands": [
-                          {
-                            "type": "wait",
-                            "data": {
-                              "waitTime": 3.0
-                            }
-                          },
                           {
                             "type": "named",
                             "data": {
@@ -195,6 +244,61 @@
                             "type": "named",
                             "data": {
                               "name": "SpindexerSOTM"
+                            }
+                          },
+                          {
+                            "type": "sequential",
+                            "data": {
+                              "commands": [
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeOut"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeStore"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeOut"
+                                  }
+                                },
+                                {
+                                  "type": "wait",
+                                  "data": {
+                                    "waitTime": 0.5
+                                  }
+                                },
+                                {
+                                  "type": "named",
+                                  "data": {
+                                    "name": "IntakeStore"
+                                  }
+                                }
+                              ]
                             }
                           }
                         ]

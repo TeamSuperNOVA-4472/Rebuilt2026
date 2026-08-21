@@ -235,6 +235,8 @@ public class IntakeSubsystem extends SubsystemBase {
         SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Storage Mode: ", kStorageMode.name());
         SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Encoder Position: ", kIntakeSlider.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Stator Current: ", kIntakeSlider.getStatorCurrent().getValueAsDouble());*/
+
+        SmartDashboard.putBoolean("Subsystems/IntakeSubsystem/Is Intake Out: ", kStorageMode == IntakeStorageMode.OUT ? true : false);
     } 
 
     @Override
