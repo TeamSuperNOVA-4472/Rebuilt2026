@@ -7,9 +7,11 @@
 
 package frc.robot.subsystems.drive;
 
+import static edu.wpi.first.units.Units.Radians;
 import static frc.robot.subsystems.drive.DriveConstants.*;
 import static frc.robot.util.SparkUtil.*;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -27,6 +29,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.AnalogPotentiometer;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
@@ -42,7 +46,7 @@ public class ModuleIOSpark implements ModuleIO {
   private final SparkBase driveSpark;
   private final SparkBase turnSpark;
   private final RelativeEncoder driveEncoder;
-  private final AnalogPotentiometer turnEncoder;
+  private final CANcoder turnEncoder;
 
   // Closed loop controllers
   private final SparkClosedLoopController driveController;
@@ -90,16 +94,14 @@ public class ModuleIOSpark implements ModuleIO {
             MotorType.kBrushless);
     driveEncoder = driveSpark.getEncoder();
     turnEncoder =
-        new AnalogPotentiometer(
+        new CANcoder(
             switch (module) {
               case 0 -> frontLeftTurnEncId;
               case 1 -> frontRightTurnEncId;
               case 2 -> backLeftTurnEncId;
               case 3 -> backRightTurnEncId;
               default -> 0;
-            },
-            fullRotationRadians,
-            zeroRotation.getRadians());
+            }, "rio");
     driveController = driveSpark.getClosedLoopController();
     turnController = new PIDController(turnKp, 0, turnKd);
 
@@ -162,7 +164,7 @@ public class ModuleIOSpark implements ModuleIO {
   }
 
   private double getTurnAngleRadians() {
-    return ((turnEncoder.get() % fullRotationRadians) + fullRotationRadians) % fullRotationRadians;
+    return ((turnEncoder.getAbsolutePosition().getValue().in(Units.Radians) % fullRotationRadians) + fullRotationRadians) % fullRotationRadians;
   }
 
   @Override
