@@ -12,7 +12,7 @@ public class resetSliderEncoder extends Command {
     public resetSliderEncoder(IntakeSubsystem mIntakeSubsystem)
     {
         kIntakeSubsystem = mIntakeSubsystem;
-        kDebounce = new Debouncer(0.25);
+        kDebounce = new Debouncer(IntakeSubsystemConstants.kSliderDebounceTime);
 
         addRequirements(kIntakeSubsystem);
     }

@@ -175,9 +175,6 @@ public class VisionSubsystem extends SubsystemBase
 
         return true;
     }
-
-    // public void restrictToClimbTags() { mRestrictedTags = VisionConstants.kClimbTags; }
-    // public void restrictToHubTags() { mRestrictedTags = VisionConstants.kHubTags; }
   
     //Estimate position of robot based off of limelight data
     private Optional<PoseEstimate> calculatePosition(String limelight)

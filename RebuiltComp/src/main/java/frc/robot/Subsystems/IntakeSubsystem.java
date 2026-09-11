@@ -78,7 +78,6 @@ public class IntakeSubsystem extends SubsystemBase {
         kSimSpace = new Mechanism2d(IntakeSubsystemConstants.kSimWidth, IntakeSubsystemConstants.kSimHeight);
         kSimRoot = kSimSpace.getRoot(IntakeSubsystemConstants.kSimRootName, IntakeSubsystemConstants.kSimX, IntakeSubsystemConstants.kSimY);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Intake", kIntakeSim.getPositionMeters()*Constants.IntakeSubsystemConstants.kSimLenMult, Constants.IntakeSubsystemConstants.kIntakeAngle));
-        // SmartDashboard.putData("IntakeSim", kSimSpace);
 
         TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kIntakeCurrentConfig = new CurrentLimitsConfigs();
@@ -159,6 +158,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void addBuffer()
     {
+        // Encoder needed a buffer
         kCurrentOutPos = kCurrentOutPos - IntakeSubsystemConstants.kSlipConstant;
         kCurrentStoredPos = kCurrentStoredPos - IntakeSubsystemConstants.kSlipConstant;
     }
@@ -228,13 +228,6 @@ public class IntakeSubsystem extends SubsystemBase {
             kIntakeSlider.set(PIDOutput);
         }
         
-        /*SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Encoder Speed: ", kIntakeSlider.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack PID Output: ", PIDOutput);
-        SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Action Mode: ", kActionMode.name());
-        SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Storage Mode: ", kStorageMode.name());
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Encoder Position: ", kIntakeSlider.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Stator Current: ", kIntakeSlider.getStatorCurrent().getValueAsDouble());*/
-
         SmartDashboard.putBoolean("Subsystems/IntakeSubsystem/Is Intake Out: ", kStorageMode == IntakeStorageMode.OUT ? true : false);
     } 
 
@@ -245,6 +238,5 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeSim.update(IntakeSubsystemConstants.kSimdt);
 
         kSimDisp.setLength(kIntakeSim.getPositionMeters()*Constants.IntakeSubsystemConstants.kSimLenMult);
-        // SmartDashboard.putNumber("Intake Length Horizontal", kIntakeSim.getPositionMeters()*39.3701*Math.cos(Math.toRadians(15)));
     }
 }

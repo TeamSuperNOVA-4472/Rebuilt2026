@@ -77,7 +77,7 @@ public class FlywheelSubsystem extends SubsystemBase {
         kMode = FlywheelMode.OFF;
        
         kIsSafeModeEnabled = false;
-        //TODO: Values below should be constants.
+        
         kFlywheel1Motor = new TalonFX(FlywheelConstants.kFlywheel1MotorPort, FlywheelConstants.kFlywheel1Canbus);
         kFlywheel2Motor = new TalonFX(FlywheelConstants.kFlywheel2MotorPort, FlywheelConstants.kFlywheel2Canbus);
         kFlywheelHoodMotor = new TalonFX(FlywheelConstants.kFlywheelHoodMotorPort, FlywheelConstants.kFlywheelHoodCanbus);
@@ -115,7 +115,6 @@ public class FlywheelSubsystem extends SubsystemBase {
                         m_velocity.mut_replace(kFlywheel2Motor.getVelocity().getValueAsDouble(), RotationsPerSecond));
               }, this));
 
-        //SmartDashboard.putData("FlyWheelHoodSim", kSimSpace);
         TalonFXConfiguration kFlywheel1Config = new TalonFXConfiguration();
         CurrentLimitsConfigs kFlywheel1CurrentConfig = new CurrentLimitsConfigs();
         MotorOutputConfigs kFlywheel1MotorConfig = new MotorOutputConfigs();
@@ -306,13 +305,8 @@ public class FlywheelSubsystem extends SubsystemBase {
                 break;
         }
         
-        /*SmartDashboard.putBoolean("Subsystems/FlywheelSubsystem/Flywheel At Setpoint: ", kFlywheelAtTarget);
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 2: ", kFlywheel2Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Flywheel Speed: ", kTargetSpeed);
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Current Hood Angle: ", getHoodAngle());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);*/
     }
+
     @Override
     public void simulationPeriodic() {
       kFlywheelHoodSim.setInput(kOutput * FlywheelConstants.kSimMultiplier);
@@ -320,11 +314,12 @@ public class FlywheelSubsystem extends SubsystemBase {
       kFlywheelHoodSim.update(FlywheelConstants.kSimdt);
 
       kSimDisp.setAngle(kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
-      //SmartDashboard.putNumber("FlywheelHood", kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
     }
+
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return kRoutine.dynamic(direction);
     }
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return kRoutine.quasistatic(direction);
     }

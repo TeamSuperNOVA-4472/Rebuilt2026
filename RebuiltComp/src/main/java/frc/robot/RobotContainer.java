@@ -39,9 +39,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
-import frc.robot.Commands.autoAlignToClimb;
 import frc.robot.Commands.flywheelSysIDCommand;
-import frc.robot.Commands.setClimb;
 import frc.robot.Commands.setFlywheelTest;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -49,13 +47,11 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import frc.robot.Commands.setIntakeAction;
 import frc.robot.Commands.toggleIntakeStorage;
 import frc.robot.Commands.AutoCommands.moveTurretAuto;
-import frc.robot.Commands.AutoCommands.setClimbAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelAuto;
 import frc.robot.Commands.AutoCommands.setFlywheelSlowAuto;
 import frc.robot.Commands.AutoCommands.setIntakeActionAuto;
 import frc.robot.Commands.AutoCommands.setIntakeStorageAuto;
 import frc.robot.Commands.AutoCommands.setSpindexerAuto;
-import frc.robot.Commands.Autos.ShootPreloadFromStandstill;
 import frc.robot.Commands.ResetCommands.antijam;
 import frc.robot.Commands.ResetCommands.resetHoodEncoder;
 import frc.robot.Commands.ResetCommands.resetSliderEncoder;
@@ -64,15 +60,12 @@ import frc.robot.Commands.TeleopCommands.FlywheelTeleop;
 import frc.robot.Commands.TeleopCommands.SpindexerTeleop;
 import frc.robot.Commands.TeleopCommands.SwerveTeleop;
 import frc.robot.Commands.TeleopCommands.TurretTeleop;
-import frc.robot.Commands.autoAlignToClimb.ClimbDirection;
-import frc.robot.Subsystems.ClimbSubsystem;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.IntakeSubsystem;
 import frc.robot.Subsystems.SpindexerSubsystem;
 import frc.robot.Subsystems.SwerveSubsystem;
 import frc.robot.Subsystems.TurretSubsystem;
 import frc.robot.Subsystems.VisionSubsystem;
-import frc.robot.Subsystems.ClimbSubsystem.ClimbState;
 import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeActionMode;
 import frc.robot.Subsystems.IntakeSubsystem.IntakeStorageMode;
@@ -85,7 +78,6 @@ import com.pathplanner.lib.events.EventTrigger;
 
 public class RobotContainer {
   private final IntakeSubsystem mIntake = new IntakeSubsystem();
-  private final ClimbSubsystem mClimb = new ClimbSubsystem();
   private final SpindexerSubsystem mSpindexer = new SpindexerSubsystem();
   private final VisionSubsystem mVisionSubsystem;
   private final CommandXboxController mDriver = new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -93,7 +85,6 @@ public class RobotContainer {
   private final TurretSubsystem mTurret = new TurretSubsystem();
   private final SwerveSubsystem mSwerve = new SwerveSubsystem();
   private final FlywheelSubsystem mFlywheel = new FlywheelSubsystem();
-  private final PowerDistribution mPdh = new PowerDistribution(1, ModuleType.kRev);
   private final SendableChooser<PathPlannerAuto> autoChooser;
   
   private final SlewRateLimiter mFwdLimiter = new SlewRateLimiter(OperatorConstants.kSlewLimit);
@@ -158,7 +149,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("FlywheelOnSlow", new setFlywheelSlowAuto(mFlywheel));
     NamedCommands.registerCommand("FlywheelOff", new InstantCommand(() -> {
       mFlywheel.setMode(FlywheelMode.OFF, 0.0);
-      mFlywheel.setHoodTarget(20.0);
+      mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
     }));
     NamedCommands.registerCommand("IntakeOn", new setIntakeActionAuto(mIntake, IntakeActionMode.INTAKE));
     NamedCommands.registerCommand("IntakeOff", new setIntakeActionAuto(mIntake, IntakeActionMode.OFF));
@@ -208,12 +199,10 @@ public class RobotContainer {
       mFlywheel.setMode(FlywheelMode.OFF);
     }));
 
-    //mDriver.x().whileTrue(new autoAlignToClimb(mSwerve, mVisionSubsystem, mClimb, ClimbDirection.RIGHT));
   }
 
   private void configureOperatorBindings()
   {
-
     // Intake Action Bindings
     mOperator.leftBumper().onTrue(new setIntakeAction(mIntake, IntakeActionMode.OUTTAKE));
     mOperator.leftTrigger(OperatorConstants.kTriggerThreshold).onTrue(new setIntakeAction(mIntake, IntakeActionMode.INTAKE));
@@ -229,37 +218,20 @@ public class RobotContainer {
 
     mOperator.povRight().onTrue(new resetTurretEncoder(mTurret));
 
-    //mOperator.y().onTrue(new InstantCommand(() -> mVisionSubsystem.restrictToClimbTags()));
-    //mOperator.y().onFalse(new InstantCommand(() -> mVisionSubsystem.restrictToHubTags()));
-
     mOperator.rightBumper().whileTrue(new antijam(mSpindexer, mFlywheel));
     mOperator.rightBumper().onFalse(new InstantCommand(() -> {
       mFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
       mFlywheel.setMode(FlywheelMode.OFF);
     }).alongWith(new SpindexerTeleop(mSpindexer, SpindexerMode.OFF, () -> true, () -> FieldMathHelpers.Location.ALLIANCE_ZONE)));
 
-    // TODO: make this a constant
-    // mOperator.y().onTrue(new setClimb(mClimb, ClimbState.UP));
-    // mOperator.a().onTrue(new setClimb(mClimb, ClimbState.CLIMB));
-    // mOperator.b().onTrue(new setClimb(mClimb, ClimbState.STORED));
-
-    mOperator.a().onTrue(new InstantCommand(() -> mClimb.setVoltage(ClimbConstants.kClimbVoltage)));
-    mOperator.b().onTrue(new InstantCommand(() -> mClimb.setVoltage(-ClimbConstants.kClimbVoltage)));
-
-    mOperator.a().or(mOperator.b()).onFalse(new InstantCommand(() -> mClimb.setVoltage(0)));
-
     mOperator.x().onTrue(new InstantCommand(() -> mSwerve.resetOdometry(mVisionSubsystem.getLastValidPose())));
   }
 
   public Command getAutonomousCommand() {
-      //mSwerve.resetOdometry(autoChooser.getSelected().getStartingPose());
       return autoChooser.getSelected();
   }
 
-  public void getAmperageToLog(){
-    SmartDashboard.putNumber("Total Amperage", mPdh.getTotalCurrent());
-  }
-
+  // Autonomous commands
   public Command getTurretCommand(){
     return new TurretTeleop(
       mTurret, 

@@ -3,6 +3,7 @@ package frc.robot.Commands;
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.FlywheelConstants;
 import frc.robot.Subsystems.FlywheelSubsystem;
 import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 
@@ -12,8 +13,8 @@ public class setFlywheelTest extends Command {
     private final Supplier<Boolean> kSpeedDown;
     private final Supplier<Boolean> kHoodUp;
     private final Supplier<Boolean> kHoodDown;
-    private double speed = 40;
-    private double hood = 20;
+    private double speed = FlywheelConstants.kSafeSpeed;
+    private double hood = FlywheelConstants.kSafeAngle;
 
     public setFlywheelTest(
         FlywheelSubsystem mFlywheelSubsystem, 
@@ -34,20 +35,20 @@ public class setFlywheelTest extends Command {
     public void execute() {
         if (kSpeedUp.get())
         {
-            speed += 2;
+            speed += FlywheelConstants.kFlywheelIncrementTestSpeed;
         }
         else if (kSpeedDown.get())
         {
-            speed -= 2;
+            speed -= FlywheelConstants.kFlywheelIncrementTestSpeed;
         }
 
         if (kHoodUp.get())
         {
-            hood += 1;
+            hood += FlywheelConstants.kFlywheelIncrementTestAngle;
         }
         else if (kHoodDown.get())
         {
-            hood -= 1;
+            hood -= FlywheelConstants.kFlywheelIncrementTestAngle;
         }
 
         kFlywheel.setHoodTarget(hood);

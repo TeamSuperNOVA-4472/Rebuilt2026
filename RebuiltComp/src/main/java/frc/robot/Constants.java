@@ -53,9 +53,14 @@ public final class Constants {
     public static final double kS = 0.267;
     public static final double kV = 2.65;
     public static final double kA = 0.239;
+    public static final double kSReplacement = 0.212775;
+    public static final double kVReplacement = 2.121025;
+    public static final double kAReplacement = 0.1667725;
     public static final double kPGyro = 0.12;
     public static final double kIGyro = 0;
     public static final double kDGyro = 0.0005;
+    public static final double kPTranslation = 5.0;
+    public static final double kPRotation = 2.5;
   }
 
   public static class ClimbConstants {
@@ -155,6 +160,8 @@ public final class Constants {
     public static final double kDistanceMinimumInMeters = 1.8;
     public static final double kDistanceMaximumInMeters = 5.5;
 
+    public static final double kHoodDebounceTime = 0.25;
+
     public static final int kFlywheel1MotorPort = 60;
     public static final String kFlywheel1Canbus = "rio";
     public static final double kFlywheel1SupplyLimit = 20;
@@ -184,6 +191,9 @@ public final class Constants {
     public static final double kDHood = 0;
 
     public static final double kHoodTolerance = 2;
+
+    public static final double kFlywheelIncrementTestSpeed = 2;
+    public static final double kFlywheelIncrementTestAngle = 1;
 
     public static final double kSFlywheel = 0.44;
     public static final double kVFlywheel = 0.1075;
@@ -364,6 +374,8 @@ public final class Constants {
     public static final double kTurretV = 0.00055;
     public static final double kTurretA = 0;
 
+    public static final double kTurretDebounceTime = 0.25;
+
     // TODO: tune a lower tolerance for this
     public static final double kTurretTolerance = 15;
 
@@ -433,6 +445,7 @@ public final class Constants {
   public static class IntakeSubsystemConstants {
     //TODO: Find real values for the constants.
     public static final double kSliderOffset = 0.0;
+    public static final double kSliderDebounceTime = 0.25;
     public static final double kStoredPos = 0.0;
     public static final double kOutPos = 17;
     public static final double kBuffer = 0;
