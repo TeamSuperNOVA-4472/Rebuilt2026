@@ -41,9 +41,7 @@ public class IntakeSubsystem extends SubsystemBase {
         OUTTAKE,
         OFF
     }
-
-    // private final Trigger kStatorLimitExceeded;
-
+    
     private IntakeStorageMode kStorageMode;
     private IntakeActionMode kActionMode;
 
