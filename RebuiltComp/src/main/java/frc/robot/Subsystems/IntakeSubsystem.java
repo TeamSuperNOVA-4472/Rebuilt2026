@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.Constants.IntakeSubsystemConstants;
-import swervelib.simulation.ironmaple.simulation.IntakeSimulation;
 
 public class IntakeSubsystem extends SubsystemBase {
     
@@ -42,9 +41,7 @@ public class IntakeSubsystem extends SubsystemBase {
         OUTTAKE,
         OFF
     }
-
-    // private final Trigger kStatorLimitExceeded;
-
+    
     private IntakeStorageMode kStorageMode;
     private IntakeActionMode kActionMode;
 
@@ -63,6 +60,9 @@ public class IntakeSubsystem extends SubsystemBase {
     private final MechanismRoot2d kSimRoot;
     private final MechanismLigament2d kSimDisp;
 
+    private double kCurrentOutPos = IntakeSubsystemConstants.kOutPos;
+    private double kCurrentStoredPos = IntakeSubsystemConstants.kStoredPos;
+
     public IntakeSubsystem(){
         kStorageMode = IntakeStorageMode.STORED;
         kActionMode = IntakeActionMode.OFF;
@@ -76,7 +76,6 @@ public class IntakeSubsystem extends SubsystemBase {
         kSimSpace = new Mechanism2d(IntakeSubsystemConstants.kSimWidth, IntakeSubsystemConstants.kSimHeight);
         kSimRoot = kSimSpace.getRoot(IntakeSubsystemConstants.kSimRootName, IntakeSubsystemConstants.kSimX, IntakeSubsystemConstants.kSimY);
         kSimDisp = kSimRoot.append(new MechanismLigament2d("Intake", kIntakeSim.getPositionMeters()*Constants.IntakeSubsystemConstants.kSimLenMult, Constants.IntakeSubsystemConstants.kIntakeAngle));
-        SmartDashboard.putData("IntakeSim", kSimSpace);
 
         TalonFXConfiguration kIntakeConfig = new TalonFXConfiguration();
         CurrentLimitsConfigs kIntakeCurrentConfig = new CurrentLimitsConfigs();
@@ -114,11 +113,11 @@ public class IntakeSubsystem extends SubsystemBase {
     private void moveToStorageState(){
         switch (kStorageMode){
         case STORED:
-            kSliderTarget = Constants.IntakeSubsystemConstants.kStoredPos;
+            kSliderTarget = kCurrentStoredPos;
             break;
 
         case OUT:
-            kSliderTarget = Constants.IntakeSubsystemConstants.kOutPos;
+            kSliderTarget = kCurrentOutPos;
             break;
         
         }
@@ -152,7 +151,29 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void resetSliderEncoderToOutPosition()
     {
-        kIntakeSlider.setPosition(IntakeSubsystemConstants.kOutPos/Constants.IntakeSubsystemConstants.kEncoderToInchesMult);
+        kIntakeSlider.setPosition(IntakeSubsystemConstants.kOutPos);
+    }
+
+    public void addBuffer()
+    {
+        // Encoder needed a buffer
+        kCurrentOutPos = kCurrentOutPos - IntakeSubsystemConstants.kSlipConstant;
+        kCurrentStoredPos = kCurrentStoredPos - IntakeSubsystemConstants.kSlipConstant;
+    }
+
+    public void resetOutAndStored()
+    {
+        kCurrentOutPos = IntakeSubsystemConstants.kOutPos;
+        kCurrentStoredPos = IntakeSubsystemConstants.kStoredPos;
+        if (kStorageMode == IntakeStorageMode.STORED)
+        {
+            kSliderTarget = kCurrentStoredPos;
+        }
+        else
+        {
+            kSliderTarget = kCurrentOutPos;
+        }
+
     }
 
     public double getSliderStator()
@@ -198,18 +219,14 @@ public class IntakeSubsystem extends SubsystemBase {
         {
             kIsAtState = kSliderPID.atSetpoint();
             if (Robot.isReal()){
-                PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble()*Constants.IntakeSubsystemConstants.kEncoderToInchesMult,kSliderTarget), -IntakeSubsystemConstants.kSliderMaxSpeedOutput, IntakeSubsystemConstants.kSliderMaxSpeedOutput);
+                PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSlider.getPosition().getValueAsDouble(),kSliderTarget), -IntakeSubsystemConstants.kSliderMaxSpeedOutput, IntakeSubsystemConstants.kSliderMaxSpeedOutput);
             } else {
                 PIDOutput = MathUtil.clamp(kSliderPID.calculate(kIntakeSim.getPositionMeters()*IntakeSubsystemConstants.kSimLenBaseMult,kSliderTarget), -IntakeSubsystemConstants.kSimMaxSpeed, IntakeSubsystemConstants.kSimMaxSpeed);
             }
             kIntakeSlider.set(PIDOutput);
         }
         
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack PID Output: ", PIDOutput);
-        SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Action Mode: ", kActionMode.name());
-        SmartDashboard.putString("Subsystems/IntakeSubsystem/Current Storage Mode: ", kStorageMode.name());
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Encoder Position: ", kIntakeSlider.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/IntakeSubsystem/Intake Rack Stator Current: ", kIntakeSlider.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putBoolean("Subsystems/IntakeSubsystem/Is Intake Out: ", kStorageMode == IntakeStorageMode.OUT ? true : false);
     } 
 
     @Override
@@ -219,6 +236,5 @@ public class IntakeSubsystem extends SubsystemBase {
         kIntakeSim.update(IntakeSubsystemConstants.kSimdt);
 
         kSimDisp.setLength(kIntakeSim.getPositionMeters()*Constants.IntakeSubsystemConstants.kSimLenMult);
-        SmartDashboard.putNumber("Intake Length Horizontal", kIntakeSim.getPositionMeters()*39.3701*Math.cos(Math.toRadians(15)));
     }
 }

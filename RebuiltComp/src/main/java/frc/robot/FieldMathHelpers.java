@@ -73,25 +73,30 @@ public class FieldMathHelpers
     {
         // Calculate translations and distances
         Pose2d turretPose = botPose.transformBy(TurretConstants.kTurretOffset);
-        Translation2d translationToHub = getTranslationToHub(turretPose);
-        double distanceToHub = translationToHub.getNorm();
         double dt;
+        Translation2d originalTranslationToHub = getTranslationToHub(turretPose);
+        Translation2d adjustedTranslationToHub = originalTranslationToHub;
 
         Pair<Double, Double> fieldSpeeds = getFieldRelativeSpeedOfOffsetObject(normalizeDegrees(botPose.getRotation().getDegrees()), xVelocityMetersPerSecond, yVelocityMetersPerSecond, angularSpeedDegreesPerSecond);
         xVelocityMetersPerSecond = fieldSpeeds.getFirst();
         yVelocityMetersPerSecond = fieldSpeeds.getSecond();
 
-        distanceToHub = MathUtil.clamp(distanceToHub, FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
-        dt = FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub) + VisionConstants.kLatencyLagInSeconds;
+        for (int i = 0; i < FlywheelConstants.kSOTMIterations; i++)
+        {
+            double distanceToHub = adjustedTranslationToHub.getNorm();
+            distanceToHub = MathUtil.clamp(distanceToHub, FlywheelConstants.kDistanceMinimumInMeters, FlywheelConstants.kDistanceMaximumInMeters);
+            dt = FlywheelConstants.kDistanceToFlywheelSpeedTime.get(distanceToHub) + VisionConstants.kLatencyLagInSeconds;
 
-        // Calculate offsets
-        double dx = xVelocityMetersPerSecond * dt;
-        double dy = yVelocityMetersPerSecond * dt;
-        Translation2d delta = new Translation2d(dx,dy);
+            // Calculate offsets
+            double dx = xVelocityMetersPerSecond * dt;
+            double dy = yVelocityMetersPerSecond * dt;
+            Translation2d delta = new Translation2d(dx,dy);
 
-        // Calculate adjusted translation
-        Translation2d adjustedTranslation = translationToHub.minus(delta);
-        return adjustedTranslation;
+            // Calculate adjusted translation
+            adjustedTranslationToHub = originalTranslationToHub.minus(delta);
+        }
+
+        return adjustedTranslationToHub;
     }
 
     public static double getRotationToHubWithSomeSpeed(

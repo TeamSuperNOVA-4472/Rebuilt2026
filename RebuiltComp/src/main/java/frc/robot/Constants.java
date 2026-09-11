@@ -5,18 +5,22 @@
 package frc.robot;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.littletonrobotics.junction.LogFileUtil;
+import org.opencv.video.KalmanFilter;
 
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -35,8 +39,8 @@ public final class Constants {
 
   public static class SwerveConstants {
     public static final double kMaxSpeedMS = 4.5;
-    public static final double kSOTMConstant = -3.6;
-    public static final double kMaxSOTMSpeedMS = 0.9;
+    public static final double kSOTMConstant = -3.5;
+    public static final double kMaxSOTMSpeedMS = 1;
     public static final double kLatencyInSeconds = 0.02;
     public static final double kMetersPerInch = Units.inchesToMeters(1);
     public static final double kSwerveLocYInches = 7.5;
@@ -49,14 +53,19 @@ public final class Constants {
     public static final double kS = 0.267;
     public static final double kV = 2.65;
     public static final double kA = 0.239;
+    public static final double kSReplacement = 0.212775;
+    public static final double kVReplacement = 2.121025;
+    public static final double kAReplacement = 0.1667725;
     public static final double kPGyro = 0.12;
     public static final double kIGyro = 0;
     public static final double kDGyro = 0.0005;
+    public static final double kPTranslation = 5.0;
+    public static final double kPRotation = 2.5;
   }
 
   public static class ClimbConstants {
     public static final int kClimbMotorPort = 59;
-    public static final double kClimbVoltage = 8;
+    public static final double kClimbVoltage = 4;
     public static final String kClimbCanbus = "CANivore";
     public static final double kClimbSupplyLimit = 40;
     public static final double kClimbStatorLimit = 40;
@@ -84,22 +93,30 @@ public final class Constants {
     public static final double kSimY = 5;
     public static final double kSimMultiplier = 12;
     public static final double kSimdt = 0.02;
+    public static final Pose2d kRedLeftClimbPose = new Pose2d(new Translation2d(15.64, 3.32), Rotation2d.fromDegrees(90));
+    public static final Pose2d kRedRightClimbPose = new Pose2d(new Translation2d(15.36, 5.40), Rotation2d.fromDegrees(270));
+
+    public static final Pose2d kBlueLeftClimbPose = new Pose2d(new Translation2d(15.52, 3.63), Rotation2d.fromDegrees(270));
+    public static final Pose2d kBlueRightClimbPose = new Pose2d(new Translation2d(14.483078, 4.896612), Rotation2d.fromDegrees(90));
+
   }
 
   public static class FlywheelConstants {
-    public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeed = new InterpolatingDoubleTreeMap();
-    static {
-      kDistanceToFlywheelSpeed.put(1.8, 44.0);
-      kDistanceToFlywheelSpeed.put(2.2, 44.0);
-      kDistanceToFlywheelSpeed.put(2.5, 48.0);
-      kDistanceToFlywheelSpeed.put(3.0, 49.0);
-      kDistanceToFlywheelSpeed.put(3.5, 50.0);
-      kDistanceToFlywheelSpeed.put(4.0, 58.0);
-      kDistanceToFlywheelSpeed.put(4.5, 66.0);
-      kDistanceToFlywheelSpeed.put(5.0, 74.0);
-      kDistanceToFlywheelSpeed.put(5.5, 82.0);
-    }
+    public static final Double[] kDistances = {1.8, 2.2, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5};
 
+    public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedDefault = new InterpolatingDoubleTreeMap();
+    static{
+      kDistanceToFlywheelSpeedDefault.put(kDistances[0], 44.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[1], 44.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[2], 48.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[3], 49.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[4], 50.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[5], 58.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[6], 64.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[7], 72.0);
+      kDistanceToFlywheelSpeedDefault.put(kDistances[8], 80.0);
+    }
+      
     public static final InterpolatingDoubleTreeMap kDistanceToFlywheelSpeedTime = new InterpolatingDoubleTreeMap();
     static {
       kDistanceToFlywheelSpeedTime.put(1.8, 1.11);
@@ -111,38 +128,44 @@ public final class Constants {
       kDistanceToFlywheelSpeedTime.put(5.5, 1.30);
     }
 
-    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngle = new InterpolatingDoubleTreeMap();
+    public static final InterpolatingDoubleTreeMap kDistanceToHoodAngleDefault = new InterpolatingDoubleTreeMap();
     static {
-      kDistanceToHoodAngle.put(1.8, 21.0);
-      kDistanceToHoodAngle.put(2.2, 23.0);
-      kDistanceToHoodAngle.put(2.5,23.0);
-      kDistanceToHoodAngle.put(3.0, 26.0);
-      kDistanceToHoodAngle.put(3.5, 28.0);
-      kDistanceToHoodAngle.put(4.0, 28.0);
-      kDistanceToHoodAngle.put(4.5, 29.0);
-      kDistanceToHoodAngle.put(5.0, 30.0);
-      kDistanceToHoodAngle.put(5.5, 32.0);
+      kDistanceToHoodAngleDefault.put(kDistances[0], 21.0);
+      kDistanceToHoodAngleDefault.put(kDistances[1], 23.0);
+      kDistanceToHoodAngleDefault.put(kDistances[2], 23.0);
+      kDistanceToHoodAngleDefault.put(kDistances[3], 26.0);
+      kDistanceToHoodAngleDefault.put(kDistances[4], 28.0);
+      kDistanceToHoodAngleDefault.put(kDistances[5], 28.0);
+      kDistanceToHoodAngleDefault.put(kDistances[6], 29.0);
+      kDistanceToHoodAngleDefault.put(kDistances[7], 30.0);
+      kDistanceToHoodAngleDefault.put(kDistances[8], 32.0);
     }
 
     public static final InterpolatingDoubleTreeMap kPassingDistanceToSpeed = new InterpolatingDoubleTreeMap();
     static {
-      kPassingDistanceToSpeed.put(4.8514, 40.0);
-      kPassingDistanceToSpeed.put(6.985, 70.0);
+      kPassingDistanceToSpeed.put(4.8, 40.0);
+      kPassingDistanceToSpeed.put(7.0, 70.0);
+      kPassingDistanceToSpeed.put(9.2, 95.0);
     }
 
-    public static final double kPassingMinimumInMeters = 4.8514;
-    public static final double kPassingMaximumInMeters = 6.985;
+    public static final int kSOTMIterations = 2;
+    public static final int kSlowSpeed = 30;
+
+    public static final double kPassingMinimumInMeters = 4.8;
+    public static final double kPassingMaximumInMeters = 9.2;
 
     public static final double kHoodEncoderMultiplier = (0.02833333333330) * 360.0;
     public static final double kHoodMinAngle = 20.0;
     public static final double kHoodMaxAngle = 45.0;
     public static final double kDistanceMinimumInMeters = 1.8;
-    public static final double kDistanceMaximumInMeters = 5.41;
+    public static final double kDistanceMaximumInMeters = 5.5;
+
+    public static final double kHoodDebounceTime = 0.25;
 
     public static final int kFlywheel1MotorPort = 60;
     public static final String kFlywheel1Canbus = "rio";
     public static final double kFlywheel1SupplyLimit = 20;
-    public static final double kFlywheel1StatorLimit = 20;
+    public static final double kFlywheel1StatorLimit = 40;
     public static final boolean kFlywheel1SupplyLimitEnabled = true;
     public static final boolean kFlywheel1StatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheel1NeutralMode = NeutralModeValue.Coast;
@@ -150,7 +173,7 @@ public final class Constants {
     public static final int kFlywheel2MotorPort = 20;
     public static final String kFlywheel2Canbus = "rio";
     public static final double kFlywheel2SupplyLimit = 20;
-    public static final double kFlywheel2StatorLimit = 20;
+    public static final double kFlywheel2StatorLimit = 40;
     public static final boolean kFlywheel2SupplyLimitEnabled = true;
     public static final boolean kFlywheel2StatorLimitEnabled = true;
     public static final NeutralModeValue kFlywheel2NeutralMode = NeutralModeValue.Coast;
@@ -168,6 +191,9 @@ public final class Constants {
     public static final double kDHood = 0;
 
     public static final double kHoodTolerance = 2;
+
+    public static final double kFlywheelIncrementTestSpeed = 2;
+    public static final double kFlywheelIncrementTestAngle = 1;
 
     public static final double kSFlywheel = 0.44;
     public static final double kVFlywheel = 0.1075;
@@ -203,6 +229,8 @@ public final class Constants {
 
     public static final double kMaxSpeed = 1;
     public static final double kMaxVoltage = 11.5;
+
+    public static final double kAntijamVoltage = -5;
   }
 
   public static class OperatorConstants {
@@ -215,7 +243,6 @@ public final class Constants {
 
     static {
         kControllerProfileMap.put(0.0, 0.0);
-        // kControllerProfileMap.put(0.8, 1.0/3.0);
         kControllerProfileMap.put(1.0, 1.0);
     }
 
@@ -228,12 +255,13 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final boolean kUseMegatag2ByDefault = true; 
+    public static final boolean kRestrictTagsByDefault = true;
     public static final String[] kLimelightNames = {"limelight-one","limelight-two"};
     public static final Matrix<N3, N1> kStandardDeviations = VecBuilder.fill(.7,.7,9999999);
     public static final double kAmbiguity = .3;
     public static final double kBaseLateralDev = 0.3;
     public static final double kBaseRotDev = 0.5;
-    public static final double kTagDistThreshold = 10;
+    public static final double kTagDistThreshold = 7;
     public static final double kMegaTag1Multiplier = 2;
     public static final double kRestrictedTagsMultiplier = 0.25;
     public static final double kLatencyLagInSeconds = 0.2;
@@ -251,6 +279,30 @@ public final class Constants {
       kClimbTags.add(31);
       kClimbTags.add(32);
     }
+
+    public static final ArrayList<Integer> kHubTags = new ArrayList<>();
+    static {
+      kHubTags.add(8);
+      kHubTags.add(5);
+      kHubTags.add(9);
+      kHubTags.add(10);
+      kHubTags.add(11);
+      kHubTags.add(2);
+      kHubTags.add(4);
+      kHubTags.add(3);
+
+      kHubTags.add(18);
+      kHubTags.add(27);
+      kHubTags.add(19);
+      kHubTags.add(20);
+      kHubTags.add(26);
+      kHubTags.add(25);
+      kHubTags.add(24);
+      kHubTags.add(21);
+    }
+
+    public static final double kMaxFieldLength = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldLength();
+    public static final double kMaxFieldWidth = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldWidth();
 
     // Welded hub poses
     public static final Pose2d kHubPoseBlueWeldedMeters = new Pose2d(4.6255177999999995, 4.0346376, Rotation2d.fromDegrees(0));
@@ -302,7 +354,7 @@ public final class Constants {
 
   
   public static class TurretConstants {
-    public static final Transform2d kTurretOffset = new Transform2d(0.143,-0.3, new Rotation2d()); // 0.143, 0.168
+    public static final Transform2d kTurretOffset = new Transform2d(0.25,-0.3, new Rotation2d()); // 0.143, 0.168
     public static final double kStartingAngleOffset = 90;
 
     public static final int kTurretMotorPort = 24;
@@ -317,12 +369,14 @@ public final class Constants {
     public static final double kTurretI = 0.0;
     public static final double kTurretD = 0.0;
 
-    public static final double kTurretS = 0.02;
+    public static final double kTurretS = 0.015;
     public static final double kTurretV = 0.00055;
     public static final double kTurretA = 0;
 
+    public static final double kTurretDebounceTime = 0.25;
+
     // TODO: tune a lower tolerance for this
-    public static final double kTurretTolerance = 30;
+    public static final double kTurretTolerance = 15;
 
     public static final double kTurretResetSpeed = -0.15;
     public static final double kTurretResetStatorThreshold = 19;
@@ -375,8 +429,10 @@ public final class Constants {
     public static final double kKickerV = 0.4;
     public static final double kSpindexerV = 0.47;
 
-    public static final double kKickerSpeed = -25;
-    public static final double kSpindexerSpeed = -20;
+    public static final double kKickerSpeed = -20;
+    public static final double kSpindexerSpeed = -25;
+
+    public static final double kAntijamVoltage = 6;
 
     public static final InterpolatingDoubleTreeMap kDistanceToKickerSpeed = new InterpolatingDoubleTreeMap();
     static {
@@ -388,10 +444,12 @@ public final class Constants {
   public static class IntakeSubsystemConstants {
     //TODO: Find real values for the constants.
     public static final double kSliderOffset = 0.0;
+    public static final double kSliderDebounceTime = 0.25;
     public static final double kStoredPos = 0.0;
-    public static final double kOutPos = 11;
+    public static final double kOutPos = 17;
+    public static final double kBuffer = 0;
     public static final double kIntakeAngle = 345.0;
-    public static final double kIntakeMotorSpeed = 0.8;
+    public static final double kIntakeMotorSpeed = 0.9;
     public static final double kSlideThreshold = 0.20;
     public static final double kSlideSpeedThreshold = 0.20;
 
@@ -406,22 +464,24 @@ public final class Constants {
     public static final int kSliderMotorPort = 31;
     public static final String kSliderCanbus = "rio";
     public static final double kSliderSupplyLimit = 20;
-    public static final double kSliderStatorLimit = 30;
+    public static final double kSliderStatorLimit = 20;
     public static final boolean kSliderSupplyLimitEnabled = true;
     public static final boolean kSliderStatorLimitEnabled = true;
     public static final NeutralModeValue kSliderNeutralMode = NeutralModeValue.Coast;
 
-    public static final double kSliderP = 0.07;
+    public static final double kSliderP = 0.14;
     public static final double kSliderI = 0;
     public static final double kSliderD = 0.0;
 
-    public static final double kSliderMaxVelocity = 48;
-    public static final double kSliderMaxAcceleration = 36;
+    public static final double kSlipConstant = 0.225;
+
+    public static final double kSliderMaxVelocity = 128; // 128
+    public static final double kSliderMaxAcceleration = 96; // 96
 
     public static final double kSliderMaxSpeedOutput = .5;
 
-    public static final double kSliderResetSpeed = .2;
-    public static final double kSliderResetStatorThreshold = 28;
+    public static final double kSliderResetSpeed = .15;
+    public static final double kSliderResetStatorThreshold = 10;
 
     public static final int kSimNumMotors = 1;
     public static final double kSimWidth = 60;
@@ -440,5 +500,15 @@ public final class Constants {
     public static final double kSimdt = 0.02;
 
     public static final double kEncoderToInchesMult = 3.1875 / 5 ;
+  }
+
+  public static class GameConstants {
+    public static final int[] kReturnThresholdLose = { 88, 38 };
+    public static final int[] kReturnThresholdWin = { 113, 63 };
+
+    public static final int[] kShootThresholdLose = { 83, 33 };
+    public static final int[] kShootThresholdWin = { 108, 58 };
+
+    public static final int[] kShiftChanges = { 130, 105, 80, 55, 30 };
   }
 }

@@ -10,28 +10,18 @@ import frc.robot.Subsystems.FlywheelSubsystem.FlywheelMode;
 
 public class setFlywheelSlowAuto extends Command {
     private final FlywheelSubsystem kFlywheel;
-    private final Supplier<Double> kDistance;
 
-    public setFlywheelSlowAuto(FlywheelSubsystem mFlywheelSubsystem, Supplier<Double> mDistance){
+    public setFlywheelSlowAuto(FlywheelSubsystem mFlywheelSubsystem){
         kFlywheel = mFlywheelSubsystem;
-        kDistance = mDistance;
 
         addRequirements(kFlywheel);
     }
 
     @Override
     public void initialize(){
-        double angle;
-        double speed;
-        double distance = kDistance.get();
-        kFlywheel.disableFlywheelPID();
-        SmartDashboard.putNumber("Distance setFlywheel", distance);
-            if (distance >= FlywheelConstants.kDistanceMinimumInMeters && distance <= FlywheelConstants.kDistanceMaximumInMeters){
-                speed = FlywheelConstants.kDistanceToFlywheelSpeed.get(distance);
-                angle = FlywheelConstants.kDistanceToHoodAngle.get(distance);
-                kFlywheel.setHoodTarget(FlywheelConstants.kHoodMinAngle);
-                kFlywheel.setMode(FlywheelMode.SPINNING, speed);    
-            }
+        kFlywheel.disableFlywheelBangBang();
+        kFlywheel.setMode(FlywheelMode.SPINNING, FlywheelConstants.kSlowSpeed);
+        kFlywheel.setHoodTarget(FlywheelConstants.kStartingHoodAngle);
     }
 
     @Override
@@ -41,6 +31,6 @@ public class setFlywheelSlowAuto extends Command {
 
     @Override
     public void end(boolean isInterupted){
-        kFlywheel.enableFlywheelPID();
+        kFlywheel.enableFlywheelBangBang();
     }
 }

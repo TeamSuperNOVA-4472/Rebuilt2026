@@ -14,7 +14,7 @@ public class resetTurretEncoder extends Command {
     public resetTurretEncoder (TurretSubsystem mTurretSubsystem)
     {
         kTurretSubsystem = mTurretSubsystem;
-        kDebounce = new Debouncer(0.25, DebounceType.kRising);
+        kDebounce = new Debouncer(TurretConstants.kTurretDebounceTime, DebounceType.kRising);
 
         addRequirements(kTurretSubsystem);
     }
@@ -34,10 +34,7 @@ public class resetTurretEncoder extends Command {
     @Override
     public void end(boolean interrupted) {
         kTurretSubsystem.stop();
-        // if (!interrupted)
-        // {
-            kTurretSubsystem.resetEncoder();
-            kTurretSubsystem.enablePID();
-        // }
+        kTurretSubsystem.resetEncoder();
+        kTurretSubsystem.enablePID();
     }
 }

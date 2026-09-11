@@ -68,7 +68,7 @@ public class SwerveTeleop extends Command {
     //TODO: make analog transition w/ trigger so it isnt as choppy
     double speed = MathUtil.clamp(mSOTM.get() * SwerveConstants.kSOTMConstant + SwerveConstants.kMaxSpeedMS, SwerveConstants.kMaxSOTMSpeedMS, SwerveConstants.kMaxSpeedMS);
 
-    SmartDashboard.putNumber("Trigger Input: ", mSOTM.get());
+    //SmartDashboard.putNumber("Trigger Input: ", mSOTM.get());
 
     double updatedFwdSpeedMS = mFwdInput.get() * speed;
     double updatedSideSpeedMS = mSideInput.get() * speed;

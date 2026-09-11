@@ -21,6 +21,5 @@ public class setFlywheelPassingAuto extends InstantCommand {
     @Override
     public void initialize(){
         kFlywheel.setHoodTarget(FlywheelConstants.kPassingAngle);
-        //kFlywheel.setMode(FlywheelMode.SPINNING, FlywheelConstants.kPassingSpeed);
     }
 }

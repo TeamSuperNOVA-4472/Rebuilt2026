@@ -12,15 +12,19 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import java.util.Map.Entry;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -37,7 +41,8 @@ import frc.robot.Constants.FlywheelConstants;
 public class FlywheelSubsystem extends SubsystemBase {
     public enum FlywheelMode{
         OFF,
-        SPINNING    
+        SPINNING,
+        ANTIJAM
     }
     private final TalonFX kFlywheel1Motor;
     private final TalonFX kFlywheel2Motor;
@@ -66,12 +71,13 @@ public class FlywheelSubsystem extends SubsystemBase {
     private boolean kIsSafeModeEnabled;
 
     private boolean kHoodPIDEnabled = true;
-    private short kFlywheelPIDEnabled = 1;
+    private short kFlywheelBangBangEnabled = 1;
     
     public FlywheelSubsystem(){
         kMode = FlywheelMode.OFF;
+       
         kIsSafeModeEnabled = false;
-        //TODO: Values below should be constants.
+        
         kFlywheel1Motor = new TalonFX(FlywheelConstants.kFlywheel1MotorPort, FlywheelConstants.kFlywheel1Canbus);
         kFlywheel2Motor = new TalonFX(FlywheelConstants.kFlywheel2MotorPort, FlywheelConstants.kFlywheel2Canbus);
         kFlywheelHoodMotor = new TalonFX(FlywheelConstants.kFlywheelHoodMotorPort, FlywheelConstants.kFlywheelHoodCanbus);
@@ -109,7 +115,6 @@ public class FlywheelSubsystem extends SubsystemBase {
                         m_velocity.mut_replace(kFlywheel2Motor.getVelocity().getValueAsDouble(), RotationsPerSecond));
               }, this));
 
-        SmartDashboard.putData("FlyWheelHoodSim", kSimSpace);
         TalonFXConfiguration kFlywheel1Config = new TalonFXConfiguration();
         CurrentLimitsConfigs kFlywheel1CurrentConfig = new CurrentLimitsConfigs();
         MotorOutputConfigs kFlywheel1MotorConfig = new MotorOutputConfigs();
@@ -204,6 +209,10 @@ public class FlywheelSubsystem extends SubsystemBase {
         moveFlywheel(speed);
     }
 
+    public void setMode(FlywheelMode mNewMode){
+        setMode(mNewMode, 0);
+    }
+
     public void setHoodTarget(double mNewTarget){
         if (mNewTarget >= Constants.FlywheelConstants.kHoodMinAngle && mNewTarget <= Constants.FlywheelConstants.kHoodMaxAngle) kTargetAngle = mNewTarget;
     }
@@ -223,14 +232,14 @@ public class FlywheelSubsystem extends SubsystemBase {
         kHoodPIDEnabled = true;
     }
 
-    public void disableFlywheelPID()
+    public void disableFlywheelBangBang()
     {
-        kFlywheelPIDEnabled = 0;
+        kFlywheelBangBangEnabled = 0;
     }
 
-    public void enableFlywheelPID()
+    public void enableFlywheelBangBang()
     {
-        kFlywheelPIDEnabled = 1;
+        kFlywheelBangBangEnabled = 1;
     }
 
     public void resetEncoderToBase()
@@ -281,8 +290,8 @@ public class FlywheelSubsystem extends SubsystemBase {
         switch (kMode)
         {
             case SPINNING:
-                double kFlywheel1Output = MathUtil.clamp(kFlywheelBangBang.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
-                double kFlywheel2Output = MathUtil.clamp(kFlywheelBangBang.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
+                double kFlywheel1Output = MathUtil.clamp(kFlywheelBangBangEnabled*kFlywheelBangBang.calculate(kFlywheel1Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel1Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
+                double kFlywheel2Output = MathUtil.clamp(kFlywheelBangBangEnabled*kFlywheelBangBang.calculate(kFlywheel2Motor.getVelocity().getValueAsDouble(), kTargetSpeed) + kFlywheel2Feedforward.calculate(kTargetSpeed), -FlywheelConstants.kMaxVoltage, FlywheelConstants.kMaxVoltage);
                 kFlywheel1Motor.setVoltage(kFlywheel1Output);
                 kFlywheel2Motor.setVoltage(kFlywheel2Output);
                 break;
@@ -290,16 +299,14 @@ public class FlywheelSubsystem extends SubsystemBase {
                 kFlywheel1Motor.setVoltage(0);
                 kFlywheel2Motor.setVoltage(0);
                 break;
+            case ANTIJAM:
+                kFlywheel1Motor.setVoltage(FlywheelConstants.kAntijamVoltage);
+                kFlywheel2Motor.setVoltage(FlywheelConstants.kAntijamVoltage);
+                break;
         }
         
-        SmartDashboard.putBoolean("Subsystems/FlywheelSubsystem/Flywheel At Setpoint: ", kFlywheelAtTarget);
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 1: ", kFlywheel1Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Actual Flywheel Speed 2: ", kFlywheel2Motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Flywheel Speed: ", kTargetSpeed);
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Current Hood Angle: ", getHoodAngle());
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Target Hood Angle: ", kTargetAngle);
-        SmartDashboard.putNumber("Subsystems/FlywheelSubsystem/Hood PID Output: ", kOutput);
     }
+
     @Override
     public void simulationPeriodic() {
       kFlywheelHoodSim.setInput(kOutput * FlywheelConstants.kSimMultiplier);
@@ -307,11 +314,12 @@ public class FlywheelSubsystem extends SubsystemBase {
       kFlywheelHoodSim.update(FlywheelConstants.kSimdt);
 
       kSimDisp.setAngle(kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
-      SmartDashboard.putNumber("FlywheelHood", kFlywheelHoodSim.getAngleRads()*180 / Math.PI);
     }
+
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return kRoutine.dynamic(direction);
     }
+
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
         return kRoutine.quasistatic(direction);
     }

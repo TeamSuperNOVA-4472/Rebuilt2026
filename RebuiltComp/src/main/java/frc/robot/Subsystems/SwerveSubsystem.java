@@ -26,6 +26,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -49,13 +50,10 @@ import static frc.robot.Constants.SwerveConstants.*;
 
 
 public class SwerveSubsystem extends SubsystemBase {
+  private final Field2d mField = new Field2d();
   private final SwerveDrive mSwerveDrive;
-  //private Command kSwerveSysID;
   private double kYawGyroOffset = 0;
   private Location kLocation = FieldMathHelpers.Location.ALLIANCE_ZONE;
-  private static final double kS = 0.212775; //BL: 0.24038 BR: 0.20704 FL: 0.21531 FR: 0.18837 
-  private static final double kV = 2.121025; //BL: 2.1179 BR: 2.0122 FL: 2.1095 FR: 2.2445
-  private static final double kA = 0.1667725; //BL: 0.14532 BR: 0.14542 FL: 0.24849 FR: 0.12786
 
   private static SwerveDrive readSwerveConfig() {
     SwerveDrive swerveDrive = null;
@@ -63,7 +61,7 @@ public class SwerveSubsystem extends SubsystemBase {
     try {
       swerveDrive = new SwerveParser(swerveJsonDirectory)
         .createSwerveDrive(kMaxSpeedMS);
-      swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(kS, kV, kA));
+      swerveDrive.replaceSwerveModuleFeedforward(new SimpleMotorFeedforward(SwerveConstants.kSReplacement, SwerveConstants.kVReplacement, SwerveConstants.kAReplacement));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -82,10 +80,10 @@ public class SwerveSubsystem extends SubsystemBase {
         pSwerveSubsystem::getPose, // Robot pose supplier
         (Pose2d pose) -> pSwerveSubsystem.resetOdometry(pose), // Method to reset odometry (will be called if your auto has a starting pose)
         pSwerveSubsystem::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        (speeds, feedforwards) ->pSwerveSubsystem.driveRobotOriented(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+        (speeds, feedforwards) -> pSwerveSubsystem.driveRobotOriented(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                new PIDConstants(2.5, 0.0, 0.0) // Rotation PID constants
+                new PIDConstants(SwerveConstants.kPTranslation, 0.0, 0.0), // Translation PID constants
+                new PIDConstants(SwerveConstants.kPRotation, 0.0, 0.0) // Rotation PID constants
         ),
         config, // The robot configuration
         () -> {
@@ -107,20 +105,11 @@ public class SwerveSubsystem extends SubsystemBase {
     }
   }
 
-  /** Creates a new ExampleSubsystem. */
+  // Swerve subsystem constructor 
   public SwerveSubsystem() {
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.NONE;
     mSwerveDrive = readSwerveConfig();
     mSwerveDrive.setHeadingCorrection(false);
-    /*kSwerveSysID = SwerveDriveTest.generateSysIdCommand(
-            SwerveDriveTest.setDriveSysIdRoutine(
-                new SysIdRoutine.Config(),
-                this,
-                mSwerveDrive,
-                12,
-                true),
-                3.0,
-                5,
-                3);*/
     configAutoBuilder(this);
     resetHeading();
   }
@@ -205,20 +194,9 @@ public class SwerveSubsystem extends SubsystemBase {
     return mSwerveDrive.getFieldVelocity();
   }
 
-  /*public Command getSysIDCommand() {
-    return kSwerveSysID;
-  }*/
-
   @Override
   public void periodic() {
-
     kLocation = FieldMathHelpers.getLocation(getPose());
-
-    SmartDashboard.putString("Robot Telemetry/Pose/Swerve Pose: ", getPose().toString());
-    SmartDashboard.putString("Robot Telemetry/Pose/Location: ", kLocation.name());
-    SmartDashboard.putNumber("Robot Telemetry/Pose/Heading Degrees: ", getHeadingDegrees());
-
-    SmartDashboard.putNumber("Robot Telemetry/Distance To Hub/Turret Adjusted: ", FieldMathHelpers.getTranslationToHub(getPose().transformBy(TurretConstants.kTurretOffset)).getNorm());
-    SmartDashboard.putString("Turret Pose: ", getPose().transformBy(TurretConstants.kTurretOffset).toString());
+    mField.setRobotPose(getPose());
   }
 }

@@ -38,9 +38,6 @@ import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
 
 
-
-
-
 public class VisionSubsystem extends SubsystemBase
 {
     //Suppliers and constants, members of class
@@ -49,8 +46,9 @@ public class VisionSubsystem extends SubsystemBase
     private final Supplier<Double> mGetRobotAngularVelocity;
     private final BiConsumer<PoseEstimate, Matrix<N3,N1>> mUpdateRobotPose;
     private final Field2d mField;
+    private ArrayList<Integer> mRestrictedTags = VisionConstants.kHubTags;
     private boolean mUseMegaTag2 = VisionConstants.kUseMegatag2ByDefault;
-    private boolean mRestrictTags = false;
+    private boolean mRestrictTags = VisionConstants.kRestrictTagsByDefault;
 
     // Limelight lib is stupid and wants integers for modes
     // Beat limelight's stupidity by creating an enum we can assign to a trigger
@@ -86,9 +84,6 @@ public class VisionSubsystem extends SubsystemBase
     public void disableMT2() { mUseMegaTag2 = false; }
     public void enableMT2() { mUseMegaTag2 = true; }
 
-    public void unrestrictTags() { mRestrictTags = false; }
-    public void restrictTags() { mRestrictTags = true; }
-
     private void updatePose(PoseEstimate pose)
     {
         // Update swerve subsystem with pose and standard deviations
@@ -102,8 +97,6 @@ public class VisionSubsystem extends SubsystemBase
         {
             LimelightHelpers.SetIMUMode(limelight, mode.get());
         }
-
-        SmartDashboard.putString("Subsystems/VisionSubsystem/IMU Mode: ", mode.name());
     }
 
     private void setIMUThrottle(int throttle)
@@ -113,11 +106,8 @@ public class VisionSubsystem extends SubsystemBase
         {
             LimelightHelpers.SetThrottle(limelight, throttle);
         }
-
-        SmartDashboard.putNumber("Subsystems/VisionSubsystem/Throttle: ", throttle);
     }
 
-    @AutoLogOutput
     public Pose2d getLastValidPose()
     {
         return mLastValidPose;
@@ -141,7 +131,7 @@ public class VisionSubsystem extends SubsystemBase
     {
         double lateraldev = pose.avgTagDist * Constants.VisionConstants.kBaseLateralDev; // Scale the standard deviation by tag distance
         if (!mUseMegaTag2) lateraldev *= VisionConstants.kMegaTag1Multiplier;
-        if (mRestrictTags) lateraldev *= VisionConstants.kRestrictedTagsMultiplier;
+        // if (mRestrictTags) lateraldev *= VisionConstants.kRestrictedTagsMultiplier;
         double rotationaldev = mUseMegaTag2 ? Double.POSITIVE_INFINITY : pose.avgTagDist * Constants.VisionConstants.kBaseRotDev ; // If MT1, scale by distance and square
 
         return VecBuilder.fill(lateraldev, lateraldev, rotationaldev);
@@ -163,8 +153,8 @@ public class VisionSubsystem extends SubsystemBase
             pose.tagCount >= Constants.VisionConstants.kTagCountThreshold &&
             pose.pose.getX() >= 0 &&
             pose.pose.getY() >= 0 &&
-            pose.pose.getX() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldLength() &&
-            pose.pose.getY() <= AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark).getFieldWidth() &&
+            pose.pose.getX() <= VisionConstants.kMaxFieldLength &&
+            pose.pose.getY() <= VisionConstants.kMaxFieldWidth &&
             mGetRobotAngularVelocity.get() <= Constants.VisionConstants.kAngularVelocityThreshold &&
             underAmbiguityThreshold(pose) &&
             withinAcceptedTags(pose))
@@ -180,7 +170,7 @@ public class VisionSubsystem extends SubsystemBase
 
         for (RawFiducial id : pose.rawFiducials)
         {
-            if (!VisionConstants.kClimbTags.contains(id.id)) return false;
+            if (!mRestrictedTags.contains(id.id)) return false;
         }
 
         return true;
@@ -205,10 +195,7 @@ public class VisionSubsystem extends SubsystemBase
         if(rejectUpdate(pose))
         {
             rejectUpdate = true;
-        }
-
-        SmartDashboard.putNumber("Subsystems/VisionSubsystem/Average Tag Distance: ", pose.avgTagDist);
-       
+        }       
 
         if(!rejectUpdate)
         {
@@ -217,11 +204,6 @@ public class VisionSubsystem extends SubsystemBase
 
         return Optional.empty();
     }
-
-    @AutoLogOutput(key = "VisionSubsystem/LogPose")
-    private Pose2d logPose = new Pose2d();
-    
-    
 
     // Calculate position, update position if present
     @Override
@@ -237,7 +219,6 @@ public class VisionSubsystem extends SubsystemBase
             {
                 updatePose(pose.get());
                 mLastValidPose = pose.get().pose;
-                SmartDashboard.putString("Subsystems/VisionSubsystem/Pose: ", pose.get().pose.toString());
             }
 
             adjustThrottleAndIMU();

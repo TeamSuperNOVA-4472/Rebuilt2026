@@ -12,6 +12,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import com.ctre.phoenix6.SignalLogger;
+import com.pathplanner.lib.commands.FollowPathCommand;
 
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -45,22 +46,31 @@ public class Robot extends LoggedRobot {
     // }
 
     //Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+    
     m_robotContainer = new RobotContainer();
+
+    FollowPathCommand.warmupCommand().schedule();
+
     // Starts recording to data log
     //DataLogManager.start();
   }
 
   @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-    //m_robotContainer.getAmperageToLog();
+  public void robotInit() {
   }
 
   @Override
-  public void disabledInit() {}
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
+  }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledInit() {
+  }
+
+  @Override
+  public void disabledPeriodic() {
+  }
 
   @Override
   public void disabledExit() {}
@@ -78,7 +88,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+  }
 
   @Override
   public void autonomousExit() {}
@@ -91,7 +103,9 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+  }
 
   @Override
   public void teleopExit() {}

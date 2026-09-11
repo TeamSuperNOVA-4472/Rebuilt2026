@@ -8,14 +8,8 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.DoTheThingCommand;
-import frc.robot.commands.ShooterSysIdCommand;
 import frc.robot.commands.SwerveTeleop;
-import frc.robot.commands.ToggleSpindexer;
-import frc.robot.commands.calculateFlywheelSpeed;
-import frc.robot.subsystems.FlywheelSubsystem;
-import frc.robot.subsystems.SpindexerSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
@@ -50,14 +44,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DoTheThingCommand;
-import frc.robot.commands.FlywheelTestCommand;
 import frc.robot.commands.GoToAngleCommand;
 import frc.robot.commands.SwerveTeleop;
-import frc.robot.commands.ToggleSpindexer;
-import frc.robot.commands.calculateFlywheelSpeed;
-import frc.robot.subsystems.FlywheelSubsystem;
-import frc.robot.subsystems.SpindexerSubsystem;
-import frc.robot.subsystems.FlywheelSubsystem.FlywheelMode;
 import frc.robot.subsystems.SwerveSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -91,9 +79,6 @@ public class RobotContainer {
     mDriver::getXButton,
     mSwerveSubsystem);
 
-  private final FlywheelSubsystem kFlywheel = FlywheelSubsystem.kFlywheel;
-  private final SpindexerSubsystem kSpindexer = SpindexerSubsystem.kInstance;
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     mSwerveSubsystem.setDefaultCommand(mSwerveTeleop);
@@ -106,14 +91,6 @@ public class RobotContainer {
         mSwerveSubsystem.addVisionMeasurement(pose.pose, pose.timestampSeconds, stdDevs);
       }
       );
-
-    Trigger flyWheelToggle = new Trigger(mDriver::getLeftBumperButton);
-    flyWheelToggle.whileTrue(new calculateFlywheelSpeed(kFlywheel, mSwerveSubsystem::getPose, mSwerveSubsystem::getFieldRelativeSpeeds, FlywheelMode.SPINNING));
-    flyWheelToggle.onFalse(new InstantCommand(() -> kFlywheel.setMode(FlywheelMode.OFF)));
-
-    Trigger spindexerToggle = new Trigger(mDriver::getRightBumperButton);
-    spindexerToggle.onTrue(new ToggleSpindexer(kSpindexer));
-    
   }
 
 
